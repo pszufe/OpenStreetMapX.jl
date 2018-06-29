@@ -10,6 +10,7 @@ include("map_snippet.jl")
 # osmconvert --drop-author winnipeg.osm -o=winn2.osm
 # TODO: check what other data can be filtered out from the map
 
+# The winnipeg.osm file can be obtained from https://szufel.pl/winnipeg.zip
 md = loadMapData("winnipeg.osm")
 
 # once you process osm.file the next time

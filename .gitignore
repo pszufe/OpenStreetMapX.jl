@@ -10,4 +10,6 @@
 *.xls
 *.htm
 *.html
+winnipeg.osm
+winnipeg.zip
 deps/deps.jl

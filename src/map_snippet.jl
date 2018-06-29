@@ -1,4 +1,4 @@
-include("OpenStreetMap.jl")
+include("osm/OpenStreetMap.jl")
 using OpenStreetMap
 
 struct MapData
