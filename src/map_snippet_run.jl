@@ -16,7 +16,7 @@ md = loadMapData("winnipeg.osm")
 # once you process osm.file the next time
 # you can increase processing speed with load/saveMapData function
 # that use fast Julia serialization instead of XML parsing
-function saveMapData(md::MadData)
+function saveMapData(md::MapData)
     f = open("map.data","w")
     serialize(f,md)
     close(f)
