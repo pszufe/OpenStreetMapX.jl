@@ -1,7 +1,8 @@
 
-###############################
-### LLA to ECEF coordinates ###
-###############################
+###############################################
+### Conversion from LLA to ECEF coordinates ###
+###############################################
+
 
 function ECEF(lla::LLA, datum::Ellipsoid = WGS84)
     ϕdeg, λdeg, h = lla.lat, lla.lon, lla.alt
@@ -19,9 +20,21 @@ function ECEF(lla::LLA, datum::Ellipsoid = WGS84)
     return ECEF(x, y, z)
 end
 
-###############################
-### ECEF to LLA coordinates ###
-###############################
+# For dictionary of nodes
+function ECEF(nodes::Dict{Int,LLA}, datum::Ellipsoid = WGS84)
+    r = Dict{Int,ECEF}()
+    sizehint!(r, ceil(Int, 1.5*length(nodes)))
+
+    for (key, node) in nodes
+        r[key] = ECEF(node, datum)
+    end
+
+    return r
+end
+
+###############################################
+### Conversion from ECEF to LLA coordinates ###
+###############################################
 
 function LLA(ecef::ECEF, datum::Ellipsoid = WGS84)
     x, y, z = ecef.x, ecef.y, ecef.z
@@ -36,6 +49,18 @@ function LLA(ecef::ECEF, datum::Ellipsoid = WGS84)
     h = p / cos(ϕ) - N
 
     return LLA(rad2deg(ϕ), rad2deg(λ), h)
+end
+
+# For dictionary of nodes
+function LLA(nodes::Dict{Int,ECEF}, datum::Ellipsoid = WGS84)
+    r = Dict{Int,LLA}()
+    sizehint!(r, ceil(Int, 1.5*length(nodes)))
+
+    for (key, node) in nodes
+        r[key] = LLA(node, datum)
+    end
+
+    return r
 end
 
 ###############################
@@ -121,4 +146,27 @@ function ENU(bounds::Bounds{LLA}, lla_ref::LLA = center(bounds), datum::Ellipsoi
     end
 
     return Bounds{ENU}(min_y, max_y, min_x, max_x)
+end
+
+#####################################
+### Conversion to ENU coordinates ###
+#####################################
+
+# Given a reference point
+function ENU{T<:@compat Union{LLA,ECEF}}(nodes::Dict{Int,T},
+                                         lla_ref::LLA,
+                                         datum::Ellipsoid = WGS84)
+    r = Dict{Int,ENU}()
+    sizehint!(r, ceil(Int, 1.5*length(nodes)))
+
+    for (key, node) in nodes
+        r[key] = ENU(node, lla_ref, datum)
+    end
+
+    return r
+end
+
+# Given Bounds
+function ENU(nodes::Dict, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84)
+    ENU(nodes, center(bounds), datum)
 end
