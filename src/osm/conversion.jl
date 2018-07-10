@@ -1,3 +1,6 @@
+##########################
+### Points Conversions ###
+##########################
 
 ###############################################
 ### Conversion from LLA to ECEF coordinates ###
@@ -20,18 +23,6 @@ function ECEF(lla::LLA, datum::Ellipsoid = WGS84)
     return ECEF(x, y, z)
 end
 
-# For dictionary of nodes
-function ECEF(nodes::Dict{Int,LLA}, datum::Ellipsoid = WGS84)
-    r = Dict{Int,ECEF}()
-    sizehint!(r, ceil(Int, 1.5*length(nodes)))
-
-    for (key, node) in nodes
-        r[key] = ECEF(node, datum)
-    end
-
-    return r
-end
-
 ###############################################
 ### Conversion from ECEF to LLA coordinates ###
 ###############################################
@@ -51,21 +42,9 @@ function LLA(ecef::ECEF, datum::Ellipsoid = WGS84)
     return LLA(rad2deg(ϕ), rad2deg(λ), h)
 end
 
-# For dictionary of nodes
-function LLA(nodes::Dict{Int,ECEF}, datum::Ellipsoid = WGS84)
-    r = Dict{Int,LLA}()
-    sizehint!(r, ceil(Int, 1.5*length(nodes)))
-
-    for (key, node) in nodes
-        r[key] = LLA(node, datum)
-    end
-
-    return r
-end
-
-###############################
-### ECEF to ENU coordinates ###
-###############################
+###############################################
+### Conversion from ECEF to ENU coordinates ###
+###############################################
 
 # Given a reference point for linarization
 function ENU(ecef::ECEF, lla_ref::LLA, datum::Ellipsoid = WGS84)
@@ -92,65 +71,101 @@ function ENU(ecef::ECEF, lla_ref::LLA, datum::Ellipsoid = WGS84)
     return ENU(east, north, up)
 end
 
+
 # Given Bounds object for linearization
-function ENU(ecef::ECEF, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84)
-    lla_ref = center(bounds)
-    return ENU(ecef, lla_ref, datum)
+ENU(ecef::ECEF, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ENU(ecef, center(bounds), datum)
+
+
+###############################################
+### Conversion from ENU to ECEF coordinates ###
+###############################################
+
+function ECEF(enu::ENU, lla_ref::LLA, datum::Ellipsoid = WGS84)
+    ϕdeg, λdeg = lla_ref.lat, lla_ref.lon
+
+    ecef_ref = ECEF(lla_ref, datum)
+
+    # Compute rotation matrix
+    sinλ, cosλ = sind(λdeg), cosd(λdeg)
+    sinϕ, cosϕ = sind(ϕdeg), cosd(ϕdeg)
+
+    # R = [-sinλ -sinϕ*cosλ  cosϕ*cosλ
+    #      	cosλ -sinϕ*sinλ  cosϕ*sinλ
+    #        0.0       cosϕ       sinϕ]
+    #
+    # x,y,z = R * [east, north, up] + [ecef_ref.x, ecef_ref.y, ecef_ref.z]
+	
+	
+	
+	
+    x  = -sinλ*enu.east + -sinϕ*cosλ*enu.north + cosϕ*cosλ*enu.up + ecef_ref.x
+    y = cosλ*enu.east +  -sinϕ*sinλ*enu.north + cosϕ*sinλ*enu.up + ecef_ref.y
+    z    = 0.0*enu.east + cosϕ*enu.north + sinϕ*enu.up + ecef_ref.z
+
+    return ECEF(x, y, z)
 end
 
-##############################
-### LLA to ENU coordinates ###
-##############################
+# Given Bounds object for linearization
+ECEF(enu::ENU, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ECEF(enu, center(bounds), datum)
+
+##############################################
+### Conversion from LLA to ENU coordinates ###
+##############################################
 
 # Given a reference point for linarization
-function ENU(lla::LLA, lla_ref::LLA, datum::Ellipsoid = WGS84)
-    ecef = ECEF(lla, datum)
-    return ENU(ecef, lla_ref, datum)
-end
+ENU(lla::LLA, lla_ref::LLA, datum::Ellipsoid = WGS84) = ENU(ECEF(lla, datum), lla_ref, datum)
 
 # Given Bounds object for linearization
-function ENU(lla::LLA, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84)
-    ecef = ECEF(lla, datum)
-    return ENU(ecef, bounds, datum)
+ENU(lla::LLA, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ENU(ECEF(lla, datum), bounds, datum)
+
+##############################################
+### Conversion from ENU to LLA coordinates ###
+##############################################
+
+# Given a reference point for linarization
+LLA(enu::ENU, lla_ref::LLA, datum::Ellipsoid = WGS84) = LLA(ECEF(enu,lla_ref))
+
+# Given Bounds object for linearization
+LLA(enu::ENU, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = LLA(ECEF(enu,bounds))
+
+#########################################
+### Dictionaries of Nodes Conversions ###
+#########################################
+
+###############################################
+### Conversion from LLA to ECEF coordinates ###
+###############################################
+
+function ECEF(nodes::Dict{Int,LLA}, datum::Ellipsoid = WGS84)
+    r = Dict{Int,ECEF}()
+    sizehint!(r, ceil(Int, 1.5*length(nodes)))
+
+    for (key, node) in nodes
+        r[key] = ECEF(node, datum)
+    end
+
+    return r
 end
 
-#################################
-### LLA to ENU Bounds objects ###
-#################################
+###############################################
+### Conversion from ECEF to LLA coordinates ###
+###############################################
 
-# there's not an unambiguous conversion, but for now,
-# returning the minimum bounds that contain all points contained
-# by the input bounds
-function ENU(bounds::Bounds{LLA}, lla_ref::LLA = center(bounds), datum::Ellipsoid = WGS84)
+function LLA(nodes::Dict{Int,ECEF}, datum::Ellipsoid = WGS84)
+    r = Dict{Int,LLA}()
+    sizehint!(r, ceil(Int, 1.5*length(nodes)))
 
-    max_x = max_y = -Inf
-    min_x = min_y = Inf
-
-    xs = [bounds.min_x, bounds.max_x]
-    ys = [bounds.min_y, bounds.max_y]
-    if bounds.min_y < 0.0 < bounds.max_y
-        push!(ys, 0.0)
-    end
-    ref_x = getX(lla_ref)
-    if bounds.min_x < ref_x < bounds.max_x ||
-       (bounds.min_x > bounds.max_x && !(bounds.min_x >= ref_x >= bounds.max_x))
-        push!(xs, ref_x)
+    for (key, node) in nodes
+        r[key] = LLA(node, datum)
     end
 
-    for x_lla in xs, y_lla in ys
-        pt = ENU(LLA(y_lla, x_lla), lla_ref, datum)
-        x, y = getX(pt), getY(pt)
-
-        min_x, max_x = min(x, min_x), max(x, max_x)
-        min_y, max_y = min(y, min_y), max(y, max_y)
-    end
-
-    return Bounds{ENU}(min_y, max_y, min_x, max_x)
+    return r
 end
 
-#####################################
-### Conversion to ENU coordinates ###
-#####################################
+
+######################################################
+### Conversion from LLA or ECEF to ENU coordinates ###
+######################################################
 
 # Given a reference point
 function ENU{T<:@compat Union{LLA,ECEF}}(nodes::Dict{Int,T},
@@ -167,6 +182,40 @@ function ENU{T<:@compat Union{LLA,ECEF}}(nodes::Dict{Int,T},
 end
 
 # Given Bounds
-function ENU(nodes::Dict, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84)
-    ENU(nodes, center(bounds), datum)
+ENU(nodes::Dict, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ENU(nodes, center(bounds), datum)
+
+###############################################
+### Conversion from ENU to ECEF coordinates ###
+###############################################
+
+function ECEF(nodes::Dict{Int,ENU},lla_ref::LLA , datum::Ellipsoid = WGS84)
+    r = Dict{Int,ECEF}()
+    sizehint!(r, ceil(Int, 1.5*length(nodes)))
+
+    for (key, node) in nodes
+        r[key] = ECEF(node, lla_ref, datum)
+    end
+
+    return r
 end
+
+# Given Bounds
+ECEF(nodes::Dict, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ECEF(nodes, center(bounds), datum)
+
+###############################################
+### Conversion from ENU to LLA coordinates ###
+###############################################
+
+function LLA(nodes::Dict{Int,ENU},lla_ref::LLA , datum::Ellipsoid = WGS84)
+    r = Dict{Int,LLA}()
+    sizehint!(r, ceil(Int, 1.5*length(nodes)))
+
+    for (key, node) in nodes
+        r[key] = LLA(node, lla_ref, datum)
+    end
+
+    return r
+end
+
+# Given Bounds
+LLA(nodes::Dict, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = LLA(nodes, center(bounds), datum)

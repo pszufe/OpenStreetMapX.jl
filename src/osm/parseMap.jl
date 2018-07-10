@@ -2,42 +2,6 @@
 ### MIT License                 ###
 ### Copyright 2014              ###
 
-type OSMattributes
-    oneway::Bool
-    oneway_override::Bool
-    oneway_reverse::Bool
-    visible::Bool
-    lanes::Int
-
-    name::String
-    class::String
-    detail::String
-    cycleway::String
-    sidewalk::String
-    bicycle::String
-
-    # XML elements
-    element::Symbol # :None, :Node, :Way, :Tag[, :Relation]
-    parent::Symbol # :Building, :Feature, :Highway
-    way_nodes::Vector{Int} # for buildings and highways
-
-    id::Int # Uninitialized
-    lat::Float64 # Uninitialized
-    lon::Float64 # Uninitialized
-
-    OSMattributes() = new(false,false,false,false,1,
-                          "","","","","","",:None,:None,[])
-end
-
-type OSMdata
-    nodes::Dict{Int,LLA}
-    highways::Dict{Int,Highway}
-    buildings::Dict{Int,Building}
-    features::Dict{Int,Feature}
-    attr::OSMattributes
-    OSMdata() = new(Dict(),Dict(),Dict(),Dict(),OSMattributes())
-end
-
 function reset_attributes!(osm::OSMattributes)
     osm.oneway = osm.oneway_override = osm.oneway_reverse = osm.visible = false
     osm.lanes = 1

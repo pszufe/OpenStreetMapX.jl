@@ -34,20 +34,18 @@ include("classes.jl") #grouping highways into classes for routing and plotting
 include("layers.jl")  #layers used in plotting
 include("speeds.jl") # speed limits in kilometers per hour
 
-
-include("points.jl") # points coordinates
+include("points.jl") # points coordinates and constants
 include("bounds.jl") #bounds of the map
 include("conversion.jl") #conversion of geographical coordinates
 
-
 include("classification.jl") #highways, features and buildings classification functions (probably will be removed) 
 
-
-include("nodes.jl") #finding nearest nodes or nodes within some range 
 include("parseMap.jl") #map parsing funcions
 include("crop.jl") #cropping nodes
-include("plot.jl") #plotting
+
+include("nodes.jl") #finding nearest nodes or nodes within some range 
 include("intersections.jl") #finding intersections
 include("routing.jl") #routing functions
+include("plot.jl") #plotting
 
 end 
