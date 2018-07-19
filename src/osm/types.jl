@@ -80,7 +80,7 @@ end
 ### Bounds Type ###
 ###################
 
-type Bounds{T <: Union{LLA, ENU}}
+struct Bounds{T <: Union{LLA, ENU}}
     min_y::Float64
     max_y::Float64
     min_x::Float64
@@ -101,18 +101,27 @@ end
 ### Main Types ###
 ##################
 
-type Highway
-    @compat class::AbstractString       # Type of highway
-    lanes::Int          # Number of lanes (1 if unspecified)
-    oneway::Bool        # True if road is one-way
-    @compat sidewalk::AbstractString    # Sidewalk classifier, if available
-    @compat cycleway::AbstractString    # Cycleway classifier, if available
-    @compat bicycle::AbstractString     # Bicycle classifier, if available
-    @compat name::AbstractString        # Name, if available
-    nodes::Vector{Int}  # List of nodes
+abstract type 
+	OSMElement
 end
 
-type Segment
+mutable struct Way <: OSMElement
+    id::Int
+    nodes::Vector{Int}
+    tags::Dict{String,String}
+    Way(id::Int) = new(id, Vector{Int}(), Dict{String,String}())
+end
+tags(w::Way) = w.tags
+
+mutable struct Relation <: OSMElement
+    id::Int
+    members::Vector{Dict{String,String}}
+    tags::Dict{String,String}
+    Relation(id::Int) = new(id, Vector{Dict{String,String}}(), Dict{String,String}())
+end
+tags(r::Relation) = r.tags
+
+mutable struct Segment
     node0::Int          # Source node ID
     node1::Int          # Target node ID
     nodes::Vector{Int}  # List of nodes falling within node0 and node1
@@ -122,34 +131,17 @@ type Segment
     oneway::Bool        # True if road is one-way
 end
 
-type Feature
-    @compat class::AbstractString       # Shop, amenity, crossing, etc.
-    @compat detail::AbstractString      # Class qualifier
-    @compat name::AbstractString        # Name
-end
-
-type Building
-    @compat class::AbstractString       # Building type (usually "yes")
-    @compat name::AbstractString        # Building name (usually unavailable)
-    nodes::Vector{Int}  # List of nodes
-end
-
-type Intersection
+mutable struct Intersection
     highways::Set{Int}  # Set of highway IDs
 end
 Intersection() = Intersection(Set{Int}())
-
-#to moze  wywalic
-type HighwaySet # Multiple highways representing a single "street" with a common name
-    highways::Set{Int}
-end
 
 #######################################
 ### Graph Representation of Network ###
 #######################################
 
 # Transporation network graph data and helpers to increase routing speed (do koniecznej zmiany)
-type Network
+mutable struct Network
     g                                   # Graph object
     v::Dict{Int,Int}  					# (node id) => (graph vertex)
     w::Vector{Float64}                  # Edge weights, indexed by edge id
@@ -163,42 +155,27 @@ end
 ### OSM Data Types ###
 ######################
 
-type OSMattributes
-    oneway::Bool
-    oneway_override::Bool
-    oneway_reverse::Bool
-    visible::Bool
-    lanes::Int
-
-    name::String
-    class::String
-    detail::String
-    cycleway::String
-    sidewalk::String
-    bicycle::String
-
-    # XML elements
-    element::Symbol # :None, :Node, :Way, :Tag[, :Relation]
-    parent::Symbol # :Building, :Feature, :Highway
-    way_nodes::Vector{Int} # for buildings and highways
-
-    id::Int # Uninitialized
-    lat::Float64 # Uninitialized
-    lon::Float64 # Uninitialized
-
-    OSMattributes() = new(false,false,false,false,1,"","","","","","",:None,:None,[])
-end
-
-
-type OSMdata
+mutable struct OSMData
     nodes::Dict{Int,LLA}
-    highways::Dict{Int,Highway}
-    buildings::Dict{Int,Building}
-    features::Dict{Int,Feature}
-    attr::OSMattributes 
-	
-	OSMdata() = new(Dict(),Dict(),Dict(),Dict(),OSMattributes())
+    ways::Vector{Way}
+    relations::Vector{Relation}
+	features::Dict{Int,Tuple{String,String}}
+	bounds::Bounds
+    way_tags::Set{String}
+    relation_tags::Set{String}
 end
+OSMData() = OSMData(Dict{Int,LLA}(), Vector{Way}(), Vector{Relation}(), Dict{Int,String}(), Bounds(0.0,0.0,0.0,0.0), Set{String}(), Set{String}())
+
+mutable struct DataHandle
+    element::Symbol
+    osm::OSMData
+    node::Tuple{Int64,LLA} # initially undefined
+    way::Way # initially undefined
+    relation::Relation # initially undefined
+	bounds::Bounds # initially undefined
+    DataHandle() = new(:None, OSMData())
+end
+
 
 
 ############################
@@ -206,9 +183,9 @@ end
 ############################
 
 ### Rendering style data (tu moze zmienic bedzie trzeba)
-type Style
-    @compat color::UInt32
+struct Style
+    color::UInt32
     width::Real
-    @compat spec::AbstractString
+    spec::AbstractString
 end
 Style(x, y) = Style(x, y, "-")

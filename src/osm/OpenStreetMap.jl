@@ -1,33 +1,21 @@
-###################################
-### Julia OpenStreetMap Package ###
-### MIT License                 ###
-### Copyright 2014              ###
-###################################
-
 module OpenStreetMap
 
-#packages for parsing XML files:
-using LightXML
 using LibExpat
-
 using Compat
 using LightGraphs
 using Winston
 
-
-export ECEF, ENU, LLA # Points
-export Bounds, Ellipsoid # Other types
-export WGS84, OSGB36, NAD27 # Constants
-export center, distance, getX, getY, getZ, inBounds  # Methods
-	
-export parseMapXML, getOSMData, getBounds #parsing XML file
-export plotMap, add_route! #plotting
-export cropMap! #removing unnecessary points (e.g. outside the bounds) 
-export findIntersections, findClassIntersections, nearestNode, segmentHighways, highwaySegments #finding roads intersections, segments, etc.
-export roadways, walkways, cycleways, classify #classification of highways  
-export createGraph, shortestRoute, fastestRoute, routeEdges #creating a road network graph and finding shortest or fastest routes
-export nodesWithinRange, nodesWithinDrivingDistance, nodesWithinDrivingTime  
-export findHighwaySets, findIntersectionClusters, replaceHighwayNodes! 
+export WGS84, OSGB36, NAD27 # Coordinate systems constants
+export distance, getX, getY, getZ  # Auxiliary functions to calculate distances and get coordinates of points
+export center, inBounds, onBounds, boundaryPoint #Functions for map bounds
+export ECEF, LLA, ENU #Conversion functions
+export parseOSM #parsing XML file
+export extractHighways #Highways extraction 
+export filterRoadways, classifyRoadways,  filterWalkways, classifyWalkways, filterCycleways, classifyCycleways #Filtering and classification of cars, cycles and pedestrian Highways
+export extractBuildings, filterBuildings, classifyBuildings #Building extraction, filtering and classification 
+export filterFeatures, filterFeatures!, classifyFeatures #Features filtering and classification
+export crop! #crop map elements
+export nearestNode, nodesWithinRange, centroid #Nodes functions
 
 include("types.jl") #types used in the package
 include("classes.jl") #grouping highways into classes for routing and plotting
@@ -38,14 +26,13 @@ include("points.jl") # points coordinates and constants
 include("bounds.jl") #bounds of the map
 include("conversion.jl") #conversion of geographical coordinates
 
-include("classification.jl") #highways, features and buildings classification functions (probably will be removed) 
-
 include("parseMap.jl") #map parsing funcions
-include("crop.jl") #cropping nodes
+include("classification.jl") #highways, features and buildings classification functions 
+#include("crop.jl") #cropping nodes and ways
 
 include("nodes.jl") #finding nearest nodes or nodes within some range 
-include("intersections.jl") #finding intersections
-include("routing.jl") #routing functions
-include("plot.jl") #plotting
+#include("intersections.jl") #finding intersections
+#include("routing.jl") #routing functions
+#include("plot.jl") #plotting
 
 end 

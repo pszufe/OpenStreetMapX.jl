@@ -1,181 +1,70 @@
-### Julia OpenStreetMap Package ###
-### MIT License                 ###
-### Copyright 2014              ###
+#############################
+### Parse Elements of Map ###
+#############################
 
-function reset_attributes!(osm::OSMattributes)
-    osm.oneway = osm.oneway_override = osm.oneway_reverse = osm.visible = false
-    osm.lanes = 1
-    osm.name = osm.class = osm.detail = osm.cycleway = osm.sidewalk = osm.bicycle = ""
-    osm.element = osm.parent = :None
-    empty!(osm.way_nodes)
-end
-
-### PARSE XML ELEMENTS ###
-
-function parse_node(attr::OSMattributes, attrs_in::Dict{@compat(AbstractString),@compat(AbstractString)})
-    attr.visible = true
-    attr.element = :Node
-    if haskey(attrs_in, "id")
-        attr.id = @compat( parse(Int,attrs_in["id"]) )
-        attr.lat = float(attrs_in["lat"])
-        attr.lon = float(attrs_in["lon"])
-    end
-end
-
-function parse_way(attr::OSMattributes, attrs_in::Dict{@compat(AbstractString),@compat(AbstractString)})
-    attr.visible = true
-    attr.element = :Way
-    if haskey(attrs_in, "id")
-        attr.id = @compat( parse(Int,attrs_in["id"]) )
-    end
-end
-
-function parse_nd(attr::OSMattributes, attrs_in::Dict{@compat(AbstractString),@compat(AbstractString)})
-    if haskey(attrs_in, "ref")
-        push!(attr.way_nodes, @compat( parse(Int64,attrs_in["ref"]) ) )
-    end
-end
-
-function parse_tag(attr::OSMattributes, attrs_in::Dict{@compat(AbstractString),@compat(AbstractString)})
-    if haskey(attrs_in, "k") && haskey(attrs_in, "v")
-        k, v = attrs_in["k"], attrs_in["v"]
-        if k == "name"
-            if isempty(attr.name)
-                attr.name = v # applicable to roads (highways), buildings, features
-            end
-        elseif attr.element == :Way
-            if k == "building"
-                parse_building(attr, v)
-            else
-                parse_highway(attr, k, v) # for other highway tags
-            end
-        elseif attr.element == :Node
-            if haskey(FEATURE_CLASSES, k)
-                parse_feature(attr, k, v)
-            end
-        end
-    else
-        # Nothing to be done here?
-    end
-end
-
-### PARSE OSM ENTITIES ###
-
-function parse_highway(attr::OSMattributes, k::@compat(AbstractString), v::@compat(AbstractString))
-    if k == "highway"
-        attr.class = v
-        if v == "services" # Highways marked "services" are not traversable
-            attr.visible = false
-            return
-        end
-        if v == "motorway" || v == "motorway_link"
-            attr.oneway = true # motorways default to oneway
-        end
-    elseif k == "oneway"
-        if v == "-1"
-            attr.oneway = true
-            attr.oneway_reverse = true
-        elseif v == "false" || v == "no" || v == "0"
-            attr.oneway = false
-            attr.oneway_override = true
-        elseif v == "true" || v == "yes" || v == "1"
-            attr.oneway = true
-        end
-    elseif k == "junction" && v == "roundabout"
-        attr.oneway = true
-    elseif k == "cycleway"
-        attr.cycleway = v
-    elseif k == "sidewalk"
-        attr.sidewalk = v
-    elseif k == "bicycle"
-        attr.bicycle = v
-    elseif k == "lanes" && length(v)==1 && '1' <= v[1] <= '9'
-        attr.lanes = @compat parse(Int,v)
-    else
-        return
-    end
-    attr.parent = :Highway
-end
-
-function parse_building(attr::OSMattributes, v::@compat(AbstractString))
-    attr.parent = :Building
-    if isempty(attr.class)
-        attr.class = v
-    end
-end
-
-function parse_feature(attr::OSMattributes, k::@compat(AbstractString), v::@compat(AbstractString))
-    attr.parent = :Feature
-    attr.class = k
-    attr.detail = v
-end
-
-### LibExpat.XPStreamHandlers ###
-
-function parseElement(handler::LibExpat.XPStreamHandler, name::@compat(AbstractString), attrs_in::Dict{@compat(AbstractString),@compat(AbstractString)})
-    attr = handler.data.attr::OSMattributes
-    if attr.visible
-        if name == "nd"
-            parse_nd(attr, attrs_in)
-        elseif name == "tag"
-            parse_tag(attr, attrs_in)
-        end
-    elseif !(haskey(attrs_in, "visible") && attrs_in["visible"] == "false")
-        if name == "node"
-            parse_node(attr, attrs_in)
-        elseif name == "way"
-            parse_way(attr, attrs_in)
-        end
-    end # no work done for "relations" yet
-end
-
-function collectValues(handler::LibExpat.XPStreamHandler, name::@compat(AbstractString))
-    # println(typeof(name))
-    osm = handler.data::OSMdata
-    attr = osm.attr::OSMattributes
+function parseElement(handler::LibExpat.XPStreamHandler,
+                      name::AbstractString,
+                      attr::Dict{AbstractString,AbstractString})
+    data = handler.data::DataHandle
     if name == "node"
-        osm.nodes[attr.id] = LLA(attr.lat, attr.lon)
-        if attr.parent == :Feature
-            osm.features[attr.id] = Feature(attr.class, attr.detail, attr.name)
-        end
+        data.element = :Tuple
+        data.node = (parse(Int, attr["id"]),
+                         LLA(float(attr["lon"]), float(attr["lat"])))
     elseif name == "way"
-        if attr.parent == :Building
-            osm.buildings[attr.id] = Building(attr.class, attr.name, copy(attr.way_nodes))
-        elseif attr.parent == :Highway
-            if attr.oneway_reverse
-                reverse!(attr.way_nodes)
-            end
-            osm.highways[attr.id] = Highway(attr.class, attr.lanes,
-                                            (attr.oneway && !attr.oneway_override),
-                                            attr.sidewalk, attr.cycleway, attr.bicycle,
-                                            attr.name, copy(attr.way_nodes))
+        data.element = :Way
+        data.way = Way(parse(Int, attr["id"]))
+    elseif name == "relation"
+        data.element = :Relation
+        data.relation = Relation(parse(Int, attr["id"]))
+    elseif name == "bounds"
+        data.element =:Bounds
+        data.bounds = Bounds(float(attr["minlat"]), float(attr["maxlat"]), float(attr["minlon"]), float(attr["maxlon"]))
+    elseif name == "tag" 
+        k = attr["k"]; v = attr["v"]
+        if  data.element == :Tuple
+			if haskey(FEATURE_CLASSES, k)
+				data.osm.features[handler.data.node[1]] = k,v
+			end
+		elseif data.element == :Way
+            data_tags = tags(data.way)
+            push!(data.osm.way_tags, k)
+			data_tags[k] = v
+        elseif data.element == :Relation
+            data_tags = tags(data.relation)
+            push!(data.osm.relation_tags, k)
+			data_tags[k] = v
         end
-    else # :Tag or :Nd (don't reset values!)
-        return
+    elseif name == "nd"
+        push!(data.way.nodes, parse(Int, attr["ref"]))
+    elseif name == "member"
+        push!(data.relation.members, attr)
     end
-    reset_attributes!(osm.attr)
 end
 
-### Parse the data from an openStreetMap XML file ###
-function parseMapXML(filename::@compat(AbstractString))
-
-    # Parse the file
-    street_map = LightXML.parse_file(filename)
-
-    if LightXML.name(LightXML.root(street_map)) != "osm"
-        throw(ArgumentError("Not an OpenStreetMap datafile."))
+function collectElement(handler::LibExpat.XPStreamHandler, name::AbstractString)
+    if name == "node"
+        handler.data.osm.nodes[handler.data.node[1]] = handler.data.node[2]
+        handler.data.element = :None
+    elseif name == "way"
+        push!(handler.data.osm.ways, handler.data.way)
+        handler.data.element = :None
+    elseif name == "relation"
+        push!(handler.data.osm.relations, handler.data.relation)
+        handler.data.element = :None
+    elseif name == "bounds"
+        handler.data.osm.bounds = handler.data.bounds
+		handler.data.element = :None
     end
-
-    return street_map
 end
 
-function getOSMData(filename::@compat(AbstractString); args...)
-    osm = OSMdata()
-
+function parseOSM(filename::AbstractString; args...)
     callbacks = LibExpat.XPCallbacks()
     callbacks.start_element = parseElement
-    callbacks.end_element = collectValues
-
-    LibExpat.parsefile(filename, callbacks, data=osm; args...)
-    osm.nodes, osm.highways, osm.buildings, osm.features
+    callbacks.end_element = collectElement
+    data = DataHandle()
+    LibExpat.parsefile(filename, callbacks, data=data; args...)
+    data.osm::OSMData
 end
+
+
+

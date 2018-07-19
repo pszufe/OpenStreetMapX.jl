@@ -1,91 +1,119 @@
-### Julia OpenStreetMap Package ###
-### MIT License                 ###
-### Copyright 2018              ###
+########################
+### Extract Highways ###
+########################
 
-### Classify highways for cars ###
-roadways(highways::Dict{Int,Highway}) = Dict{Int,Int}(key => ROAD_CLASSES[highway.class] for (key, highway) in highways if haskey(ROAD_CLASSES, highway.class))
+extractHighways(ways::Vector{OpenStreetMap.Way}) = [way for way in ways if isdefined(way,:tags) && haskey(way.tags, "highway")]
 
-### Classify highways for pedestrians ###
-function walkways(highways::Dict{Int,Highway})
-    peds = Dict{Int,Int}()
+##############################################
+### Filter and Classify Highways for Cars ###
+##############################################
 
-    for (key, highway) in highways
-        if highway.sidewalk != "no"
-            # Field priority: sidewalk, highway
-            if haskey(PED_CLASSES, "sidewalk:$(highway.sidewalk)")
-                peds[key] = PED_CLASSES["sidewalk:$(highway.sidewalk)"]
-            elseif haskey(PED_CLASSES, highway.class)
-                peds[key] = PED_CLASSES[highway.class]
+filterRoadways(ways::Vector{OpenStreetMap.Way},levels::Set{Int} = Set(1:length(OpenStreetMap.ROAD_CLASSES)), classes::Dict{String, Int} = OpenStreetMap.ROAD_CLASSES) = [way for way in ways if way.tags["highway"] in keys(classes) && classes[way.tags["highway"]] in levels]
+
+classifyRoadways(ways::Vector{OpenStreetMap.Way}, classes::Dict{String, Int} = OpenStreetMap.ROAD_CLASSES) = Dict{Int,Int}(way.id => classes[way.tags["highway"]] for  way in ways if haskey(classes, way.tags["highway"]))
+
+####################################################
+### Filter and Classify Highways for Pedestrians ###
+####################################################
+
+function filterWalkways(ways::Vector{OpenStreetMap.Way},levels::Set{Int} = Set(1:length(OpenStreetMap.PED_CLASSES)), classes::Dict{String, Int} = OpenStreetMap.PED_CLASSES)
+    walkways = []
+    for way in ways
+        sidewalk = get(way.tags, "sidewalk", "")
+        if sidewalk != "no"
+            if haskey(classes, "sidewalk:$(sidewalk)") && classes["sidewalk:$(sidewalk)"] in levels
+                push!(walkways,way)
+            elseif haskey(classes, way.tags["highway"]) && classes[way.tags["highway"]] in levels
+                push!(walkways,way)
             end
         end
     end
+    return walkways
+end 
 
-    return peds
-end
-
-
-### Classify highways for cycles ###
-function cycleways(highways::Dict{Int,Highway})
-    cycles = Dict{Int,Int}()
-
-    for (key, highway) in highways
-        if highway.bicycle != "no"
-            # Field priority: cycleway, bicycle, highway
-            if haskey(CYCLE_CLASSES, "cycleway:$(highway.cycleway)")
-                cycles[key] = CYCLE_CLASSES["cycleway:$(highway.cycleway)"]
-            elseif haskey(CYCLE_CLASSES, "bicycle:$(highway.bicycle)")
-                cycles[key] = CYCLE_CLASSES["bicycle:$(highway.bicycle)"]
-            elseif haskey(CYCLE_CLASSES, highway.class)
-                cycles[key] = CYCLE_CLASSES[highway.class]
+function classifyWalkways(ways::Vector{OpenStreetMap.Way},classes::Dict{String, Int} = OpenStreetMap.PED_CLASSES)
+    walkways = Dict{Int,Int}()
+    for way in ways
+        sidewalk = get(way.tags, "sidewalk", "")
+        if sidewalk != "no"
+            if haskey(classes, "sidewalk:$(sidewalk)") 
+                walkways[way.id] = classes["sidewalk:$(sidewalk)"]
+            elseif haskey(classes, way.tags["highway"]) 
+                walkways[way.id] = classes[way.tags["highway"]]
             end
         end
     end
-
-    return cycles
+    return walkways
 end
 
+###############################################
+### Filter and Classify Highways for Cycles ###
+###############################################
 
-### Find sets of same-named highways ###
-function findHighwaySets( highways::Dict{Int,Highway} )
-    clusters = HighwaySet[]
+function filterCycleways(ways::Vector{OpenStreetMap.Way},levels::Set{Int} = Set(1:length(OpenStreetMap.CYCLE_CLASSES)), classes::Dict{String, Int} = OpenStreetMap.CYCLE_CLASSES)
+    cycleways = []
+    for way in ways
+        bicycle = get(way.tags, "bicycle", "")
+        cycleway = get(way.tags, "cycleway", "")
+        highway = get(way.tags, "highway", "")
 
-    street_names = @compat Tuple{@compat(AbstractString), @compat(AbstractString), Int}[]
+        cycleclass = "cycleway:$(cycleway)"
+        bikeclass = "bicycle:$(bicycle)"
 
-    for (key, highway) in highways
-        if length(highway.name) > 0 && highway.oneway
-            push!(street_names,(highway.name,highway.class,key))
-        end
-    end
-
-    sort!(street_names)
-    for k = 2:length(street_names)
-        cluster = Int[]
-        for kk = 1:(k-1)
-            if k == length(street_names) || street_names[k][1] != street_names[k+1][1]
-                if street_names[k][1] == street_names[k-kk][1]
-                    if street_names[k][2] == street_names[k-kk][2]
-                        if kk == 1
-                            push!(cluster,street_names[k][3])
-                        end
-                        push!(cluster,street_names[k-kk][3])
-                    end
-                else
-                    break
-                end
+        if bicycle != "no"
+            if haskey(classes, cycleclass) && classes[cycleclass] in levels
+                push!(cycleways, way)
+            elseif haskey(classes, bikeclass) && classes[bikeclass] in levels
+                push!(cycleways, way)
+            elseif haskey(classes, highway) && classes[highway] in levels
+                push!(cycleways, way)
             end
         end
-
-        if length(cluster) > 1
-            push!(clusters,HighwaySet(Set(cluster)))
-        end
     end
-
-    return clusters
+    return cycleways
 end
 
+function classifyCycleways(ways::Vector{OpenStreetMap.Way}, classes::Dict{String, Int} = OpenStreetMap.CYCLE_CLASSES)
+    cycleways = Dict{Int,Int}()
+    for way in ways
+        bicycle = get(way.tags, "bicycle", "")
+        cycleway = get(way.tags, "cycleway", "")
+        highway = get(way.tags, "highway", "")
 
-### Classify features ###
-classify(features::Dict{Int,Feature}) = Dict{Int,Int}(key =>  FEATURE_CLASSES[feature.class] for (key, feature) in features if haskey(FEATURE_CLASSES, feature.class))
+        cycleclass = "cycleway:$(cycleway)"
+        bikeclass = "bicycle:$(bicycle)"
 
-### Classify buildings ###
-classify(buildings::Dict{Int,Building}) = Dict{Int,Int}(key =>  BUILDING_CLASSES[building.class] for (key, building) in features if haskey(BUILDING_CLASSES, building.class))
+        if bicycle != "no"
+            if haskey(classes, cycleclass) 
+                cycleways[way.id] = classes[cycleclass]
+            elseif haskey(classes, bikeclass) 
+                cycleways[way.id] = classes[bikeclass]
+            elseif haskey(classes, highway) 
+                cycleways[way.id] = classes[highway]
+            end
+        end
+    end
+    return cycleways
+end
+
+##############################################
+### Extract, Filter and Classify Buildings ###
+##############################################
+
+extractBuildings(ways::Vector{OpenStreetMap.Way}) = [way for way in ways if isdefined(way,:tags) && haskey(way.tags, "building")]
+
+filterBuildings(buildings::Vector{OpenStreetMap.Way},levels::Set{Int}, classes::Dict{String, Int} = OpenStreetMap.BUILDING_CLASSES) = [building for building in buildings if building.tags["building"] in keys(classes) && classes[building.tags["building"]] in levels]
+
+classifyBuildings(buildings::Vector{OpenStreetMap.Way}, classes::Dict{String, Int} = OpenStreetMap.BUILDING_CLASSES) = Dict{Int,Int}(building.id => classes[building.tags["building"]] for  building in buildings if haskey(classes, building.tags["building"]))
+
+#############################################
+### Extract, Filter and Classify Features ###
+#############################################
+
+filterFeatures(features::Dict{Int,Tuple{String,String}}, levels::Set{Int}, classes::Dict{String, Int} = OpenStreetMap.FEATURE_CLASSES) = Dict{Int,Tuple{String,String}}(key => feature for (key,feature) in features if classes[feature[1]] in levels)
+
+function filterFeatures!(osmdata::OpenStreetMap.OSMData, levels::Set{Int}, classes::Dict{String, Int} = OpenStreetMap.FEATURE_CLASSES)
+	osmdata.features = filterFeatures(osmdata.features, levels, classes)
+end
+
+classifyFeatures(features::Dict{Int,Tuple{String,String}}, classes::Dict{String, Int} = OpenStreetMap.FEATURE_CLASSES) = Dict{Int,Int}(key =>  classes[feature[1]] for (key, feature) in features if haskey(classes, feature[1]))
