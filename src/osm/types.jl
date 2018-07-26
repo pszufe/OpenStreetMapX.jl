@@ -125,16 +125,9 @@ mutable struct Segment
     node0::Int          # Source node ID
     node1::Int          # Target node ID
     nodes::Vector{Int}  # List of nodes falling within node0 and node1
-    dist::Real          # Length of the segment
-    class::Int          # Class of the segment
+    distance::Real      # Length of the segment
     parent::Int         # ID of parent highway
-    oneway::Bool        # True if road is one-way
 end
-
-mutable struct Intersection
-    highways::Set{Int}  # Set of highway IDs
-end
-Intersection() = Intersection(Set{Int}())
 
 #######################################
 ### Graph Representation of Network ###
@@ -142,12 +135,11 @@ Intersection() = Intersection(Set{Int}())
 
 # Transporation network graph data and helpers to increase routing speed (do koniecznej zmiany)
 mutable struct Network
-    g                                   # Graph object
-    v::Dict{Int,Int}  					# (node id) => (graph vertex)
-    w::Vector{Float64}                  # Edge weights, indexed by edge id
-	e::Array{Tuple{Int64,Int64},1}     	#edges in graph, stored as a tuple (source,destination)
-    class::Vector{Int}                 	# Road class of each edge
-	
+    g::LightGraphs.SimpleGraphs.SimpleDiGraph{Int64}                # Graph object
+    v::Dict{Int,Int}  												# (node id) => (graph vertex)
+	e::Array{Tuple{Int64,Int64},1}     								#edges in graph, stored as a tuple (source,destination)	
+	w::SparseMatrixCSC{Float64, Int}    							# Edge weights, indexed by graph id
+	class::Vector{Int}                 								# Road class of each edge
 end
 
 

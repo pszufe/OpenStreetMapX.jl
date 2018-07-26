@@ -168,7 +168,7 @@ end
 ######################################################
 
 # Given a reference point
-function ENU{T<:@compat Union{LLA,ECEF}}(nodes::Dict{Int,T},
+function ENU{T<:Union{LLA,ECEF}}(nodes::Dict{Int,T},
                                          lla_ref::LLA,
                                          datum::Ellipsoid = WGS84)
     r = Dict{Int,ENU}()

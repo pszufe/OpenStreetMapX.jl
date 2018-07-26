@@ -9,7 +9,7 @@ function parseElement(handler::LibExpat.XPStreamHandler,
     if name == "node"
         data.element = :Tuple
         data.node = (parse(Int, attr["id"]),
-                         LLA(float(attr["lon"]), float(attr["lat"])))
+                         LLA(float(attr["lat"]), float(attr["lon"])))
     elseif name == "way"
         data.element = :Way
         data.way = Way(parse(Int, attr["id"]))

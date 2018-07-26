@@ -2,8 +2,7 @@
 ### Add a New Node ###
 ######################
 
-function addNewNode!{T <: (Union{LLA,ENU}) }(nodes::Dict{Int,T}loc::T,
-                                        start_id::Int = reinterpret((Int), hash(loc)) )
+function addNewNode!{T <: (Union{LLA,ENU}) }(nodes::Dict{Int,T},loc::T, start_id::Int = reinterpret((Int), hash(loc)))
     id = start_id
     while id <= typemax(Int)
         if !haskey(nodes, id)
@@ -55,14 +54,14 @@ end
 
 
 ### Find nearest node serving as a vertex in a routing network ###
-nearestNode{T<:(Union{ENU,ECEF})}( nodes::Dict{Int,T}, loc::T, network::Network) = nearestNode(nodes,loc,collect(keys(network.v)))
+nearestNode{T<:(Union{ENU,ECEF})}(nodes::Dict{Int,T}, loc::T, network::Network) = nearestNode(nodes,loc,collect(keys(network.v)))
 
 #############################
 ### Find Node Within Range###
 #############################
 
 ### Find all nodes within range of a location ###
-function nodesWithinRange{T<:(Union{ENU,ECEF})}(nodes::Dict{Int,T}, loc::T, range::Float64=Inf)
+function nodesWithinRange{T<:(Union{ENU,ECEF})}(nodes::Dict{Int,T}, loc::T, range::Float64 = Inf)
     if range == Inf
         return keys(nodes)
     end
@@ -77,7 +76,7 @@ function nodesWithinRange{T<:(Union{ENU,ECEF})}(nodes::Dict{Int,T}, loc::T, rang
 end
 
 ### Find nodes within range of a location using a subset of nodes ###
-function nodesWithinRange{T<:(Union{ENU,ECEF})}(nodes::Dict{Int,T}, loc::T, node_list::Vector{Int}, range::Float64=Inf)
+function nodesWithinRange{T<:(Union{ENU,ECEF})}(nodes::Dict{Int,T}, loc::T, node_list::Vector{Int}, range::Float64 = Inf)
     if range == Inf
         return node_list
     end
@@ -85,14 +84,14 @@ function nodesWithinRange{T<:(Union{ENU,ECEF})}(nodes::Dict{Int,T}, loc::T, node
     for ind in node_list
         dist = distance(nodes[ind], loc)
         if dist < range
-            push!(ind, key)
+            push!(indices, ind)
         end
     end
     return indices
 end
 
 ### Find vertices of a routing network within range of a location ###
-nodesWithinRange{T <: (Union{ENU,ECEF}) } = (nodes::Dict{Int,T},loc::T, network::Network, range::Float64=Inf) = nodesWithinRange(nodes,loc,collect(keys(network.v)),range)
+nodesWithinRange{T <:(Union{ENU,ECEF})}(nodes::Dict{Int,T},loc::T, network::Network, range::Float64 = Inf) = nodesWithinRange(nodes,loc,collect(keys(network.v)),range)
 
 #########################################
 ### Compute Centroid of List of Nodes ###
