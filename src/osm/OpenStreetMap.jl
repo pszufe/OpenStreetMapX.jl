@@ -19,7 +19,7 @@ export findIntersections, findSegments #Get intersections or segments of the roa
 export createGraph #Create a routing network
 export findRoute, shortestRoute, fastestRoute #Routing funcions
 export nodesWithinWeights, nodesWithinDrivingDistance, nodesWithinDrivingTime #Find nodes within specified range
-#export plotMap, addRoute! #Plotting
+export plotMap, addRoute! #Plotting
 
 include("types.jl") #types used in the package
 include("classes.jl") #grouping highways into classes for routing and plotting
@@ -37,6 +37,6 @@ include("crop.jl") #cropping nodes and ways
 include("nodes.jl") #finding nearest nodes or nodes within some range 
 include("intersections.jl") #finding intersections
 include("routing.jl") #routing functions
-#include("plot.jl") #plotting
+include("plot.jl") #plotting
 
 end 

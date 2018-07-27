@@ -2,14 +2,14 @@
 
 include("map_snippet.jl")
 
-md = loadMapData("map.osm");
+md = parseOSM("map.osm");
 
-routes = []
+r = :none
 
 for i in 1:5
     pointA = generatePointInBounds(md);
     pointB = generatePointInBounds(md);
-    r = findRoutes(pointA,pointB,md)
-	push!(routes,r)
+    r = findRoutes(pointA,pointB,md,true,r==:none?(:none):(r.p))
 end
 
+display(r.p)

@@ -34,7 +34,7 @@ classifyRoadways(ways::Vector{OpenStreetMap.Way}, classes::Dict{String, Int} = O
 ####################################################
 
 function filterWalkways(ways::Vector{OpenStreetMap.Way},classes::Dict{String, Int} = OpenStreetMap.PED_CLASSES; levels::Set{Int} = Set(1:length(OpenStreetMap.PED_CLASSES)))
-    walkways = []
+    walkways = OpenStreetMap.Way[]
     for way in ways
         sidewalk = get(way.tags, "sidewalk", "")
         if sidewalk != "no"
@@ -68,7 +68,7 @@ end
 ###############################################
 
 function filterCycleways(ways::Vector{OpenStreetMap.Way}, classes::Dict{String, Int} = OpenStreetMap.CYCLE_CLASSES; levels::Set{Int} = Set(1:length(OpenStreetMap.CYCLE_CLASSES)))
-    cycleways = []
+    cycleways = OpenStreetMap.Way[]
     for way in ways
         bicycle = get(way.tags, "bicycle", "")
         cycleway = get(way.tags, "cycleway", "")
