@@ -1,10 +1,47 @@
-dict_data_demostat = Dict(:PRCDDA => "Dissemination Area",
-    :ECYBASHHD => "Total Households",
+
+###################################
+# Datasets dictionary
+###################################
+
+
+# Business data dictionary
+dict_df_business = Dict(
+    :PRCDDA    => "Dissemination Area", 
+    :LATITUDE  => "Latitude",
+    :LONGITUDE => "Longitude",
+    :CENTROID  => "Centroid",
+    :BUSNAME   => "Business name",
+    :IEMP_DESC => "Number of employees",
+    :ISAL_DESC => "Volume of annual sales",
+    :ICLS_DESC => "Industry"
+)
+
+
+# Daytimepop data dictionary
+dict_df_daytimep = Dict(
+    :PRCDDA     => "Dissemination Area",
+    :ECYTOTPOPD => "Total Household Population",
+    :ECYDAYPOP  => "Total Daytime Population",
+    :ECYHOMEPOP => "Total Daytime Population at Home",
+    :ECYHOM014  => "Total Daytime Population at Home Aged 0-14",
+    :ECYHOM1564 => "Total Daytime Population at Home Aged 15-64",
+    :ECYHOM65P  => "Total Daytime Population at Home Aged 65 and Over",
+    :ECYWORKPOP => "Total Daytime Population at Work",
+    :ECYWKPUSP  => "Total Daytime Population at Work at Usual Place",
+    :ECYWKPMOB  => "Total Daytime Population at Work Mobile",
+    :ECYWKPHOM  => "Total Daytime Population at Work at Home"
+)
+
+
+# Demostat data dictionary
+dict_df_demostat = Dict(
+    :PRCDDA     => "Dissemination Area",
+    :ECYBASHHD  => "Total Households",
     :ECYBASHPOP => "Total Household Population",
     :ECYBAS15HP => "Total Household Population 15 Years Or Over",
     :ECYBAS18HP => "Total Household Population 18 Years Or Over",
-    :ECYBASKID => "Total Children Living In Households (Children At Home)",
-    :ECYBASLF => "In The Labour Force",
+    :ECYBASKID  => "Total Children Living In Households (Children At Home)",
+    :ECYBASLF   => "In The Labour Force",
     :ECYHTA_0_4 => "Household Population by Age - 0 To 4",
     :ECYHTA_5_9 => "Household Population by Age - 5 To 9",
     :ECYHTA1014 => "Household Population by Age - 10 To 14",
@@ -22,9 +59,9 @@ dict_data_demostat = Dict(:PRCDDA => "Dissemination Area",
     :ECYHTA7074 => "Household Population by Age - 70 To 74",
     :ECYHTA7579 => "Household Population by Age - 75 To 79",
     :ECYHTA8084 => "Household Population by Age - 80 To 84",
-    :ECYHTA85P => "Household Population by Age - 85 Or Older",
-    :ECYHTAAVG => "Average Age Of Total Household Population",
-    :ECYHTAMED => "Median Age Of Total Household Population",
+    :ECYHTA85P  => "Household Population by Age - 85 Or Older",
+    :ECYHTAAVG  => "Average Age Of Total Household Population",
+    :ECYHTAMED  => "Median Age Of Total Household Population",
     :ECYHMAHPOP => "Household Population Male",
     :ECYHMA_0_4 => "Male Household Population by Age - 0 To 4",
     :ECYHMA_5_9 => "Male Household Population by Age - 5 To 9",
@@ -43,9 +80,9 @@ dict_data_demostat = Dict(:PRCDDA => "Dissemination Area",
     :ECYHMA7074 => "Male Household Population by Age - 70 To 74",
     :ECYHMA7579 => "Male Household Population by Age - 75 To 79",
     :ECYHMA8084 => "Male Household Population by Age - 80 To 84",
-    :ECYHMA85P => "Male Household Population by Age - 85 Or Older",
-    :ECYHMAAVG => "Average Age Of Household Population Male",
-    :ECYHMAMED => "Median Age Of Household Population Male",
+    :ECYHMA85P  => "Male Household Population by Age - 85 Or Older",
+    :ECYHMAAVG  => "Average Age Of Household Population Male",
+    :ECYHMAMED  => "Median Age Of Household Population Male",
     :ECYHFAHPOP => "Household Population Female",
     :ECYHFA_0_4 => "Female Household Population by Age - 0 To 4",
     :ECYHFA_5_9 => "Female Household Population by Age - 5 To 9",
@@ -64,22 +101,31 @@ dict_data_demostat = Dict(:PRCDDA => "Dissemination Area",
     :ECYHFA7074 => "Female Household Population by Age - 70 To 74",
     :ECYHFA7579 => "Female Household Population by Age - 75 To 79",
     :ECYHFA8084 => "Female Household Population by Age - 80 To 84",
-    :ECYHFA85P => "Female Household Population by Age - 85 Or Older",
-    :ECYHFAAVG => "Average Age Of Household Population Female",
-    :ECYHFAMED => "Median Age Of Household Population Female",
+    :ECYHFA85P  => "Female Household Population by Age - 85 Or Older",
+    :ECYHFAAVG  => "Average Age Of Household Population Female",
+    :ECYHFAMED  => "Median Age Of Household Population Female",
     :ECYHSZ1PER => "Total Households For Household Size - 1 Person",
     :ECYHSZ2PER => "Total Households For Household Size - 2 Persons",
     :ECYHSZ3PER => "Total Households For Household Size - 3 Persons",
     :ECYHSZ4PER => "Total Households For Household Size - 4 Persons",
     :ECYHSZ5PER => "Total Households For Household Size - 5 Persons",
-    :ECYMARMCL => "Total Population 15 Years Or Over - Married Or Living With A Common-Law Partner",
+    :ECYMARMCL  => "Total Population 15 Years Or Over - Married Or Living With A Common-Law Partner",
     :ECYMARNMCL => "Total Population 15 Years Or Over - Not Married And Not Living With A Common-Law Partner",
+    :ECYHFSCNC  => "Total Households with Couple Without Children At Home", 
+    :ECYHFSCWC  => "Total Households with Couple With Children At Home", 
+    :ECYHFSC1C  => "Total Households with Couple 1 Child", 
+    :ECYHFSC2C  => "Total Households with Couple 2 Children", 
+    :ECYHFSC3C  => "Total Households with Couple 3 Or More Children", 
+    :ECYHFSLP   => "Total Households with Lone-Parent Total Lone-Parent Family Households", 
+    :ECYHFSLP1C => "Total Households with Lone-Parent 1 Child", 
+    :ECYHFSLP2C => "Total Households with Lone-Parent 2 Children", 
+    :ECYHFSLP3C => "Total Households with Lone-Parent 3 Or More Children", 
     :ECYCHA_0_4 => "Total Children At Home by Age - 0 To 4",
     :ECYCHA_5_9 => "Total Children At Home by Age - 5 To 9",
     :ECYCHA1014 => "Total Children At Home by Age - 10 To 14",
     :ECYCHA1519 => "Total Children At Home by Age - 15 To 19",
     :ECYCHA2024 => "Total Children At Home by Age - 20 To 24",
-    :ECYCHA25P => "Total Children At Home by Age - 25 Or More",
+    :ECYCHA25P  => "Total Children At Home by Age - 25 Or More",
     :ECYHRI_010 => "Total Households by Income - ",
     :ECYHRI1020 => "Total Households by Income - 10,000 To 19,999 (Constant Year 2005 \$)",
     :ECYHRI2030 => "Total Households by Income - 20,000 To 29,999 (Constant Year 2005 \$)",
@@ -96,9 +142,9 @@ dict_data_demostat = Dict(:PRCDDA => "Dissemination Area",
     :ECYHRIX200 => "Total Households by Income - 175,000 To 199,999 (Constant Year 2005 \$)",
     :ECYHRIX250 => "Total Households by Income - 200,000 To 249,999 (Constant Year 2005 \$)",
     :ECYHRI250P => "Total Households by Income - 250,000 Or Over (Constant Year 2005 \$)",
-    :ECYHRIAVG => "Average Household Income (Constant Year 2005 \$)",
-    :ECYHRIMED => "Median Household Income (Constant Year 2005 \$)",
-    :ECYOCCNA => "HH Pop 15 years or over in Labour Force - Occupation Not Applicable",
+    :ECYHRIAVG  => "Average Household Income (Constant Year 2005 \$)",
+    :ECYHRIMED  => "Median Household Income (Constant Year 2005 \$)",
+    :ECYOCCNA   => "HH Pop 15 years or over in Labour Force - Occupation Not Applicable",
     :ECYOCCMGMT => "HH Pop 15 years or over in Labour Force - Management",
     :ECYOCCBFAD => "HH Pop 15 years or over in Labour Force - Business Finance Administration",
     :ECYOCCNSCI => "HH Pop 15 years or over in Labour Force - Occupations In Sciences",
@@ -110,7 +156,7 @@ dict_data_demostat = Dict(:PRCDDA => "Dissemination Area",
     :ECYOCCPRIM => "HH Pop 15 years or over in Labour Force - Occupations Unique To Primary Industries",
     :ECYOCCSCND => "HH Pop 15 years or over in Labour Force - Occupations Unique To Manufacture And Utilities",
     :ECYINDINLF => "HH Pop 15 years or over by industry - ",
-    :ECYINDNA => "HH Pop 15 years or over by industry - Industry - Not Applicable",
+    :ECYINDNA   => "HH Pop 15 years or over by industry - Industry - Not Applicable",
     :ECYINDAGRI => "HH Pop 15 years or over by industry - 11 Agriculture, Forestry, Fishing And Hunting",
     :ECYINDMINE => "HH Pop 15 years or over by industry - 21 Mining, Quarrying, And Oil And Gas Extraction",
     :ECYINDUTIL => "HH Pop 15 years or over by industry - 22 Utilities",
@@ -131,35 +177,118 @@ dict_data_demostat = Dict(:PRCDDA => "Dissemination Area",
     :ECYINDACCO => "HH Pop 15 years or over by industry - 72 Accommodation And Food Services",
     :ECYINDOSER => "HH Pop 15 years or over by industry - 81 Other Services (Except Public Administration)",
     :ECYINDPUBL => "HH Pop 15 years or over by industry - 91 Public Administration",
-    :ECYPOWEMP => "HH Pop 15 years or over by place of work - Employed",
+    :ECYPOWEMP  => "HH Pop 15 years or over by place of work - Employed",
     :ECYPOWHOME => "HH Pop 15 years or over by place of work - Worked At Home",
     :ECYPOWOSCA => "HH Pop 15 years or over by place of work - Worked Outside Canada",
     :ECYPOWNFIX => "HH Pop 15 years or over by place of work - No Fixed Workplace Address",
     :ECYPOWUSUL => "HH Pop 15 years or over by place of work - Worked At Usual Place",
-    :ECYTRAALL => "HH Pop 15 years or over with usual place of work and no fixed place of work - ",
+    :ECYTRAALL  => "HH Pop 15 years or over with usual place of work and no fixed place of work - ",
     :ECYTRADRIV => "HH Pop 15 years or over with usual place of work and no fixed place of work - Travel To Work By Car As Driver",
     :ECYTRAPSGR => "HH Pop 15 years or over with usual place of work and no fixed place of work - Travel To Work By Car As Passenger",
     :ECYTRAPUBL => "HH Pop 15 years or over with usual place of work and no fixed place of work - Travel To Work By Public Transit",
     :ECYTRAWALK => "HH Pop 15 years or over with usual place of work and no fixed place of work - Travel To Work By Walked",
     :ECYTRABIKE => "HH Pop 15 years or over with usual place of work and no fixed place of work - Travel To Work By Bicycle",
     :ECYTRAOTHE => "HH Pop 15 years or over with usual place of work and no fixed place of work - Travel To Work By Other Method",
-    :ECYVISVM => "Household Population - Visible Minority Total",
+    :ECYVISVM   => "Household Population - Visible Minority Total",
     :ECYVISCHIN => "Household Population - Visible Minority Chinese",
-    :ECYVISSA => "Household Population - Visible Minority South Asian",
+    :ECYVISSA   => "Household Population - Visible Minority South Asian",
     :ECYVISBLCK => "Household Population - Visible Minority Black",
     :ECYVISFILI => "Household Population - Visible Minority Filipino",
-    :ECYVISLAM => "Household Population - Visible Minority Latin American",
-    :ECYVISSEA => "Household Population - Visible Minority Southeast Asian",
+    :ECYVISLAM  => "Household Population - Visible Minority Latin American",
+    :ECYVISSEA  => "Household Population - Visible Minority Southeast Asian",
     :ECYVISARAB => "Household Population - Visible Minority Arab",
-    :ECYVISWA => "Household Population - Visible Minority West Asian",
-    :ECYVISKOR => "Household Population - Visible Minority Korean",
+    :ECYVISWA   => "Household Population - Visible Minority West Asian",
+    :ECYVISKOR  => "Household Population - Visible Minority Korean",
     :ECYVISJAPA => "Household Population - Visible Minority Japanese",
-    :ECYVISOVM => "Household Population - Visible Minority All Other Visible Minorities",
-    :ECYVISMVM => "Household Population - Visible Minority Multiple Visible Minorities",
-    :ECYVISNVM => "Household Population - Visible Minority Not A Visible Minority",
-    :ECYPIMNI => "Household Population - Non-Immigrants",
-    :ECYPIMIM => "Household Population - Immigrants",
-    :ECYPIMP01 => "Household Population For Period Of Immigration - Before 2001",
+    :ECYVISOVM  => "Household Population - Visible Minority All Other Visible Minorities",
+    :ECYVISMVM  => "Household Population - Visible Minority Multiple Visible Minorities",
+    :ECYVISNVM  => "Household Population - Visible Minority Not A Visible Minority",
+    :ECYPIMNI   => "Household Population - Non-Immigrants",
+    :ECYPIMIM   => "Household Population - Immigrants",
+    :ECYPIMP01  => "Household Population For Period Of Immigration - Before 2001",
     :ECYPIM0105 => "Household Population For Period Of Immigration - 2001 To 2005",
     :ECYPIM0611 => "Household Population For Period Of Immigration - 2006 To 2011",
-    :ECYPIM12CY => "Household Population For Period Of Immigration - 2012 To Present")
+    :ECYPIM12CY => "Household Population For Period Of Immigration - 2012 To Present"
+)
+
+
+# H-W flow journey matrix dictionary
+dict_df_hwflows = Dict(
+    :DA_home                   => "Unique home DA id (PRCDDA)",
+    :DA_work                   => "Unique work DA id (PRCDDA)",
+    :FlowVolume                => "Flow Volume of commuters from DA_home to DA_work", 
+    :FlowVolume_sum_perDAhome  => "Total Flow Volume of commuters from a given DA_home", 
+    :weight_DA_work            => "Probability of commuting to each of the DA_work from a given DA_home", 
+    :FlowVolume_sum_perDAwork  => "Total Flow Volume of commuters to a given DA_Work"
+)
+
+
+# Schools data dictionary
+dict_df_schools = Dict(
+    :NAME      => "School name",
+    :STNAME    => "Street name",
+    :LONGITUDE => "Longitude",
+    :LATITUDE  => "Latitude",
+    :FEATTYP   => "School type", 
+    :SUBCAT    => "School subcategory"
+)
+
+
+# Traffic data dictionary
+dict_df_traffic = Dict(
+    :STREET    => "Name of the street the count was taken on",
+    :TRAFFIC1  => "Most recent traffic count",
+    :CNTTYPE1  => "Type of count",
+    :CNT1YEAR  => "Year this count was taken",
+    :CROSSST   => "Nearest cross street to the count",
+    :CROSSDIR  => "Direction from the count to the cross street",
+    :CROSSDIST => "Distance, in miles, to the nearest cross street",
+    :LONGITUDE => "Longitude of traffic point",
+    :LATITUDE  => "Latitude of traffic point"
+)
+
+
+# Schopping centres data dictionary
+dict_df_shopping = Dict(
+    :PRCDDA    => "Dissemination Area",
+    :centre_nm => "Shopping Centre Name",
+    :address   => "Address",
+    :LATITUDE  => "Latitude",
+    :LONGITUDE => "Longitude",
+    :centre_typ => "Centre Type",
+    :gla       => "Gross Leaseable Area",
+    :totstores => "Total Number of Stores",
+    :parking   => "Total Number of Parking Spaces",
+    :anch_cnt  => "Number of Anchor Stores"
+)
+
+
+# Vehicles data dictionary
+dict_df_vehicles = Dict(
+    :PRCDDA     => "Dissemination Area",
+    :RSINDSTRYT => "Retail Industry",
+    :RSCAR____T => "Retail Car",
+    :RSSUBCOM_T => "Retail Subcompact",
+    :RSCMPACT_T => "Retail Compact",
+    :RSINTMDT_T => "Retail Intermediate",
+    :RSFULSIZET => "Retail Full Size",
+    :RSLUXURY_T => "Retail Luxury",
+    :RSMEDLUX_T => "Retail Medium Luxury",
+    :RSHILUX__T => "Retail High Luxury",
+    :RSLUXSPT_T => "Retail Luxury Sport",
+    :RSSPORT__T => "Retail Sport",
+    :RSTRUCK__T => "Retail Truck",
+    :RSCMPSUV_T => "Retail Compact SUV",
+    :RSINTSUV_T => "Retail Intermediate SUV",
+    :RSLRGSUV_T => "Retail Large SUV",
+    :RSLUXSUV_T => "Retail Luxury SUV",
+    :RSSMLPKUPT => "Retail Small Pickup",
+    :RSLRGPKUPT => "Retail Large Pickup",
+    :RSSMLVAN_T => "Retail Small Van",
+    :RSLRGVAN_T => "Retail Large Van",
+    :RSMEDHVY_T => "Retail Medium/Heavy",
+    :RSINDSTRYT_min_RSLRGVAN_T_RSMEDHVY_T => "Retail Industry minus large van and medium/heavy truck"
+)
+
+
+
