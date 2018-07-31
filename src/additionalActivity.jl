@@ -42,17 +42,15 @@ function additionalActivitySchools(max_distance_from_cc::Int64 = max_distance_fr
     if agent_profile.children_number_of > 0
     
         if agent_profile.city_region == "downtown"
-            drive_children = sample(["yes", "no"], pweights([0.5, 0.5]))
-            print("live in the centre \n")
+            drive_children = sample(["yes", "no"], pweights([0.5, 0.5])); # println("live in the centre")
         else
-            drive_children = sample(["yes", "no"], pweights([0.75, 0.25]))
-            print("live NOT in the centre \n")
+            drive_children = sample(["yes", "no"], pweights([0.75, 0.25])); # println("live NOT in the centre")
         end
 
 
         if drive_children == "no"
             # do nothing
-            print("don't drive children \n")
+            # println("don't drive children")
 
         else
             schoolcat = []
@@ -68,8 +66,7 @@ function additionalActivitySchools(max_distance_from_cc::Int64 = max_distance_fr
                 push!(schoolcat, "School")
             end
 
-            schoolcat = unique(schoolcat)
-            print(schoolcat, "\n")
+            schoolcat = unique(schoolcat); #println(schoolcat)
 
             if size(schoolcat, 1) > 0
                 index_schoolcat = [(df_schools[:SUBCAT][i] in schoolcat) for i in 1:size(df_schools, 1)]
@@ -145,7 +142,7 @@ function additionalActivityShopping(p_shopping_F::Float64 = p_shopping_F,
         index_nearest_H = dist_shopping_H .< distance_radius_H
         index_nearest_W = dist_shopping_W .< distance_radius_W
 
-        # print("index_nearest_H sum ", sum(index_nearest_H), "\nindex_nearest_W sum ", sum(index_nearest_W), "\n")
+        # println("index_nearest_H sum ", sum(index_nearest_H), "index_nearest_W sum ", sum(index_nearest_W))
 
         # geographical potential for shopping
         GP_H = (df_shopping[index_nearest_H, :gla] ./ dist_shopping_H[index_nearest_H] + 
@@ -153,8 +150,8 @@ function additionalActivityShopping(p_shopping_F::Float64 = p_shopping_F,
         GP_W = (df_shopping[index_nearest_W, :gla] ./ dist_shopping_W[index_nearest_W] + 
                 df_shopping[index_nearest_W, :anch_cnt])
 
-        # print("GP_H ", GP_H, "\nGP_W", GP_W, "\n")
-        # print(sum(GP_H), "\n", sum(GP_W), "\n")
+        # println("GP_H ", GP_H, "GP_W", GP_W)
+        # println(sum(GP_H), sum(GP_W))
 
         if sum(GP_H) > sum(GP_W)
             index_nearest = index_nearest_H
@@ -175,7 +172,7 @@ function additionalActivityShopping(p_shopping_F::Float64 = p_shopping_F,
 
             points_shopping = tuple(df_shopping_temp[index, :LATITUDE], df_shopping_temp[index, :LONGITUDE])
 
-            push!(AdditionalActivity, ["shopping", "before", points_shopping, detail])
+            push!(AdditionalActivity, ["shopping", "after", points_shopping, detail])
         end
     
     end
@@ -266,4 +263,13 @@ function additionalActivityRecreation(p_recreation_before::Float64 = p_recreatio
     
     end
 end
+
+
+
+function additionalActivitySelector()
+    additionalActivitySchools()
+    additionalActivityShopping()
+    additionalActivityRecreation()
+end
+
 

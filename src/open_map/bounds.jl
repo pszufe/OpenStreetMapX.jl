@@ -1,49 +1,41 @@
-### Julia OpenStreetMap Package ###
-### MIT License                 ###
-### Copyright 2014              ###
+#################################
+### Convert LLA Bounds to ENU ###
+#################################
 
+# there's not an unambiguous conversion, but for now,
+# returning the minimum bounds that contain all points contained
+# by the input bounds
+function ENU(bounds::Bounds{LLA}, lla_ref::LLA = center(bounds), datum::Ellipsoid = WGS84)
 
-###################
-### Bounds Type ###
-###################
+    max_x = max_y = -Inf
+    min_x = min_y = Inf
 
-type Bounds{T <: Union{LLA, ENU}}
-    min_y::Float64
-    max_y::Float64
-    min_x::Float64
-    max_x::Float64
-end
-function Bounds(min_lat, max_lat, min_lon, max_lon)
-    if !(-90 <= min_lat <= max_lat <= 90 &&
-         -180 <= min_lon <= 180 &&
-         -180 <= max_lon <= 180)
-        throw(ArgumentError("Bounds out of range of LLA coordinate system. " *
-                            "Perhaps you're looking for Bounds{ENU}(...)"))
+    xs = [bounds.min_x, bounds.max_x]
+    ys = [bounds.min_y, bounds.max_y]
+    if bounds.min_y < 0.0 < bounds.max_y
+        push!(ys, 0.0)
     end
-    Bounds{LLA}(min_lat, max_lat, min_lon, max_lon)
+    ref_x = getX(lla_ref)
+    if bounds.min_x < ref_x < bounds.max_x ||
+       (bounds.min_x > bounds.max_x && !(bounds.min_x >= ref_x >= bounds.max_x))
+        push!(xs, ref_x)
+    end
+
+    for x_lla in xs, y_lla in ys
+        pt = ENU(LLA(y_lla, x_lla), lla_ref, datum)
+        x, y = getX(pt), getY(pt)
+
+        min_x, max_x = min(x, min_x), max(x, max_x)
+        min_y, max_y = min(y, min_y), max(y, max_y)
+    end
+
+    return Bounds{ENU}(min_y, max_y, min_x, max_x)
 end
 
+#########################################
+### Get Center Point of Bounds Region ###
+#########################################
 
-### Get bounds of mapped region ###
-function getBounds(street_map::LightXML.XMLDocument)
-
-    xroot = LightXML.root(street_map)
-    bounds = LightXML.get_elements_by_tagname(xroot, "bounds")
-
-    min_lat = float(LightXML.attribute(bounds[1], "minlat"))
-    max_lat = float(LightXML.attribute(bounds[1], "maxlat"))
-    min_lon = float(LightXML.attribute(bounds[1], "minlon"))
-    max_lon = float(LightXML.attribute(bounds[1], "maxlon"))
-
-    return Bounds(min_lat, max_lat, min_lon, max_lon)
-end
-
-
-#############################
-### Convenience Functions ###
-#############################
-
-### Get center point of Bounds region ###
 function center(bounds::Bounds{ENU})
     x_mid = (bounds.min_x + bounds.max_x) / 2
     y_mid = (bounds.min_y + bounds.max_y) / 2
@@ -62,19 +54,19 @@ function center(bounds::Bounds{LLA})
     return LLA(y_mid, x_mid)
 end
 
-### Check whether a location is within bounds ###
+#################################################
+### Check Whether a Location is Within Bounds ###
+#################################################
+
 function inBounds(loc::ENU, bounds::Bounds{ENU})
     x, y = getX(loc), getY(loc)
-
     bounds.min_x <= x <= bounds.max_x &&
     bounds.min_y <= y <= bounds.max_y
 end
 
 function inBounds(loc::LLA, bounds::Bounds{LLA})
     x, y = getX(loc), getY(loc)
-
     min_x, max_x = bounds.min_x, bounds.max_x
-
     (min_x > max_x ? !(max_x < x < min_x) : min_x <= x <= max_x) &&
     bounds.min_y <= y <= bounds.max_y
 end
@@ -82,19 +74,35 @@ end
 # only for points that have passed the inBounds test
 function onBounds{T<:Union{LLA,ENU}}(loc::T, bounds::Bounds{T})
     x, y = getX(loc), getY(loc)
-
     x == bounds.min_x || x == bounds.max_x ||
     y == bounds.min_y || y == bounds.max_y
 end
 
+#############################################
+### Find the Closest Point  Within Bounds ###
+#############################################
+
 # only for points where inBounds(p1) != inBounds(p2)
-# TODO: fix for cases where bounds.min_x > bounds.max_x
 function boundaryPoint{T<:Union{LLA,ENU}}(p1::T, p2::T, bounds::Bounds)
     x1, y1 = getX(p1), getY(p1)
     x2, y2 = getX(p2), getY(p2)
 
     x, y = Inf, Inf
 
+    if bounds.min_x >  bounds.max_x && x1*x2 < 0 
+        
+        if x1 < bounds.min_x && x2 < bounds.max_x || x2 < bounds.min_x && x1 < bounds.max_x
+            x = bounds.min_x
+            y = y1 + (y2 - y1) * (bounds.min_x - x1) / (x2 - x1)
+        elseif x1 > bounds.max_x && x2 > bounds.min_x || x2 > bounds.max_x && x1 > bounds.min_x 
+            x = bounds.max_x
+            y = y1 + (y2 - y1) * (bounds.max_x - x1) / (x2 - x1)
+        end
+        
+        p3 = T(XY(x, y))
+        inBounds(p3, bounds) && return p3
+    end
+    
     # Move x to x bound if segment crosses boundary
     if x1 < bounds.min_x < x2 || x1 > bounds.min_x > x2
         x = bounds.min_x
@@ -121,3 +129,4 @@ function boundaryPoint{T<:Union{LLA,ENU}}(p1::T, p2::T, bounds::Bounds)
 
     error("Failed to find boundary point.")
 end
+

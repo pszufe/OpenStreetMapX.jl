@@ -1,9 +1,7 @@
-### Julia OpenStreetMap Package ###
-### MIT License                 ###
-### Copyright 2014              ###
-
+################################################################
 ### The following dictionaries are used for grouping ways    ###
 ### into limited, discrete classes for routing and plotting. ###
+################################################################
 
 # Ordered by typical significance
 const ROAD_CLASSES = Dict(
@@ -73,15 +71,35 @@ const CYCLE_CLASSES = Dict(
     "living_street" => 4,
     "service" => 4,
     "unclassified" => 4)
-
+		
 const FEATURE_CLASSES = Dict(
-    "amenity" => 1,
-    "shop" => 2,
-    "building" => 3,
-    "craft" => 4,
-    "historic" => 5,
-    "sport" => 6,
-    "tourism" => 7)
+    "aerialway" => 1,
+    "aeroway" => 2,
+    "amenity" => 3,
+    "barrier" => 4,
+    "boundary" => 5,
+    "building" => 6,
+    "craft" => 7,
+    "emergency" => 8,
+    "geological" => 9,
+    "highway" => 10,
+    "historic" => 11,
+    "landuse" => 12,
+    "leisure" => 13,
+    "man_made" => 14,
+    "military" => 15,
+    "natural" => 16,
+    "office" => 17,
+    "place" => 18,
+    "power" => 19,
+    "public_transport" => 20,
+    "railway" => 21,
+    "route" => 22,
+    "shop" => 23,
+    "sport" => 24,
+    "tourism" => 25,
+    "waterway" => 26)
+
 
 # Class 1: Residential/Accomodation
 # Class 2: Commercial
@@ -104,9 +122,11 @@ const BUILDING_CLASSES = Dict(
     "dwelling_house" => 1,
     "static_caravan" => 1,
     "ger" => 1,
-    "commerical" => 2,
+	"bungalow" => 1,
+    "commercial" => 2,
     "industrial" => 2,
     "retail" => 2,
+	"office" => 2,
     "warehouse" => 2,
     "supermarket" => 2,
     "manufacture" =>2,
@@ -123,6 +143,12 @@ const BUILDING_CLASSES = Dict(
     "university" => 3,
     "pavilion" => 3,
     "public" => 3,
+	"hospital" => 3,
+    "mosque" => 3,
+    "shrine" => 3,
+    "stadium" => 3,
+    "synagogue" => 3,
+    "temple" => 3,
     "barn" => 4,
     "bridge" => 4,
     "bunker" => 4,
@@ -145,6 +171,8 @@ const BUILDING_CLASSES = Dict(
     "transformer_tower" => 4,
     "collapsed" => 4,
     "damaged" => 4,
-    "ruins" => 4,
+    "ruins" => 4,   
+    "kiosk" => 4,
+    "service" => 4,
     "yes" => 5,
     "Yes" => 5)
