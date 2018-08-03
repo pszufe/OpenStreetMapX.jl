@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+#cd("$(homedir())/open_map")
+
+include("map_snippet.jl")
+
+md = parseOSM("map.osm");
+=======
 
 ###################################
 # Map snippet run
@@ -108,16 +115,24 @@ if mode == "fastest"
         addRoute!(p, nodes, shortest.route, routeColor = 0x000053)
     end
 end
+>>>>>>> master
 
     
 display(p)
 
+<<<<<<< HEAD
+for i in 1:5
+    pointA = generatePointInBounds(md);
+    pointB = generatePointInBounds(md);
+    r = findRoutes(pointA,pointB,md,true,r==:none?(:none):(r.p))
+=======
 #=
 res_json = Dict()
 open("res3.json", "r") do f
     global res_json
     dicttxt = readstring(f)  # file information to string
     res_json=JSON.parse(dicttxt)  # parse and transform data
+>>>>>>> master
 end
 
 # res3
