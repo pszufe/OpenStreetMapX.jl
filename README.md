@@ -11,6 +11,7 @@ Before using the library you need to install Julia packages:
 Pkg.add("Winston")
 Pkg.add("Distributions")
 Pkg.add("DataFrames")
+Pkg.add("DataFramesMeta")
 ```
 
 Once the packages are installed you need to replace the *tkwidget.jl* file that can be found (assuming a default JuliaPro installation) at: 
