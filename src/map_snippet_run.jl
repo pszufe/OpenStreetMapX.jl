@@ -2,7 +2,9 @@
 # Map snippet run
 ###################################
 
+#cd("C:\\!BIBLIOTEKA\\EA\\OSMsim.jl\\src")
 cd("C:\\Users\\Admin\\Documents\\OSMsim.jl\\src")
+#path_datasets = "C:\\!BIBLIOTEKA\\EA\\datasets"
 path_datasets = "D:\\project ea\\data for simulation"
     # datasets:
         # Businesses2018_CMA602,       DaytimePop2018_DA_CMA602,
