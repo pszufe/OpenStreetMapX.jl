@@ -27,9 +27,7 @@ Please use the tkwidget.jl [supplied in this project](https://github.com/pszufe/
 
 
 ## TODOs
-
-
-
+ 
 1. Buffering - if the pair DA_home and DA_work has already been secelected.
 2. Add waypoints for additional activities - before and after work and optimize tha path.
 3. Calculate stats for each given intersection - agentProfileAgregator
