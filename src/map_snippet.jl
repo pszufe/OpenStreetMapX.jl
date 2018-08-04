@@ -74,7 +74,6 @@ include("routingModule.jl")
 ###################################
 # functions
 
->>>>>>> master
 function generatePointInBounds(mapD::OpenStreetMap.OSMData)
     boundaries = mapD.bounds
     (rand() * (boundaries.max_y -  boundaries.min_y) + boundaries.min_y,
