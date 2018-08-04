@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-#cd("$(homedir())/open_map")
-
-include("map_snippet.jl")
-
-md = parseOSM("map.osm");
-=======
-
 ###################################
 # Map snippet run
 ###################################
-
 
 cd("C:\\Users\\Admin\\Documents\\OSMsim.jl\\src")
 path_datasets = "D:\\project ea\\data for simulation"
@@ -19,9 +10,9 @@ path_datasets = "D:\\project ea\\data for simulation"
         # SAMPLE_WinnipegCMA_Schools,  SAMPLE_WinnipegCMA_TRAFCAN2017Q1,
         # ShoppingCentres2018_CMA602,  vehicles_SAMPLE_RVIO2018_Winnipeg_CMA_by_DA
     # map files: .osm, .dbf, .shx, .prj, .shp
-        # winnipeg - city centre only.osm, Winnipeg CMA.osm, 
+        # winnipeg - city centre only.osm, Winnipeg CMA.osm,
         # Winnipeg DAs PopWeighted Centroids.shp .dbf, .shx, .prj
-    # *8 datasets processed by datasets_parse.jl 
+    # *8 datasets processed by datasets_parse.jl
 
 include("map_snippet.jl")
 
@@ -53,7 +44,7 @@ for i in 1:20
     # destinationLocation = destinationLocationSelectorDP(); println(destinationLocation)
     # DA_work, pointB = destinationLocation.DA_id, destinationLocation.coordinates
 
-    d = distance(df_DAcentroids[df_DAcentroids[:PRCDDA] .== DA_home, :ECEF][1], 
+    d = distance(df_DAcentroids[df_DAcentroids[:PRCDDA] .== DA_home, :ECEF][1],
                  df_DAcentroids[df_DAcentroids[:PRCDDA] .== DA_work, :ECEF][1])
     if d < 2000
         println("Distance between pointA and pointB is less than 2000")
@@ -62,7 +53,7 @@ for i in 1:20
 
     AdditionalActivity = DataFrame([String, String, Tuple, String], [:what, :when, :coordinates, :details], 0)
     additionalActivitySelector(); # println(AdditionalActivity)
-    
+
     mode = routingModuleSelector()
     if mode == "shortest"
         shortest = findRoutes(pointA, pointB, WinnipegMap, network, "shortest")
@@ -74,7 +65,7 @@ for i in 1:20
 #        googlemaps = googlemapsRoute(pointA, pointB, WinnipegMap, network, "shortest", DateTime(2018,7,31,9,0))
 #        addRoute!(p, nodes, googlemaps.route, routeColor = 0xcc00ff)
     end
-    
+
     println(i)
 
 end
@@ -84,7 +75,7 @@ println()
 display(p)
 
 # using Winston
-# savefig("figure.png") 
+# savefig("figure.png")
 
 
 # before / after
@@ -115,24 +106,22 @@ if mode == "fastest"
         addRoute!(p, nodes, shortest.route, routeColor = 0x000053)
     end
 end
->>>>>>> master
 
-    
 display(p)
 
-<<<<<<< HEAD
-for i in 1:5
-    pointA = generatePointInBounds(md);
-    pointB = generatePointInBounds(md);
-    r = findRoutes(pointA,pointB,md,true,r==:none?(:none):(r.p))
-=======
+
+#for i in 1:5
+#    pointA = generatePointInBounds(md);
+#    pointB = generatePointInBounds(md);
+#    r = findRoutes(pointA,pointB,md,true,r==:none?(:none):(r.p))
+#end
+
 #=
 res_json = Dict()
 open("res3.json", "r") do f
     global res_json
     dicttxt = readstring(f)  # file information to string
     res_json=JSON.parse(dicttxt)  # parse and transform data
->>>>>>> master
 end
 
 # res3
@@ -167,11 +156,11 @@ node_id = shortest.route
 
 agentProfileStatsAgregator = function(node_id) # :: DemoProfileStats
     if haskey(DemoProfileStats, node_id)
-        DemoProfileStats[node_id][1] += 1 # + aggregowanie zmiennych 
+        DemoProfileStats[node_id][1] += 1 # + aggregowanie zmiennych
     end
     # keys = nodes_id, values = array/df? pointA, pointB, before, after, ...
-    
-    
+
+
 end
 
 # 2. Buffering - jeżeli jakaś droga już była wyznaczona - to easy - dodać do statystyk
@@ -188,8 +177,8 @@ end
 
 # - women work in constructions?
 
-# - DemoProfile: każda zmienna z innej parafii... --> są liczone dla różnych grup wiekowych, raz dla household, 
-# raz per osobę,raz per osobę w wieku 15+, dzieci tylko dla par lub samotnych, a raz w ogóle nie wiadomo jak to liczą... 
+# - DemoProfile: każda zmienna z innej parafii... --> są liczone dla różnych grup wiekowych, raz dla household,
+# raz per osobę,raz per osobę w wieku 15+, dzieci tylko dla par lub samotnych, a raz w ogóle nie wiadomo jak to liczą...
 
 # - vehicles nie uwzględniamy bo są DA gdzie liczba samochodów jest wysoce sprzeczna z census data
 
@@ -203,7 +192,7 @@ end
 
 # żeby jakos do agregowania dodac visited places
 
-# optymalizacja dróg --> A + B + C / A + C jak najmniejsze --> i to determinuje też wybór punktów 
+# optymalizacja dróg --> A + B + C / A + C jak najmniejsze --> i to determinuje też wybór punktów
 
 # recreation probabilities
 
@@ -219,7 +208,4 @@ end
 
 # add activity  - wyfiltrowałam max 1 przed i max 1 po
 
-# ??? H - before - W - after - H ? 
-
-
-
+# ??? H - before - W - after - H ?
