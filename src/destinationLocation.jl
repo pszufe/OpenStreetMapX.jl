@@ -4,32 +4,28 @@
 ###################################
 
 
+###################################
 ## Selection based on Journey Matrix 
-function destinationLocationSelectorJM(DA_home::Int64 = DA_home, 
-                                       df_hwflows::DataFrame = df_hwflows, 
-                                       df_DAcentroids::DataFrame = df_DAcentroids,
-                                       DA_id::Symbol = :PRCDDA)::DA_id_coord
+function destinationLocationSelectorJM(DA_home, dict_df_DAcentroids, dict_df_hwflows)::DA_id_coord
     
     # Selects destination DA_work for an agent randomly weighted by Pij Journey Matrix
     
     # Args:
-    # - DA_home - DA_home unique id (DA_id) selected for an agent
-    # - df_hwflows - dataframe representing Pij Journej Matrix with *FlowVolume* from *DA_home* to *DA_work*
-    # - df_DAcentroids - dataframe with :LATITUDE and :LONGITUDE for each DA_id
-    # - DA_id - variable name with unique id for each DA
-    
-    index = df_hwflows[:DA_home] .== DA_home
-    DA_work = sample(df_hwflows[index, :DA_work], fweights(df_hwflows[index, :FlowVolume]))
-    index = df_DAcentroids[df_DAcentroids[DA_id] .== DA_work, :]
-    point_DA_work = index[:LATITUDE][1], index[:LONGITUDE][1]
+    # - DA_home - DA_home unique id selected for an agent
+    # - dict_df_DAcentroids - dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
+    # - dict_df_hwflows - dataframe representing Pij Journej Matrix with *FlowVolume* from *DA_home* to *DA_work*
+   
+    df_hwflows = dict_df_hwflows[DA_home]
+    DA_work = sample(df_hwflows[:DA_work], fweights(df_hwflows[:FlowVolume]))
+    point_DA_work = dict_df_DAcentroids[DA_work][1, :LATITUDE], 
+                    dict_df_DAcentroids[DA_work][1, :LONGITUDE]
     
     return DA_id_coord(DA_work, point_DA_work)
 end
 
 
-###
 
-
+###################################
 ## Selection based on agent's Demographic Profile
 
 # DA_work selected by randomely choosing the company (business) where agent work based on 
@@ -38,35 +34,6 @@ end
 # - distance between DA_home and business location 
 # - agent_age-based weigths
 # - company size weights represented by randomely estimated number of employees
-
-
-function estimateBusinessEmployees(df_business::DataFrame = df_business,
-                                   IEMP_DESC::Symbol = :IEMP_DESC)
-    
-    # Estimates the number of employees for each Businesses unit based on "Number of employees" intervals
-    
-    # Args:
-    # df_business - dataframe with businesses along with their number of employees as String intervals
-    # IEMP_DESC - "Number of employees" variable represented by String intervals (eg "1 - 4")
-    
-    df_business[:IEMP_DESC_estimate] = 0
-    
-    for i in 1:size(df_business, 1)
-        x = split(replace(df_business[i, :IEMP_DESC], "," => ""))
-        
-        # assumption: if there is no information concerning number of employees, this number is set to 1
-        # there are 323 such businesses in Winnipeg, most of them ATMs, so the probability of selecting any
-        # of them should be low
-        if x[1] == "NA"
-            df_business[i, :IEMP_DESC_estimate] = 1 
-        else 
-            df_business[i, :IEMP_DESC_estimate] = rand(parse(Int, x[1]):parse(Int, x[3]))
-        end
-        
-    end
-
-    return df_business
-end
 
 
 # Industry dictionary for agent_profile:
@@ -104,53 +71,62 @@ dict_industry = Dict(
 )
 
 
-function destinationLocationSelectorDP(q_centre = 0.5, q_other = 0.7,
-                                       max_distance_from_cc::Int64 = max_distance_from_cc)::DA_id_coord
+function destinationLocationSelectorDP(agent_profile, DA_home, df_business, dict_df_DAcentroids, 
+                                       dict_df_demostat, dict_industry, q_centre, q_other)::DA_id_coord
     
     # Selects destination DA_work for an agent by randomly choosing the company he works in
     
     # Assumptions based on agent demographic profile:
     # - agents work in the business in accordance with their work_industry
-    # - agents livingin the city centre tend to work near home
+    # - agents living in the city centre tend to work near home - calculated based on the quantiles 
+    # of the distance array between home location and industry-related businesses locations
     # - older agents and women-agents tend to work rather closer to home 
     
     # Args:
-    # - q_centre - quantiles probability of the home - business distance for agents living in the downtown 
-    # - q_centre - quantiles probability of the home - business distance for agents not living in the downtown 
-    # - max_distance_from_cc - maximum distance from DA_home to city_centre to assume DA_home is in the downtown
-    
-    # Other objects used in the function: 
     # - agent_profile - agent demographic profile::DemoProfile with city_region, work_industy and age
-    # - df_business - business dataframe along with its location, industry and estimated number of employees 
-    # - df_DAcentroids - dataframe with :LATITUDE and :LONGITUDE for each DA_id
-    # - df_demostat - dataframe with population statistics for each DA_id
-    # - city_centre_ECEF - city centre ECEF coordinates
-    # - DA_home - DA_home unique id (DA_id) selected for an agent
-    # - dict_industry - industry (or any) dictionary matching demographic data from df_business with
-    # demographic ones selected for an agent (in agent_profile.work_industry)
+    # - DA_home - DA_home unique id selected for an agent
+    # - df_business - business dataframe along with its location, industry and estimated number of employees
+    # - dict_df_DAcentroids - dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
+    # - dict_df_demostat - dictionary of dataframes with population statistics for each DA
+    # - dict_industry - dictionary matching industry demographic data from df_business with
+    # the ones selected for an agent (in agent_profile.work_industry)
+    # - q_centre - max quantile of the home - business distance for agents living in the downtown 
+    # - q_other - max quantile of the home - business distance for agents not living in the downtown 
+ 
+    # Other objects:
+    # df_business[:ICLS_DESC] - "Number of employees" intervals
+    # dict_df_demostat[DA_home][1, :ECYHTAAVG] - "Average Age Of Total Household Population"
     
     # Function, in case of any adjustments, should be modified within its body
     
     # industry assumption:
-    bus_industry = dict_industry[agent_profile.work_industry]
-    index_industry = [(df_business[:ICLS_DESC][i] in bus_industry) for i in 1:size(df_business, 1)]
-    df_business_temp = df_business[index_industry, :]
-    
-    dist_array = distance.(df_DAcentroids[df_DAcentroids[:PRCDDA] .== DA_home, :ECEF][1], 
-                           df_business_temp[:ECEF])
+    df_business_temp = @where(df_business, findin(:ICLS_DESC, Set(dict_industry[agent_profile.work_industry])))
     
     # all other assumptions:
+    dist_array = distance.(dict_df_DAcentroids[DA_home][1, :ENU], df_business_temp[:ENU])
+    avg_age = dict_df_demostat[DA_home][1, :ECYHTAAVG]
+    
     if agent_profile.city_region == "downtown"
-        index = dist_array .< ( quantile(dist_array, q_centre)*mean(df_demostat[:ECYHTAAVG])/agent_profile.age[1] )
+        index = dist_array .< ( quantile(dist_array, q_centre)*avg_age/agent_profile.age )
+        df_business_temp = df_business_temp[index, :]
     else
-        index = dist_array .< ( quantile(dist_array, q_other)*mean(df_demostat[:ECYHTAAVG])/agent_profile.age[1] )
+        index = dist_array .< ( quantile(dist_array, q_other)*avg_age/agent_profile.age )
+        df_business_temp = df_business_temp[index, :]
     end
     
-    DA_work = sample(df_business_temp[index, :PRCDDA], 
-                     fweights(df_business_temp[index, :IEMP_DESC_estimate]))
-    
-    index = df_DAcentroids[df_DAcentroids[:PRCDDA] .== DA_work, :]
-    point_DA_work = index[:LATITUDE][1], index[:LONGITUDE][1]
+    # Estimate the number of employees for each business based on "Number of employees" intervals
+        # assumption: if there is no information concerning number of employees, this number is set to 1
+        # most of such businesses are ATMs, so the probability of selecting any of them should be low
+    intervals = [split(replace(i, "," => "")) for i in df_business_temp[:IEMP_DESC]]
+    IEMP_DESC_estimate = zeros(Int, size(intervals, 1))
+    for i in 1:size(intervals, 1)
+        intervals[i][1] .== "NA" ? IEMP_DESC_estimate[i] = 1 : 
+            IEMP_DESC_estimate[i] = rand(parse(Int, intervals[i][1]):parse(Int, intervals[i][3]))
+    end
+
+    DA_work = sample(df_business_temp[:PRCDDA], fweights(IEMP_DESC_estimate))
+    point_DA_work = dict_df_DAcentroids[DA_work][1, :LATITUDE], 
+                    dict_df_DAcentroids[DA_work][1, :LONGITUDE]
     
     return DA_id_coord(DA_work, point_DA_work)
     

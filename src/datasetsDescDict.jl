@@ -4,8 +4,9 @@
 ###################################
 
 
+###################################
 # Business data dictionary
-dict_df_business = Dict(
+desc_df_business = Dict(
     :PRCDDA    => "Dissemination Area", 
     :LATITUDE  => "Latitude",
     :LONGITUDE => "Longitude",
@@ -17,8 +18,114 @@ dict_df_business = Dict(
 )
 
 
+###################################
+# Popular stores dictionary - based on df_business
+desc_df_business_popstores = Dict(
+    "7-ELEVEN" => "convinience",
+    "DOLLARAMA" => "discount",
+    "PETRO-CANADA" => "petrol station",
+    "RED RIVER CO-OP LTD" => "petrol station",
+    "SHOPPERS DRUG MART" => "drugstore",
+    "SAFEWAY" => "supermarket",
+    "REXALL PHARMA PLUS" => "drugstore",
+    "MAC'S CONVENIENCE STORE" => "convinience",
+    "SOBEYS" => "supermarket",
+    "HUSKY GAS STATION" => "petrol station",
+    "DULUX PAINTS" => "other retail",
+    "M&M FOOD MARKET" => "grocery",
+    "DOLLAR TREE" => "discount",
+    "WALMART SUPERCENTER" => "mass merchandise",
+    "GIANT TIGER" => "discount",
+    "REAL CANADIAN SUPERSTORE" => "mass merchandise",
+    "BULK BARN FOODS" => "other retail",
+    "MEDICINE SHOPPE" => "drugstore",
+    "CANADIAN TIRE" => "other retail",
+    "BRICK" => "other retail",
+    "MC MUNN & YATES BUILDING SUPLS" => "other retail",
+    "HOME DEPOT" => "other retail",
+    "SHELL CANADA" => "petrol station",
+    "FOODFARE STORES" => "grocery",
+    "HUSKY" => "petrol station",
+    "DRUGSTORE PHARMACY" => "drugstore",
+    "PRESCRIPTION SHOP" => "drugstore",
+    "FAMILY FOODS" => "grocery",
+    "JYSK" => "other retail",
+    "IGA" => "supermarket",
+    "COSTCO WHOLESALE" => "mass merchandise",
+    "BEST BUY" => "other retail",
+    "NO FRILLS" => "supermarket",
+    "IKEA" => "other retail",
+    "LEON'S" => "other retail",
+    "RONA" => "other retail",
+    "VALUE VILLAGE" => "discount",
+    "SALVATION ARMY THRIFT STORE" => "discount",
+    "MCNALLY ROBINSON BOOKSELLERS" => "other retail",
+    "MC NALLY ROBINSON FOR KIDS" => "other retail",
+    "UNIVERSITY-WINNIPEG BOOKSTORE" => "other retail",
+    "HULL'S FAMILY BOOKSTORE" => "other retail",
+    "STAPLES" => "other retail",
+    "SAVE-ON-FOODS" => "supermarket",
+    "FAMILY FOODS" => "supermarket",
+    "DAKOTA FAMILY FOODS" => "supermarket",
+    "LOW'S FAMILY FOODS" => "supermarket",
+    "LUCKY SUPERMARKET" => "supermarket",
+    "GILL'S SUPERMARKET" => "supermarket",
+    "BROTHERS PHARMACY LTD" => "drugstore",
+    "CD WHYTE RIDGE PHARMACY" => "drugstore",
+    "CINDEN PHARMACY" => "drugstore",
+    "DAKOTA PHARMACY" => "drugstore",
+    "EBBELING PHARMACY" => "drugstore",
+    "HEALTH CENTRAL PHARMACY INC" => "drugstore",
+    "ISLAND LAKES PHARMACY" => "drugstore",
+    "MUNROE PHARMACY" => "drugstore",
+    "PEOPLE'S PHARMACY" => "drugstore",
+    "VIDEL PHARMACY" => "drugstore",
+    "TACHE PHARMACY & MEDICAL SUPLS" => "drugstore",
+    "ABERDEEN PHARMACY" => "drugstore",
+    "GOOD SHEPHERD PHARMACY" => "drugstore",
+    "MANDALAY PHARMACY" => "drugstore",
+    "SOUTH SHERBROOK HEALTH CTR" => "drugstore",
+    "EMPIRE DRUGS LTD" => "drugstore",
+    "MEYER'S DRUGS LTD" => "drugstore",
+    "BROWN'S DRUG STORE" => "drugstore",
+    "PRESCRIPTION SHOP" => "drugstore",
+    "LONDON DRUGS" => "drugstore",
+    "PEMBINA DRUGS" => "drugstore",
+    "PHARMASAVE ASSINIBOINE PHARM" => "drugstore",
+    "OAKFIELD REMEDY'S RX" => "drugstore",
+    "POSITIVE HEALTH REMEDY'S RX" => "drugstore",
+    "REXALL PHARMA PLUS" => "drugstore",
+    "DOMO" => "convinience",
+    "CANADIAN TIRE GAS+" => "petrol station",
+    "ESSO" => "petrol station",
+    "ST ADOLPHE ESSO" => "petrol station",
+    "PORTAGE ESSO" => "petrol station",
+    "NOTRE DAME ESSO ON THE RUN" => "petrol station",
+    "KING EDWARD ESSO" => "petrol station",
+    "TAYLOR ESSO" => "petrol station",
+    "PEMBINA ESSO ON THE RUN" => "petrol station",
+    "ST ANNE'S ROAD ESSO" => "petrol station",
+    "TRANSCONIA ESSO" => "petrol station",
+    "CHANCELLOR ESSO" => "petrol station",
+    "ABAS ESSO" => "petrol station",
+    "AIRPORT ESSO" => "petrol station",
+    "WAVERLEY ESSO" => "petrol station",
+    "KENASTON ESSO" => "petrol station",
+    "SETTLER'S ESSO" => "petrol station",
+    "ST PAUL ESSO" => "petrol station",
+    "SHELL CANADA PRODUCTS" => "petrol station",
+    "SHELL FOOD STORE" => "petrol station",
+    "SHELL CANADA" => "petrol station",
+    "FORREST & MAIN SHELL" => "petrol station",
+    "SOUTHDALE SHELL SELECT" => "petrol station",
+    "PROVENCHER BLVD SHELL" => "petrol station",
+    "REGENT SHELL" => "petrol station"
+)
+
+
+###################################
 # Daytimepop data dictionary
-dict_df_daytimep = Dict(
+desc_df_daytimep = Dict(
     :PRCDDA     => "Dissemination Area",
     :ECYTOTPOPD => "Total Household Population",
     :ECYDAYPOP  => "Total Daytime Population",
@@ -33,8 +140,9 @@ dict_df_daytimep = Dict(
 )
 
 
+###################################
 # Demostat data dictionary
-dict_df_demostat = Dict(
+desc_df_demostat = Dict(
     :PRCDDA     => "Dissemination Area",
     :ECYBASHHD  => "Total Households",
     :ECYBASHPOP => "Total Household Population",
@@ -212,8 +320,9 @@ dict_df_demostat = Dict(
 )
 
 
+###################################
 # H-W flow journey matrix dictionary
-dict_df_hwflows = Dict(
+desc_df_hwflows = Dict(
     :DA_home                   => "Unique home DA id (PRCDDA)",
     :DA_work                   => "Unique work DA id (PRCDDA)",
     :FlowVolume                => "Flow Volume of commuters from DA_home to DA_work", 
@@ -223,8 +332,9 @@ dict_df_hwflows = Dict(
 )
 
 
+###################################
 # Schools data dictionary
-dict_df_schools = Dict(
+desc_df_schools = Dict(
     :NAME      => "School name",
     :STNAME    => "Street name",
     :LONGITUDE => "Longitude",
@@ -234,8 +344,9 @@ dict_df_schools = Dict(
 )
 
 
+###################################
 # Traffic data dictionary
-dict_df_traffic = Dict(
+desc_df_traffic = Dict(
     :STREET    => "Name of the street the count was taken on",
     :TRAFFIC1  => "Most recent traffic count",
     :CNTTYPE1  => "Type of count",
@@ -248,8 +359,9 @@ dict_df_traffic = Dict(
 )
 
 
+###################################
 # Schopping centres data dictionary
-dict_df_shopping = Dict(
+desc_df_shopping = Dict(
     :PRCDDA    => "Dissemination Area",
     :centre_nm => "Shopping Centre Name",
     :address   => "Address",
@@ -263,8 +375,9 @@ dict_df_shopping = Dict(
 )
 
 
+###################################
 # Vehicles data dictionary
-dict_df_vehicles = Dict(
+desc_df_vehicles = Dict(
     :PRCDDA     => "Dissemination Area",
     :RSINDSTRYT => "Retail Industry",
     :RSCAR____T => "Retail Car",
