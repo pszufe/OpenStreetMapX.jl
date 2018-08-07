@@ -24,7 +24,7 @@ include("datasetsImport.jl")
 include("startingLocation.jl")
 include("agentProfile.jl")
 include("destinationLocation.jl")
-include("additionalActivity.jl")
+include("additional_activity.jl")
 include("routingModule.jl")
 
 
@@ -32,13 +32,13 @@ include("routingModule.jl")
 ###################################
 ## functions
 
-function generatePointInBounds(mapD::OpenStreetMap.OSMData)
+function generate_point_in_bounds(mapD::OpenStreetMap.OSMData)
     boundaries = mapD.bounds
     (rand() * (boundaries.max_y -  boundaries.min_y) + boundaries.min_y,
     rand() * (boundaries.max_x -  boundaries.min_x) + boundaries.min_x)
 end
 
-function convertPointsToENU(dataset, mapD)
+function convert_points_toENU(dataset, mapD)
     dataset[:ENU] = ENU.(LLA.(dataset[:LATITUDE], dataset[:LONGITUDE]), center(mapD.bounds))
 end
 
@@ -101,15 +101,15 @@ nodes, bounds, highways, roadways, intersections, segments, network = createMap(
 ###################################
 ## Create coordinates in osm format
 
-convertPointsToENU(df_business, WinnipegMap)
-convertPointsToENU(df_business_popstores, WinnipegMap)
-convertPointsToENU(df_DAcentroids, WinnipegMap)
-convertPointsToENU(df_recreationComplex, WinnipegMap)
-convertPointsToENU(df_schools, WinnipegMap)
-convertPointsToENU(df_shopping, WinnipegMap)
+convert_points_toENU(df_business, WinnipegMap)
+convert_points_toENU(df_business_popstores, WinnipegMap)
+convert_points_toENU(df_DAcentroids, WinnipegMap)
+convert_points_toENU(df_recreationComplex, WinnipegMap)
+convert_points_toENU(df_schools, WinnipegMap)
+convert_points_toENU(df_shopping, WinnipegMap)
 
 # Winnipeg city centre coordinates
-city_centre_ENU = convertPointsToENU(DataFrame(LATITUDE = 49.895485, LONGITUDE = -97.138449), 
+city_centre_ENU = convert_points_toENU(DataFrame(LATITUDE = 49.895485, LONGITUDE = -97.138449), 
     WinnipegMap)[1]
 
 	

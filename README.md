@@ -12,6 +12,10 @@ Pkg.add("Winston")
 Pkg.add("Distributions")
 Pkg.add("DataFrames")
 Pkg.add("DataFramesMeta")
+Pkg.add("FreqTables")
+Pkg.add("HTTP")
+Pkg.add("Query")
+Pkg.add("Shapefile")
 ```
 
 Once the packages are installed you need to replace the *tkwidget.jl* file that can be found (assuming a default JuliaPro installation) at: 
@@ -27,7 +31,7 @@ Please use the tkwidget.jl [supplied in this project](https://github.com/pszufe/
 
 
 ## TODOs
- 
+
 1. Buffering - if the pair DA_home and DA_work has already been secelected.
 2. Add waypoints for additional activities - before and after work and optimize tha path.
 3. Calculate stats for each given intersection - agentProfileAgregator

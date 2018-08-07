@@ -39,7 +39,7 @@ end
 
 routingMode = routingModuleSelector(agent_profile, DA_home, DA_work, dict_df_DAcentroids)
 
-additionalActivity = additionalActivitySelector(routingMode, agent_profile, DA_home, DA_work,
+additional_activity = additional_activity_selector(routingMode, agent_profile, DA_home, DA_work,
     # add waypoints selection based on route time/distance optimization
     df_recreationComplex, df_schools, df_shopping,
     dict_df_business_popstores, dict_df_DAcentroids, dict_schoolcategory, 
@@ -58,13 +58,13 @@ additionalActivity = additionalActivitySelector(routingMode, agent_profile, DA_h
 p = :none
 p = plotMap(nodes, bounds, roadways = roadways, roadwayStyle = OpenStreetMap.LAYER_STANDARD)
 
-shortest = findRoutesWithWaypoints(pointA, pointB, WinnipegMap, network, shortestRoute, additionalActivity)
+shortest = findRoutesWithWaypoints(pointA, pointB, WinnipegMap, network, shortestRoute, additional_activity)
 addRoute!(p, nodes, shortest.route, routeColor = 0x000053)
 
-fastest = findRoutesWithWaypoints(pointA, pointB, WinnipegMap, network, fastestRoute, additionalActivity)
+fastest = findRoutesWithWaypoints(pointA, pointB, WinnipegMap, network, fastestRoute, additional_activity)
 addRoute!(p, nodes, fastest.route, routeColor = 0xFF0000)
 
-googlemaps = googlemapsRoute(pointA, pointB, WinnipegMap, network, shortestRoute, now(), additionalActivity)
+googlemaps = googlemapsroute(pointA, pointB, WinnipegMap, network, shortestRoute, now(), additional_activity)
 addRoute!(p, nodes, googlemaps.route, routeColor = 0xcc00ff)
 
 display(p)

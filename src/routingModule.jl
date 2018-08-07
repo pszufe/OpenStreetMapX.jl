@@ -41,9 +41,9 @@ end
 
 ###################################
 # Fastest, shortest routes with Waypoints
-function findRoutesWithWaypoints(pointA, pointB, mapD, network, routingMode, additionalActivity)
+function findRoutesWithWaypoints(pointA, pointB, mapD, network, routingMode, additional_activity)
 
-    waypoints = additionalActivity
+    waypoints = additional_activity
     
     if length(waypoints.before) == 0 && length(waypoints.after) == 0
         r = findRoutes(pointA, pointB, mapD, network, routingMode)
@@ -101,19 +101,21 @@ function changeCoordToString(point)::String
     return string(point[1],",",point[2])
 end
 
-function googlemapsRoute(pointA, pointB, mapD, network, routingMatchMode, arrival_dt, additionalActivity)::RouteData
-
-    # Requests google maps API for a directions between points and parses the response into OSM nodes
+"""
+Requests google maps API for a directions between points and parses the response into OSM nodes
     
-    # Args:
-    # - pointA - start point - DA_home
-    # - pointB - end point - DA_work
-    # - mapD - OpenStreetMap.OSMData object representing entire map
-    # - network - OpenStreetMap.Network object representing road graph
-    # - routingMatchMode - the way google API nodes are mapped with OSM nodes - fastestRoute/shortestRoute
-    # - arrival_dt - arrival time in DateTime format (e.g. DateTime(2018,8,20,9,0) ) 
-    # - waypoints - maximum one before work point and maximum one after work point 
-    # (google accepts up to 8 waipoints per request)
+**Arguments**
+* `pointA` : start point - DA_home
+* `pointB` : end point - DA_work
+* `mapD` : OpenStreetMap.OSMData object representing entire map
+* `network` : OpenStreetMap.Network object representing road graph
+* `routingMatchMode` : the way google API nodes are mapped with OSM nodes - fastestRoute/shortestRoute
+* `arrival_dt` : arrival time in DateTime format (e.g. DateTime(2018,8,20,9,0) ) 
+* `waypoints` : maximum one before work point and maximum one after work point 
+   (google accepts up to 8 waipoints per request)
+"""
+function googlemapsroute(pointA, pointB, mapD, network, routingMatchMode, arrival_dt, additional_activity)::RouteData
+
 
     # time in seconds since midnight, January 1, 1970 UTC; Winnipeg = UTC - 5h (6h in winter time)
     arrival_time = round(Int, Dates.value(arrival_dt + Dates.Hour(5) - DateTime(1970,1,1,0,0,0))/1000)
@@ -121,7 +123,7 @@ function googlemapsRoute(pointA, pointB, mapD, network, routingMatchMode, arriva
     pointA_str = changeCoordToString(pointA)
     pointB_str = changeCoordToString(pointB)
     
-    waypoints = additionalActivity
+    waypoints = additional_activity
     
     if length(waypoints.before) == 0 && length(waypoints.after) == 0
         url = "https://maps.googleapis.com/maps/api/directions/json?origin="*pointA_str*
@@ -211,7 +213,7 @@ function routingModuleSelector(agent_profile, DA_home, DA_work, dict_df_DAcentro
         rand() < 0.6 ? mode = fastestRoute :  mode = shortestRoute
         
     else
-        mode = sample([fastestRoute, googlemapsRoute], fweights([agent_profile.age, 100 - agent_profile.age]))
+        mode = sample([fastestRoute, googlemapsroute], fweights([agent_profile.age, 100 - agent_profile.age]))
         
     end
     
