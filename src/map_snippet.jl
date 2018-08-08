@@ -19,7 +19,7 @@ using StatsBase
 
 
 include("datasetsDescDict.jl")
-# include("datasetsParse.jl") # can be run only once to process and export 8 datasets
+# include("datasetsParse.jl") # can be run only once to process and export datasets
 include("datasetsImport.jl")
 include("startingLocation.jl")
 include("agentProfile.jl")
@@ -32,12 +32,26 @@ include("routingModule.jl")
 ###################################
 ## functions
 
+"""
+Generates a point on the map and returns its LLA coordinates
+    
+**Arguments**
+* `mapD` : OpenStreetMap.OSMData object representing entire map
+"""
 function generate_point_in_bounds(mapD::OpenStreetMap.OSMData)
     boundaries = mapD.bounds
     (rand() * (boundaries.max_y -  boundaries.min_y) + boundaries.min_y,
     rand() * (boundaries.max_x -  boundaries.min_x) + boundaries.min_x)
 end
 
+
+"""
+Converts a vector of LLA coordinates points to ENU format 
+    
+**Arguments**
+* `dataset` : dataset with :LATITUDE and :LONGITUDE coordinates
+* `mapD` : OpenStreetMap.OSMData object representing entire map
+"""
 function convert_points_toENU(dataset, mapD)
     dataset[:ENU] = ENU.(LLA.(dataset[:LATITUDE], dataset[:LONGITUDE]), center(mapD.bounds))
 end
@@ -94,7 +108,7 @@ poor_rich_limit = 100000      # income at which agents get from poorer to richer
 # WinnipegMap = parseOSM(path_datasets*"\\Winnipeg CMA.osm")
 WinnipegMap = parseOSM(path_datasets*"\\winnipeg - city centre only.osm")
 
-nodes, bounds, highways, roadways, intersections, segments, network = createMap(WinnipegMap)
+nodes, bounds, highways, roadways, intersections, segments, network = create_map(WinnipegMap)
 
 
 
