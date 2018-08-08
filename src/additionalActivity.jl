@@ -1,6 +1,6 @@
 
 ###################################
-# Additional Activity Selectors
+# Additional activity selectors
 ###################################
 
 
@@ -12,9 +12,6 @@ mutable struct AdditionalActivity
 end
 
 
-
-###################################
-# schools
 
 """
 Dictionary mapping children age with school category
@@ -31,15 +28,17 @@ dict_schoolcategory = Dict(
 
 
 """
+Additional activity selector - schools
+
 Checks if an agent has small children and drives them to school and if so, it randomely selects 
 a suitable school category (child care facility/pre school/school) for children and returns their locations.
 
 **Arguments**
 * `agent_profile` : agent demographic profile::DemoProfile with city_region, children_number_of and children_age
 * `DA_home` : DA_home unique id selected for an agent
+* `df_AdditionalActivity`  : a dataframe initially empty for each agent created in additional_activity_selector
 * `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
 * `dict_schoolcategory`  : dictionary mapping children age with school category
-* `df_AdditionalActivity`  : a dataframe initially empty for each agent created in additional_activity_selector
 * `df_schools`  : schools dataframe along with its location and category 
              
 **Assumptions**
@@ -50,8 +49,8 @@ a suitable school category (child care facility/pre school/school) for children 
 - kids aged 0-3 go to Child Care Facility, kids aged 4-5 go to Pre School, kids aged 6-14 go to School
 - kids go to Child Care Facility/Pre School/School located nearest their home.
 """
-function additional_activity_schools(agent_profile, DA_home, dict_df_DAcentroids, dict_schoolcategory,
-                                     df_AdditionalActivity, df_schools)
+function additional_activity_schools(agent_profile, DA_home, dict_df_DAcentroids, df_AdditionalActivity, 
+                                     dict_schoolcategory, df_schools)
 
     if agent_profile.children_number_of > 0
     
@@ -105,19 +104,18 @@ end
 
 
 
-###################################
-# popular stores
-
 """
+Additional activity selector - popular stores
+
 Checks if an agent goes shopping to any of the popular stores and if so selects a store location
 
 **Arguments**
 * `agent_profile` : agent demographic profile::DemoProfile with sex
 * `DA_home` : DA_home unique id selected for an agent
 * `DA_work` : DA_work unique id selected for an agent
+* `df_AdditionalActivity`  : a dataframe initially empty for each agent created in additional_activity_selector
 * `dict_df_business_popstores` : dictionary of dataframes with popular shops by category
 * `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
-* `df_AdditionalActivity`  : a dataframe initially empty for each agent created in additional_activity_selector
 * `p_...`  :  probabilities for femaies of going shopping to any of the stores' categories
 * `p_shoppingMale`  :  male probability of going shopping - relative to female probabilites
              
@@ -131,7 +129,7 @@ Checks if an agent goes shopping to any of the popular stores and if so selects 
 - different probabilities for males and females
 """
 function additional_activity_popularstores(agent_profile, DA_home, DA_work, 
-                                           dict_df_business_popstores, dict_df_DAcentroids, df_AdditionalActivity,
+                                           df_AdditionalActivity, dict_df_business_popstores, dict_df_DAcentroids, 
                                            p_drugstore, p_petrol_station, p_supermarket, p_convinience, 
                                            p_other_retail, p_grocery, p_discount, p_mass_merchandise, p_shoppingMale)
 
@@ -187,10 +185,9 @@ end
 
 
 
-###################################
-# shopping centres
-
 """
+Additional activity selector - shopping centres
+
 Checks if an agent goes to the shopping centre based on shopping frequency assumptions and if so 
 it selects shopping centre location
 
@@ -198,9 +195,9 @@ it selects shopping centre location
 * `agent_profile` : agent demographic profile::DemoProfile with sex
 * `DA_home` : DA_home unique id selected for an agent
 * `DA_work` : DA_work unique id selected for an agent
-* `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
 * `df_AdditionalActivity`  : a dataframe initially empty for each agent created in additional_activity_selector
 * `df_shopping` : shopping centres dataframe along with its locations and attributes 
+* `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
 * `distance_radius_H`  :  radius around Home within which an agent might go shopping
 * `distance_radius_W`  :  radius around Work within which an agent might go shopping
 * `p_shoppingcentre`  :  probability of going to shopping centre represented by shopping frequency per week - females
@@ -218,7 +215,7 @@ their gross leasing area size and the number of anchor stores
 - different probabilities for males and females
 """
 function additional_activity_shoppingcentre(agent_profile, DA_home, DA_work, 
-                                            dict_df_DAcentroids, df_AdditionalActivity, df_shopping,
+                                            df_AdditionalActivity, df_shopping, dict_df_DAcentroids, 
                                             distance_radius_H, distance_radius_W, 
                                             p_shoppingcentre, p_shoppingMale)
 
@@ -280,10 +277,9 @@ end
 
 
 
-###################################
-# recreation complexes
-
 """
+Additional activity selector - recreation complexes
+
 Checks if an agent goes to the recreaton complex based on his demographic profile.
 If he goes, a recreation complex is selected based on it's distance from home / work
 
@@ -291,9 +287,9 @@ If he goes, a recreation complex is selected based on it's distance from home / 
 * `agent_profile` : agent demographic profile::DemoProfile with sex
 * `DA_home` : DA_home unique id selected for an agent
 * `DA_work` : DA_work unique id selected for an agent
-* `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
 * `df_AdditionalActivity`  : a dataframe initially empty for each agent created in additional_activity_selector
 * `df_recreationComplex` : recreation complexes dataframe along with its locations and attributes 
+* `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
 * `p_recreation_before`  :  probability of working-out before work
 * `p_recreation_F`  :  working-out probability for Females
 * `p_recreation_M`  :  working-out probability for Males
@@ -313,7 +309,7 @@ Younger, males and richer people work out more often.
 - probabilities to Dict
 """
 function additional_activity_recreation(agent_profile, DA_home, DA_work, 
-                                        dict_df_DAcentroids, df_AdditionalActivity, df_recreationComplex, , 
+                                        df_AdditionalActivity, df_recreationComplex, dict_df_DAcentroids, 
                                         p_recreation_before, p_recreation_F, p_recreation_M,
                                         p_recreation_younger, p_recreation_older, young_old_limit,
                                         p_recreation_poorer, p_recreation_richer, poor_rich_limit)
@@ -377,68 +373,51 @@ Additional activity selector
 Creates df_AdditionalActivity dataframe and returns point_before and point_after on the way 
 pointA - point_before - pointB - point_after, if they exist.
 
-** Arguments   
-* `routingMode` : TODO explain
-* `agent_profile` : TODO explain
-* `DA_home` : TODO explain
-* `DA_work`  : TODO explain
-TODO : explain other args
+**Arguments**   
+* `routingMode` : selected routing mode - fastestRoute / shortestRoute / googlemapsroute 
+All other arguments are explained in the functions they are passed into
              
 ** Assumptions
- - there is max one point_before and max one point_after for each agent
+ - there is maximum one point_before and maximum one point_after for each agent
  - model can be extended by introducing more points_before and more points_after based on 
    df_AdditionalActivity dataframe, which already returns multiply before and after points. 
-   To do so one should modify below "if" condintion
+   To do so one should modify below "if" condintion.
 
 
-   
-TODO : explain what it does
-```julia
-routingMode == googlemapsroute ? mode = fastestRoute : mode = routingMode
-```
-
-
-TODO : explain what it does
-```julia
-findRoutes(pointA, pointB, mapD, network, routingMode = mode)
-```
-
-TODO : explain what it does
-```julia
-find waypoints based on route time/distance optimisation
-```
+### TODO: 
+This module will be changed due to the waypoints selection based on route optimisation
 
 """
 function additional_activity_selector(routingMode, agent_profile, DA_home, DA_work, 
-                                    df_recreationComplex, df_schools, df_shopping,
-                                    dict_df_business_popstores, dict_df_DAcentroids, dict_schoolcategory, 
-                                    distance_radius_H, distance_radius_W, 
-                                    p_shoppingcentre, p_shoppingMale,
-                                    p_drugstore, p_petrol_station, p_supermarket, p_convinience, 
-                                    p_other_retail, p_grocery, p_discount, p_mass_merchandise, 
-                                    p_recreation_before, p_recreation_F, p_recreation_M,
-                                    p_recreation_younger, p_recreation_older, young_old_limit,
-                                    p_recreation_poorer, p_recreation_richer, poor_rich_limit)::AdditionalActivity
+                                      df_recreationComplex, df_schools, df_shopping,
+                                      dict_df_business_popstores, dict_df_DAcentroids, dict_schoolcategory, 
+                                      distance_radius_H, distance_radius_W, 
+                                      p_shoppingcentre, p_shoppingMale,
+                                      p_drugstore, p_petrol_station, p_supermarket, p_convinience, 
+                                      p_other_retail, p_grocery, p_discount, p_mass_merchandise, 
+                                      p_recreation_before, p_recreation_F, p_recreation_M,
+                                      p_recreation_younger, p_recreation_older, young_old_limit,
+                                      p_recreation_poorer, p_recreation_richer, poor_rich_limit)::AdditionalActivity
 
     
     df_AdditionalActivity = DataFrame([String, String, Tuple, String, Float64], 
                                    [:what, :when, :coordinates, :details, :distance], 0)
     
-    additional_activity_schools(agent_profile, DA_home, dict_df_DAcentroids, dict_schoolcategory,
-                                df_AdditionalActivity, df_schools)
+    additional_activity_schools(agent_profile, DA_home, df_AdditionalActivity, df_schools, 
+                                dict_df_DAcentroids, dict_schoolcategory)
     
     additional_activity_popularstores(agent_profile, DA_home, DA_work, 
-                                      dict_df_business_popstores, dict_df_DAcentroids, df_AdditionalActivity,
+                                      df_AdditionalActivity, dict_df_business_popstores, dict_df_DAcentroids, 
                                       p_drugstore, p_petrol_station, p_supermarket, p_convinience, 
                                       p_other_retail, p_grocery, p_discount, p_mass_merchandise, p_shoppingMale)
     
     additional_activity_shoppingcentre(agent_profile, DA_home, DA_work, 
-                                       dict_df_DAcentroids, df_AdditionalActivity, df_shopping,
+                                       df_AdditionalActivity, df_shopping, dict_df_DAcentroids, 
                                        distance_radius_H, distance_radius_W, 
                                        p_shoppingcentre, p_shoppingMale)
     
     additional_activity_recreation(agent_profile, DA_home, DA_work, 
-                                   dict_df_DAcentroids, df_AdditionalActivity, df_recreationComplex, , 
+                                   df_AdditionalActivity, df_recreationComplex, dict_df_DAcentroids,  
                                    p_recreation_before, p_recreation_F, p_recreation_M,
                                    p_recreation_younger, p_recreation_older, young_old_limit,
                                    p_recreation_poorer, p_recreation_richer, poor_rich_limit)
