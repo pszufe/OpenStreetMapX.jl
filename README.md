@@ -38,9 +38,9 @@ Please use the tkwidget.jl [supplied in this project](https://github.com/pszufe/
 4. Agent profile aggregator
 5. Function select_starting_location in python
 6. Calculate stats for each given intersection - agentProfileAgregator
-   a) DA distribution   (simplified)
-   b) demographic distribution (if demographic profile determines moving patterns)
-   c) crosstabs
+   * DA distribution   (simplified)
+   * demographic distribution (if demographic profile determines moving patterns)
+   * crosstabs
    
 ## 
 
