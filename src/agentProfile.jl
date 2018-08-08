@@ -79,19 +79,20 @@ dict_children_number_of = Dict(
 )
 
 
-function demographicProfileGenerator(DA_home, dict_df_demostat, dict_df_DAcentroids, city_centre_ENU, 
-                                     max_distance_from_cc)::DemoProfile
+"""
+Creates socio-demographic profile of an agent based on demostats distributions per DA
     
-    # Creates socio-demographic profile of an agent based on demostats distributions per DA
-    
-    # Args:
-    # - DA_home - DA_home unique id selected for an agent
-    # - dict_df_demostat - dictionary of dataframes with population statistics for each DA
-    # - dict_df_DAcentroids - dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
-    # - max_distance_from_cc - maximum distance from DA_home to city_centre to assume DA_home is in the downtown
-    # - city_centre_ENU - city centre ENU coordinates
+**Arguments**
+* `city_centre_ENU` : city centre ENU coordintes
+* `DA_home` : DA_home unique id selected for an agent
+* `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
+* `dict_df_demostat` : dictionary of dataframes with population statistics for each DA
+* `max_distance_from_cc` : maximum distance from DA_home to city_centre to assume DA_home is in the downtown
 
-    # Function, in case of any adjustments, should be modified within its body altogether with DemoProfile struct
+Function, in case of any adjustments, should be modified within its body altogether with DemoProfile struct
+"""
+function demographic_profile_generator(city_centre_ENU, DA_home, dict_df_DAcentroids, dict_df_demostat,
+                                       max_distance_from_cc)::DemoProfile
     
     df_demostat = dict_df_demostat[DA_home]
     
