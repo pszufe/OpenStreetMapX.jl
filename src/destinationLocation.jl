@@ -8,6 +8,8 @@
 ## Selection based on Journey Matrix 
 
 """
+Destination location selector JM (Jurney Matrix)
+
 Selects destination DA_work for an agent randomly weighted by Pij Journey Matrix
     
 **Arguments**
@@ -77,6 +79,8 @@ dict_industry = Dict(
 
 
 """
+Destination location selector DP (Demographic Profile)
+
 Selects destination DA_work for an agent by randomly choosing the company he works in
     
 **Arguments**
