@@ -1,6 +1,6 @@
 
 ###################################
-# Destination Location Selectors
+# Destination location selectors
 ###################################
 
 
