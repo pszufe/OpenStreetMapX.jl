@@ -18,14 +18,14 @@ using Shapefile
 using StatsBase
 
 
-include("datasetsDescDict.jl")
-# include("datasetsParse.jl") # can be run only once to process and export datasets
-include("datasetsImport.jl")
-include("startingLocation.jl")
-include("agentProfile.jl")
-include("destinationLocation.jl")
+include("datasets_desc_dict.jl")
+# include("datasets_parse.jl") # can be run only once to process and export datasets
+include("datasets_import.jl")
+include("starting_location.jl")
+include("agent_profile.jl")
+include("destination_location.jl")
 include("additional_activity.jl")
-include("routingModule.jl")
+include("routing_module.jl")
 
 
 

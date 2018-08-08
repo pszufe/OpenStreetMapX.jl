@@ -72,15 +72,15 @@ function findroutes_waypoints(pointA, pointB, mapD, network, routingMode, additi
     waypoints = additional_activity
     
     if length(waypoints.before) == 0 && length(waypoints.after) == 0
-        r = findRoutes(pointA, pointB, mapD, network, routingMode)
+        r = findroutes(pointA, pointB, mapD, network, routingMode)
         
     # before and after waypoints - route: pointA -> before -> pointB -> after -> pointA 
     elseif length(waypoints.before) > 0 && length(waypoints.after) > 0
-        r  = findRoutes(pointA, waypoints.point_before, mapD, network, routingMode)
+        r  = findroutes(pointA, waypoints.point_before, mapD, network, routingMode)
 
-        r1 = findRoutes(waypoints.point_before, pointB, mapD, network, routingMode)
-        r2 = findRoutes(pointB, waypoints.point_after, mapD, network, routingMode)
-        r3 = findRoutes(waypoints.point_after, pointA, mapD, network, routingMode)
+        r1 = findroutes(waypoints.point_before, pointB, mapD, network, routingMode)
+        r2 = findroutes(pointB, waypoints.point_after, mapD, network, routingMode)
+        r3 = findroutes(waypoints.point_after, pointA, mapD, network, routingMode)
         
         append!(r.route, append!(r1.route[2:end], append!(r2.route[2:end], r3.route[2:end])))
         r.distance += r1.distance + r2.distance + r3.distance
@@ -88,10 +88,10 @@ function findroutes_waypoints(pointA, pointB, mapD, network, routingMode, additi
         
     # only before waypoint - route: pointA -> before -> pointB -> pointA 
     elseif length(waypoints.before) > 0 && length(waypoints.after) == 0
-        r  = findRoutes(pointA, waypoints.point_before, mapD, network, routingMode)
+        r  = findroutes(pointA, waypoints.point_before, mapD, network, routingMode)
 
-        r1 = findRoutes(waypoints.point_before, pointB, mapD, network, routingMode)
-        r2 = findRoutes(pointB, pointA, mapD, network, routingMode)
+        r1 = findroutes(waypoints.point_before, pointB, mapD, network, routingMode)
+        r2 = findroutes(pointB, pointA, mapD, network, routingMode)
         
         append!(r.route, append!(r1.route[2:end], r2.route[2:end]))
         r.distance += r1.distance + r2.distance
@@ -99,10 +99,10 @@ function findroutes_waypoints(pointA, pointB, mapD, network, routingMode, additi
          
     # only after waypoint - route: pointA - pointB - after - pointA     
     elseif length(waypoints.before) == 0 && length(waypoints.after) > 0
-        r = findRoutes(pointA, pointB, mapD, network, routingMode)
+        r  = findroutes(pointA, pointB, mapD, network, routingMode)
 
-        r1 = findRoutes(pointB, waypoints.point_after, mapD, network, routingMode)
-        r2 = findRoutes(waypoints.point_after, pointA, mapD, network, routingMode)
+        r1 = findroutes(pointB, waypoints.point_after, mapD, network, routingMode)
+        r2 = findroutes(waypoints.point_after, pointA, mapD, network, routingMode)
         
         append!(r.route, append!(r1.route[2:end], r2.route[2:end]))
         r.distance += r1.distance + r2.distance

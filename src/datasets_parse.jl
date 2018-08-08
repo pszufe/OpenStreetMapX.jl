@@ -13,7 +13,7 @@ This module parses and exports datasets - can be run only once
 # using CSV, DataFrames, DataFramesMeta, FreqTables, Query, Shapefile, StatsBase
 # files_list = readdir(path_datasets)
 
-# include("datasetsDescDict.jl")
+# include("datasets_desc_dict.jl")
 
 
 function replaceMissings(col, replacement)

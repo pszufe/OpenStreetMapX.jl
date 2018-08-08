@@ -40,9 +40,10 @@ a suitable school category (child care facility/pre school/school) for children 
 * `agent_profile` : agent demographic profile::DemoProfile with city_region, children_number_of and children_age
 * `DA_home` : DA_home unique id selected for an agent
 * `df_AdditionalActivity`  : a dataframe initially empty for each agent created in additional_activity_selector
+* `df_schools`  : schools dataframe along with its location and category 
 * `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
 * `dict_schoolcategory`  : dictionary mapping children age with school category
-* `df_schools`  : schools dataframe along with its location and category 
+
              
 **Assumptions**
 - 50% of agents with kids living in the downtown drive children do school
@@ -52,8 +53,8 @@ a suitable school category (child care facility/pre school/school) for children 
 - kids aged 0-3 go to Child Care Facility, kids aged 4-5 go to Pre School, kids aged 6-14 go to School
 - kids go to Child Care Facility/Pre School/School located nearest their home.
 """
-function additional_activity_schools(agent_profile, DA_home, dict_df_DAcentroids, df_AdditionalActivity, 
-                                     dict_schoolcategory, df_schools)
+function additional_activity_schools(agent_profile, DA_home, df_AdditionalActivity, df_schools, 
+									 dict_df_DAcentroids, dict_schoolcategory)
 
     if agent_profile.children_number_of > 0
     

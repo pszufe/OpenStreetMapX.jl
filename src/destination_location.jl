@@ -39,9 +39,9 @@ DA_work selected by randomely choosing the company (business) where agent work b
 * distance between DA_home and business location 
 * agent_age-based weigths
 * company size weights represented by randomely estimated number of employees
-"""
 
-"""
+
+
 Industry dictionary for agent_profile:
 * `key` : industry from df_demostat
 * `value` : industry from df_business
