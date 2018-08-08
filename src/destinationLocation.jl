@@ -94,12 +94,12 @@ for an agent (in agent_profile.work_industry)
 * `df_business[:ICLS_DESC]` - "Number of employees" intervals
 * `dict_df_demostat[DA_home][1, :ECYHTAAVG]` - "Average Age Of Total Household Population"
 
-**Assumptions based on agent demographic profile**
-* agents work in the business in accordance with their work_industry
-* agents living in the city centre tend to work near home - calculated based on the quantiles 
+**Assumptions based on agent demographic profile
+- agents work in the business in accordance with their work_industry
+- agents living in the city centre tend to work near home - calculated based on the quantiles 
 of the distance array between home location and industry-related businesses locations
-* older agents and women-agents tend to work rather closer to home 
-* exact number of employess in businesses is estimated in each iteration based on "Number of employees" intervals
+- older agents and women-agents tend to work rather closer to home 
+- exact number of employess in businesses is estimated in each iteration based on "Number of employees" intervals
 """
 function destination_location_selectorDP(agent_profile, DA_home, df_business, dict_df_DAcentroids, 
                                          dict_df_demostat, dict_industry, q_centre, q_other)::DA_id_coord
