@@ -16,7 +16,7 @@ include("map_snippet.jl")
 startLocation = start_location_selector(dict_df_DAcentroids, df_demostat_weight_var, weight_var)
 DA_home, pointA = startLocation.DA_id, startLocation.coordinates
 
-agent_profile = demographic_profile_generator(DA_home, dict_df_demostat, dict_df_DAcentroids, city_centre_ENU, 
+agent_profile = demographic_profile_generator(city_centre_ENU, DA_home, dict_df_DAcentroids, dict_df_demostat,
                                               max_distance_from_cc); println(agent_profile)
 
 destinationLocation = destination_location_selectorJM(DA_home, dict_df_DAcentroids, dict_df_hwflows)
