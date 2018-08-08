@@ -13,6 +13,9 @@ end
 
 
 
+###################################
+# schools 
+
 """
 Dictionary mapping children age with school category
 * `key` : children age intervals from df_demostat and agent profile
@@ -104,6 +107,9 @@ end
 
 
 
+###################################
+# popular stores 
+
 """
 Additional activity selector - popular stores
 
@@ -184,6 +190,9 @@ function additional_activity_popularstores(agent_profile, DA_home, DA_work,
 end
 
 
+
+###################################
+# shopping centres 
 
 """
 Additional activity selector - shopping centres
@@ -277,6 +286,9 @@ end
 
 
 
+###################################
+# recreation complexes 
+
 """
 Additional activity selector - recreation complexes
 
@@ -366,6 +378,9 @@ function additional_activity_recreation(agent_profile, DA_home, DA_work,
 end
 
 
+
+###################################
+# additional activity selector
 
 """
 Additional activity selector
