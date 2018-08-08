@@ -102,7 +102,7 @@ of the distance array between home location and industry-related businesses loca
 * exact number of employess in businesses is estimated in each iteration based on "Number of employees" intervals
 """
 function destination_location_selectorDP(agent_profile, DA_home, df_business, dict_df_DAcentroids, 
-                                       dict_df_demostat, dict_industry, q_centre, q_other)::DA_id_coord
+                                         dict_df_demostat, dict_industry, q_centre, q_other)::DA_id_coord
     
     # industry assumption:
     df_business_temp = @where(df_business, findin(:ICLS_DESC, Set(dict_industry[agent_profile.work_industry])))
