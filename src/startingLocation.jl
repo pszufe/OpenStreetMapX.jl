@@ -1,6 +1,6 @@
 
 ###################################
-# Start Location Selector
+# Start location selector
 ###################################
 
 
@@ -10,6 +10,8 @@ mutable struct DA_id_coord
 end
 
 """
+Start location selector
+
 Selects starting DA_home for an agent randomly weighted by weight_var
     
 **Arguments**
