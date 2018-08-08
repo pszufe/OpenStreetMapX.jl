@@ -28,6 +28,8 @@ end
 # Fastest, shortest routes from pointA to pointB
 
 """
+Find routes 
+
 Returns fastest/shortest route between two points
     
 **Arguments**
@@ -53,6 +55,8 @@ end
 # Fastest, shortest routes with waypoints
 
 """
+Find routes with waypoints
+
 Returns fastest/shortest route between two points and waypoints
     
 **Arguments**
@@ -124,6 +128,8 @@ function changeCoordToString(point)::String
 end
 
 """
+Google maps route
+
 Requests google maps API for directions between points and parses the response into OSM nodes
     
 **Arguments**
@@ -222,9 +228,11 @@ end
 
 
 ###################################
-# Route Module Selector
+# Route module selector
 
 """
+Route module selector
+
 Selects routing mode from the following options: fastest route, shortest route, googlemaps route and returns a function
     
 **Arguments**
