@@ -13,16 +13,16 @@ include("map_snippet.jl")
 
 
 
-startLocation = startLocationSelector(dict_df_DAcentroids, df_demostat_weight_var, weight_var)
+startLocation = start_location_selector(dict_df_DAcentroids, df_demostat_weight_var, weight_var)
 DA_home, pointA = startLocation.DA_id, startLocation.coordinates
 
-agent_profile = demographicProfileGenerator(DA_home, dict_df_demostat, dict_df_DAcentroids, city_centre_ENU, 
+agent_profile = demographic_profile_generator(DA_home, dict_df_demostat, dict_df_DAcentroids, city_centre_ENU, 
                                             max_distance_from_cc); println(agent_profile)
 
-destinationLocation = destinationLocationSelectorJM(DA_home, dict_df_DAcentroids, dict_df_hwflows)
+destinationLocation = destination_location_selectorJM(DA_home, dict_df_DAcentroids, dict_df_hwflows)
 DA_work, pointB = destinationLocation.DA_id, destinationLocation.coordinates
 
-#destinationLocation = destinationLocationSelectorDP(agent_profile, DA_home, df_business, dict_df_DAcentroids, 
+#destinationLocation = destination_location_selectorDP(agent_profile, DA_home, df_business, dict_df_DAcentroids, 
 #                                                    dict_df_demostat, dict_industry, q_centre, q_other)
 #DA_work, pointB = destinationLocation.DA_id, destinationLocation.coordinates
 
@@ -37,7 +37,7 @@ if dist < 2000
 end
 =#
 
-routingMode = routingModuleSelector(agent_profile, DA_home, DA_work, dict_df_DAcentroids)
+routingMode = route_module_selector(agent_profile, DA_home, DA_work, dict_df_DAcentroids)
 
 additional_activity = additional_activity_selector(routingMode, agent_profile, DA_home, DA_work,
     # add waypoints selection based on route time/distance optimization
@@ -58,10 +58,10 @@ additional_activity = additional_activity_selector(routingMode, agent_profile, D
 p = :none
 p = plotMap(nodes, bounds, roadways = roadways, roadwayStyle = OpenStreetMap.LAYER_STANDARD)
 
-shortest = findRoutesWithWaypoints(pointA, pointB, WinnipegMap, network, shortestRoute, additional_activity)
+shortest = findroutes_waypoints(pointA, pointB, WinnipegMap, network, shortestRoute, additional_activity)
 addRoute!(p, nodes, shortest.route, routeColor = 0x000053)
 
-fastest = findRoutesWithWaypoints(pointA, pointB, WinnipegMap, network, fastestRoute, additional_activity)
+fastest = findroutes_waypoints(pointA, pointB, WinnipegMap, network, fastestRoute, additional_activity)
 addRoute!(p, nodes, fastest.route, routeColor = 0xFF0000)
 
 googlemaps = googlemapsroute(pointA, pointB, WinnipegMap, network, shortestRoute, now(), additional_activity)
