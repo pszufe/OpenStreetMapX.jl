@@ -3,6 +3,9 @@
 # Datasets parsing
 ###################################
 
+"""
+This module parses and exports datasets - can be run only once
+"""
 
 # cd("C:\\Users\\Admin\\Documents\\OSMsim.jl\\src")
 # path_datasets = "D:\\project ea\\data for simulation"
