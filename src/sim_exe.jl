@@ -58,7 +58,6 @@ for i in 1:10
                                           p_recreation_poorer, p_recreation_richer, poor_rich_limit)
 
     if routingMode == googlemapsroute
-        continue
         r = googlemapsroute(pointA, pointB, WinnipegMap, network, shortestRoute, now(), additional_activity)
         addRoute!(p, nodes, r.route, routeColor = 0xcc00ff)
         
