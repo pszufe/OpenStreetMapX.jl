@@ -32,11 +32,15 @@ Please use the tkwidget.jl [supplied in this project](https://github.com/pszufe/
 
 ## TODOs
 
-1. Buffering - if the pair DA_home and DA_work has already been secelected.
-2. Add waypoints for additional activities - before and after work and optimize tha path.
-3. Calculate stats for each given intersection - agentProfileAgregator
+1. Buffering - if the pair DA_home and DA_work has already been selected.
+2. Waypoints selection based on route optimization
+3. Additional activity probabilities put into Dict and tunned
+4. Agent profile aggregator
+5. Function select_starting_location in python
+6. Calculate stats for each given intersection - agentProfileAgregator
    a) DA distribution   (simplified)
    b) demographic distribution (if demographic profile determines moving patterns)
+   c) crosstabs
    
 ## 
 
