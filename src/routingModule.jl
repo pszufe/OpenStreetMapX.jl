@@ -11,7 +11,7 @@ mutable struct RouteData
 end
 
 
-function createmap(mapD)
+function create_map(mapD)
     #crop!(mapD, cropRelations = false)
     nodes = ENU(mapD.nodes, center(mapD.bounds))
     bounds = ENU(mapD.bounds, center(mapD.bounds))
