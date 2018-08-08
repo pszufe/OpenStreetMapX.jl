@@ -11,7 +11,7 @@ mutable struct RouteData
 end
 
 
-function createMap(mapD)
+function createmap(mapD)
     #crop!(mapD, cropRelations = false)
     nodes = ENU(mapD.nodes, center(mapD.bounds))
     bounds = ENU(mapD.bounds, center(mapD.bounds))
@@ -26,8 +26,18 @@ end
 
 ###################################
 # Fastest, shortest routes from pointA to pointB
-function findRoutes(pointA, pointB, mapD, network, routingMode)::RouteData
-    # routingMode = fastestRoute/shortestRoute
+
+"""
+Returns fastest/shortest route between two points
+    
+**Arguments**
+* `pointA` : start point - DA_home
+* `pointB` : end point - DA_work
+* `mapD` : OpenStreetMap.OSMData object representing entire map
+* `network` : OpenStreetMap.Network object representing road graph
+* `routingMode` : routing functon - fastestRoute/shortestRoute
+"""
+function findroutes(pointA, pointB, mapD, network, routingMode)::RouteData
     
     pointA_node = nearestNode(nodes, ENU(LLA(pointA[1],pointA[2]), center(mapD.bounds)), network)
     pointB_node = nearestNode(nodes, ENU(LLA(pointB[1],pointB[2]), center(mapD.bounds)), network)
@@ -40,8 +50,20 @@ end
 
 
 ###################################
-# Fastest, shortest routes with Waypoints
-function findRoutesWithWaypoints(pointA, pointB, mapD, network, routingMode, additional_activity)
+# Fastest, shortest routes with waypoints
+
+"""
+Returns fastest/shortest route between two points and waypoints
+    
+**Arguments**
+* `pointA` : start point - DA_home
+* `pointB` : end point - DA_work
+* `mapD` : OpenStreetMap.OSMData object representing entire map
+* `network` : OpenStreetMap.Network object representing road graph
+* `routingMode` : routing functon - fastestRoute/shortestRoute
+* `additional_activity` : waypoints - maximum one before work point and maximum one after work point 
+"""
+function findroutes_waypoints(pointA, pointB, mapD, network, routingMode, additional_activity)
 
     waypoints = additional_activity
     
@@ -102,7 +124,7 @@ function changeCoordToString(point)::String
 end
 
 """
-Requests google maps API for a directions between points and parses the response into OSM nodes
+Requests google maps API for directions between points and parses the response into OSM nodes
     
 **Arguments**
 * `pointA` : start point - DA_home
@@ -111,7 +133,7 @@ Requests google maps API for a directions between points and parses the response
 * `network` : OpenStreetMap.Network object representing road graph
 * `routingMatchMode` : the way google API nodes are mapped with OSM nodes - fastestRoute/shortestRoute
 * `arrival_dt` : arrival time in DateTime format (e.g. DateTime(2018,8,20,9,0) ) 
-* `waypoints` : maximum one before work point and maximum one after work point 
+* `additional_activity` : waypoints - maximum one before work point and maximum one after work point 
    (google accepts up to 8 waipoints per request)
 """
 function googlemapsroute(pointA, pointB, mapD, network, routingMatchMode, arrival_dt, additional_activity)::RouteData
@@ -202,7 +224,17 @@ end
 
 ###################################
 # Route Module Selector
-function routingModuleSelector(agent_profile, DA_home, DA_work, dict_df_DAcentroids)
+
+"""
+Selects routing mode from the following options: fastest route, shortest route, googlemaps route and returns a function
+    
+**Arguments**
+* `agent_profile` : agent_profile along with age
+* `DA_home` : DA_home unique id selected for an agent
+* `DA_work` : DA_work unique id selected for an agent
+* `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
+"""
+function route_module_selector(agent_profile, DA_home, DA_work, dict_df_DAcentroids)
     
     dist =  distance(dict_df_DAcentroids[DA_home][1, :ENU], dict_df_DAcentroids[DA_work][1, :ENU])
     
