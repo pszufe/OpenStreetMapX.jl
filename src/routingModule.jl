@@ -138,7 +138,6 @@ Requests google maps API for directions between points and parses the response i
 """
 function googlemapsroute(pointA, pointB, mapD, network, routingMatchMode, arrival_dt, additional_activity)::RouteData
 
-
     # time in seconds since midnight, January 1, 1970 UTC; Winnipeg = UTC - 5h (6h in winter time)
     arrival_time = round(Int, Dates.value(arrival_dt + Dates.Hour(5) - DateTime(1970,1,1,0,0,0))/1000)
     
