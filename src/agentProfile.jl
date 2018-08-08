@@ -4,22 +4,6 @@
 ###################################
 
 
-"""
-Demographic profile generator
-
-Creates socio-demographic profile of an agent based on demostats distributions per DA
-    
-**Arguments**
-* `city_centre_ENU` : city centre ENU coordintes
-* `DA_home` : DA_home unique id selected for an agent
-* `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
-* `dict_df_demostat` : dictionary of dataframes with population statistics for each DA
-* `max_distance_from_cc` : maximum distance from DA_home to city_centre to assume DA_home is in the downtown
-
-Function, in case of any adjustments, should be modified within its body altogether with DemoProfile struct
-"""
-
-# agent demographic profile generator
 mutable struct DemoProfile
     DA_home::Int
     city_region::String
@@ -35,6 +19,22 @@ mutable struct DemoProfile
     imigrant_since::String
 end
 
+
+
+"""
+Demographic profile generator
+
+Creates socio-demographic profile of an agent based on demostats distributions per DA
+    
+**Arguments**
+* `city_centre_ENU` : city centre ENU coordintes
+* `DA_home` : DA_home unique id selected for an agent
+* `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
+* `dict_df_demostat` : dictionary of dataframes with population statistics for each DA
+* `max_distance_from_cc` : maximum distance from DA_home to city_centre to assume DA_home is in the downtown
+
+Function, in case of any adjustments, should be modified within its body altogether with DemoProfile struct
+"""
 
 # work_industry
 dict_work_industry = Dict(
