@@ -6,15 +6,17 @@
 
 ###################################
 ## Selection based on Journey Matrix 
-function destinationLocationSelectorJM(DA_home, dict_df_DAcentroids, dict_df_hwflows)::DA_id_coord
+
+"""
+Selects destination DA_work for an agent randomly weighted by Pij Journey Matrix
     
-    # Selects destination DA_work for an agent randomly weighted by Pij Journey Matrix
+**Arguments**
+* `DA_home` : DA_home unique id selected for an agent
+* `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
+* `dict_df_hwflows` : dataframe representing Pij Journej Matrix with *FlowVolume* from *DA_home* to *DA_work*
+"""
+function destination_location_selectorJM(DA_home, dict_df_DAcentroids, dict_df_hwflows)::DA_id_coord
     
-    # Args:
-    # - DA_home - DA_home unique id selected for an agent
-    # - dict_df_DAcentroids - dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
-    # - dict_df_hwflows - dataframe representing Pij Journej Matrix with *FlowVolume* from *DA_home* to *DA_work*
-   
     df_hwflows = dict_df_hwflows[DA_home]
     DA_work = sample(df_hwflows[:DA_work], fweights(df_hwflows[:FlowVolume]))
     point_DA_work = dict_df_DAcentroids[DA_work][1, :LATITUDE], 
@@ -28,17 +30,20 @@ end
 ###################################
 ## Selection based on agent's Demographic Profile
 
-# DA_work selected by randomely choosing the company (business) where agent work based on 
-# - agent work_industry profile
-# - distance between DA_home and the city centre
-# - distance between DA_home and business location 
-# - agent_age-based weigths
-# - company size weights represented by randomely estimated number of employees
+"""
+DA_work selected by randomely choosing the company (business) where agent work based on:
+* agent work_industry profile
+* distance between DA_home and the city centre
+* distance between DA_home and business location 
+* agent_age-based weigths
+* company size weights represented by randomely estimated number of employees
+"""
 
-
-# Industry dictionary for agent_profile:
-# - key = industry from dfdemostat
-# - value = industry from df_business
+"""
+Industry dictionary for agent_profile:
+* `key` : industry from df_demostat
+* `value` : industry from df_business
+"""
 dict_industry = Dict(
     "Manufacturing"                       => ["Manufacturing", "Unassigned"], 
     "Transportation And Warehousing"      => ["Transportation And Warehousing", "Unassigned"], 
@@ -71,33 +76,33 @@ dict_industry = Dict(
 )
 
 
-function destinationLocationSelectorDP(agent_profile, DA_home, df_business, dict_df_DAcentroids, 
+"""
+Selects destination DA_work for an agent by randomly choosing the company he works in
+    
+**Arguments**
+* `agent_profile` : agent demographic profile::DemoProfile with city_region, work_industy and age
+* `DA_home` : DA_home unique id selected for an agent
+* `df_business` : business dataframe along with its location, industry and estimated number of employees
+* `dict_df_DAcentroids` : dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
+* `dict_df_demostat` : dictionary of dataframes with population statistics for each DA
+* `dict_industry` : dictionary matching industry demographic data from df_business with the ones selected 
+for an agent (in agent_profile.work_industry)
+* `q_centre` : max quantile of the home - business distance for agents living in the downtown 
+* `q_other` : max quantile of the home - business distance for agents not living in the downtown 
+
+**Other objects**
+* `df_business[:ICLS_DESC]` - "Number of employees" intervals
+* `dict_df_demostat[DA_home][1, :ECYHTAAVG]` - "Average Age Of Total Household Population"
+
+**Assumptions based on agent demographic profile**
+* agents work in the business in accordance with their work_industry
+* agents living in the city centre tend to work near home - calculated based on the quantiles 
+of the distance array between home location and industry-related businesses locations
+* older agents and women-agents tend to work rather closer to home 
+* exact number of employess in businesses is estimated in each iteration based on "Number of employees" intervals
+"""
+function destination_location_selectorDP(agent_profile, DA_home, df_business, dict_df_DAcentroids, 
                                        dict_df_demostat, dict_industry, q_centre, q_other)::DA_id_coord
-    
-    # Selects destination DA_work for an agent by randomly choosing the company he works in
-    
-    # Assumptions based on agent demographic profile:
-    # - agents work in the business in accordance with their work_industry
-    # - agents living in the city centre tend to work near home - calculated based on the quantiles 
-    # of the distance array between home location and industry-related businesses locations
-    # - older agents and women-agents tend to work rather closer to home 
-    
-    # Args:
-    # - agent_profile - agent demographic profile::DemoProfile with city_region, work_industy and age
-    # - DA_home - DA_home unique id selected for an agent
-    # - df_business - business dataframe along with its location, industry and estimated number of employees
-    # - dict_df_DAcentroids - dictionary of dataframes with :LATITUDE and :LONGITUDE for each DA
-    # - dict_df_demostat - dictionary of dataframes with population statistics for each DA
-    # - dict_industry - dictionary matching industry demographic data from df_business with
-    # the ones selected for an agent (in agent_profile.work_industry)
-    # - q_centre - max quantile of the home - business distance for agents living in the downtown 
-    # - q_other - max quantile of the home - business distance for agents not living in the downtown 
- 
-    # Other objects:
-    # df_business[:ICLS_DESC] - "Number of employees" intervals
-    # dict_df_demostat[DA_home][1, :ECYHTAAVG] - "Average Age Of Total Household Population"
-    
-    # Function, in case of any adjustments, should be modified within its body
     
     # industry assumption:
     df_business_temp = @where(df_business, findin(:ICLS_DESC, Set(dict_industry[agent_profile.work_industry])))
