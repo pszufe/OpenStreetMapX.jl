@@ -10,13 +10,14 @@ export center, inBounds, onBounds, boundaryPoint #Functions for map bounds
 export ECEF, LLA, ENU #Conversion functions
 export parseOSM #parsing XML file
 export extractHighways, filterHighways #Highways extraction 
-export filterRoadways, classifyRoadways,  filterWalkways, classifyWalkways, filterCycleways, classifyCycleways #Filtering and classification of cars, cycles and pedestrian Highways
+export filterRoadways, classifyRoadways,  filterWalkways, classifyWalkways, filterCycleways, classifyCycleways,fillterGraphFeatures #Filtering and classification of cars, cycles and pedestrian Highways
 export extractBuildings, filterBuildings, classifyBuildings #Building extraction, filtering and classification 
 export filterFeatures, filterFeatures!, classifyFeatures #Features filtering and classification
 export crop! #crop map elements
 export nearestNode, nodesWithinRange, centroid #Nodes functions
 export findIntersections, findSegments #Get intersections or segments of the road
 export createGraph #Create a routing network
+export featuresToGraph, findOptimalWaypointApprox, findOptimalWaypointExact
 export findRoute, shortestRoute, fastestRoute #Routing funcions
 export nodesWithinWeights, nodesWithinDrivingDistance, nodesWithinDrivingTime #Find nodes within specified range
 export plotMap, addRoute! #Plotting

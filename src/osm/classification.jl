@@ -134,3 +134,13 @@ function filterFeatures!(osmdata::OpenStreetMap.OSMData, classes::Dict{String, I
 end
 
 classifyFeatures(features::Dict{Int,Tuple{String,String}}, classes::Dict{String, Int} = OpenStreetMap.FEATURE_CLASSES) = Dict{Int,Int}(key =>  classes[feature[1]] for (key, feature) in features if haskey(classes, feature[1]))
+
+### filter features in graph ###
+
+function fillterGraphFeatures(features::Dict{Int,Tuple{String,String}}, graphFeatures::Dict{Int,Int},classes::Dict{String,Int},class::String)
+    if !haskey(classes,class)
+        error("class not in classes")
+    end
+    level = classes[class]
+    Dict{Int,Int}(key => node for (key,node) in graphFeatures if classes[features[key][1]] == level) 
+end

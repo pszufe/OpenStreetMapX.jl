@@ -42,6 +42,23 @@ function getDistances{T<:Union{ENU,ECEF}}(nodes::Dict{Int,T},edges::Array{Tuple{
     return distances
 end
 
+####################################################
+###	For Each Feature Find the Nearest Graph Node ###
+####################################################
+
+function featuresToGraph{T<:(Union{ENU,ECEF})}(nodes::Dict{Int,T}, features::Dict{Int,Tuple{String,String}}, network::OpenStreetMap.Network)
+    features_to_nodes = Dict{Int,Int}()
+    sizehint!(features_to_nodes,length(features))
+    for (key,value) in features
+        if !haskey(network.v,key)
+            features_to_nodes[key] = nearestNode(nodes,nodes[key],network)
+        else
+            features_to_nodes[key] = key
+        end
+    end
+    return features_to_nodes 
+end
+
 ############################
 ### Create Network Graph ###
 ############################
@@ -169,6 +186,22 @@ function findRoute(network::OpenStreetMap.Network, node0::Int, node1::Int, weigh
     return result
 end
 
+
+#########################################################
+### Find Route Connecting 3 Points with Given Weights ###
+#########################################################
+
+function findRoute(network::OpenStreetMap.Network, node0::Int, node1::Int, node2::Int, weights::SparseMatrixCSC{Float64,Int64}, getDistance::Bool = false, getTime::Bool = false)
+	result = Any[]
+	route1 = findRoute(network, node0, node1, weights, getDistance, getTime)
+	route2 = findRoute(network, node1, node2, weights, getDistance, getTime)
+	push!(result,vcat(route1[1],route2[1]))
+	for i = 2:length(route1)
+		push!(result,route1[i] + route2[i])
+	end
+	return result
+end
+
 ###########################
 ### Find Shortest Route ###
 ###########################
@@ -178,14 +211,71 @@ function shortestRoute(network::OpenStreetMap.Network, node0::Int, node1::Int)
 	return routeNodes, distance, routeTime
 end
 
+##################################################################
+### Find Shortest Route Connecting 3 Points with Given Weights ###
+##################################################################
+
+function shortestRoute(network::OpenStreetMap.Network, node0::Int, node1::Int, node2::Int)
+	routeNodes, distance, routeTime = findRoute(network,node0,node1, node2, network.w,false,true)
+	return routeNodes, distance, routeTime
+end
+
 ##########################
-### Find Fastets Route ###
+### Find Fastest Route ###
 ##########################
 
 function fastestRoute(network::OpenStreetMap.Network, node0::Int, node1::Int, classSpeeds=OpenStreetMap.SPEED_ROADS_URBAN)
 	w = createWeightsMatrix(network,networkTravelTimes(network, classSpeeds))
 	routeNodes, routeTime, distance = findRoute(network,node0,node1,w,true, false)
 	return routeNodes, distance, routeTime
+end
+
+#################################################################
+### Find Fastest Route Connecting 3 Points with Given Weights ###
+#################################################################
+
+function fastestRoute(network::OpenStreetMap.Network, node0::Int, node1::Int, node2::Int, classSpeeds=OpenStreetMap.SPEED_ROADS_URBAN)
+	w = createWeightsMatrix(network,networkTravelTimes(network, classSpeeds))
+	routeNodes, routeTime, distance = findRoute(network,node0,node1, node2, w,true, false)
+	return routeNodes, distance, routeTime
+end
+
+###########################################
+### Find  waypoint minimizing the route ###
+###########################################
+
+### Approximate solution ###
+
+function findOptimalWaypointApprox(network::OpenStreetMap.Network, weights::SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
+    dists_start_waypoint = LightGraphs.dijkstra_shortest_paths(network.g, network.v[node0], weights).dists
+    dists_waypoint_fin = LightGraphs.dijkstra_shortest_paths(network.g, network.v[node1], weights).dists
+    node_id = NaN
+    min_dist = Inf
+    for (key,value) in waypoints
+        dist  = dists_start_waypoint[network.v[value]] + dists_waypoint_fin[network.v[value]] 
+        if dist < min_dist
+            min_dist = dist
+            node_id = value
+        end
+    end
+    return node_id
+end
+
+### Exact solution ###
+
+function findOptimalWaypointExact(network::OpenStreetMap.Network, weights::SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
+    dists_start_waypoint = LightGraphs.dijkstra_shortest_paths(network.g, network.v[node0], weights).dists
+    node_id = NaN
+    min_dist = Inf
+    for (key,value) in waypoints
+        dist_to_fin = LightGraphs.dijkstra_shortest_paths(network.g, network.v[value], weights).dists[network.v[node1]]
+        dist  = dists_start_waypoint[network.v[value]] + dist_to_fin
+        if dist < min_dist
+            min_dist = dist
+            node_id = value
+        end
+    end
+    return node_id
 end
 
 ########################################################################
