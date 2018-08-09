@@ -5,7 +5,7 @@
 # there's not an unambiguous conversion, but for now,
 # returning the minimum bounds that contain all points contained
 # by the input bounds
-function ENU(bounds::Bounds{LLA}, lla_ref::LLA = center(bounds), datum::Ellipsoid = WGS84)
+function ENU(bounds::Bounds{LLA}, lla_ref::LLA = OpenStreetMap.center(bounds), datum::Ellipsoid = WGS84)
 
     max_x = max_y = -Inf
     min_x = min_y = Inf

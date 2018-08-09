@@ -2,7 +2,7 @@ module OpenStreetMap
 
 using LibExpat
 using LightGraphs
-using Winston
+using Plots
 
 export WGS84, OSGB36, NAD27 # Coordinate systems constants
 export distance, getX, getY, getZ  # Auxiliary functions to calculate distances and get coordinates of points

@@ -13,8 +13,8 @@ end
 
 function create_map(mapD)
     #crop!(mapD, cropRelations = false)
-    nodes = ENU(mapD.nodes, center(mapD.bounds))
-    bounds = ENU(mapD.bounds, center(mapD.bounds))
+    nodes = ENU(mapD.nodes, OpenStreetMap.center(mapD.bounds))
+    bounds = ENU(mapD.bounds, OpenStreetMap.center(mapD.bounds))
     highways = filterHighways(extractHighways(mapD.ways))
     roadways = filterRoadways(highways, levels = Set(1:6))
     intersections = findIntersections(roadways)
@@ -41,8 +41,8 @@ Returns fastest/shortest route between two points
 """
 function findroutes(pointA, pointB, mapD, network, routingMode)::RouteData
     
-    pointA_node = nearestNode(nodes, ENU(LLA(pointA[1],pointA[2]), center(mapD.bounds)), network)
-    pointB_node = nearestNode(nodes, ENU(LLA(pointB[1],pointB[2]), center(mapD.bounds)), network)
+    pointA_node = nearestNode(nodes, ENU(LLA(pointA[1],pointA[2]), OpenStreetMap.center(mapD.bounds)), network)
+    pointB_node = nearestNode(nodes, ENU(LLA(pointB[1],pointB[2]), OpenStreetMap.center(mapD.bounds)), network)
 
     route, distance, time = routingMode(network, pointA_node, pointB_node)
     
@@ -204,8 +204,8 @@ function googlemapsroute(pointA, pointB, mapD, network, routingMatchMode, arriva
             end_lat   = response[k]["steps"][i]["end_location"]["lat"]
             end_lon   = response[k]["steps"][i]["end_location"]["lng"]    
 
-            start_osmnode = nearestNode(nodes, ENU(LLA(start_lat, start_lon), center(mapD.bounds)), network)
-            end_osmnode   = nearestNode(nodes, ENU(LLA(end_lat, end_lon), center(mapD.bounds)), network)
+            start_osmnode = nearestNode(nodes, ENU(LLA(start_lat, start_lon), OpenStreetMap.center(mapD.bounds)), network)
+            end_osmnode   = nearestNode(nodes, ENU(LLA(end_lat, end_lon), OpenStreetMap.center(mapD.bounds)), network)
 
             if start_osmnode != end_osmnode
                 r = routingMode(network, start_osmnode, end_osmnode)

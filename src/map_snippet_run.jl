@@ -16,13 +16,14 @@ include("map_snippet.jl")
 startLocation = start_location_selector(dict_df_DAcentroids, df_demostat_weight_var, weight_var)
 DA_home, pointA = startLocation.DA_id, startLocation.coordinates
 
+
 agent_profile = demographic_profile_generator(city_centre_ENU, DA_home, dict_df_DAcentroids, dict_df_demostat,
                                               max_distance_from_cc); println(agent_profile)
 
 destinationLocation = destination_location_selectorJM(DA_home, dict_df_DAcentroids, dict_df_hwflows)
 DA_work, pointB = destinationLocation.DA_id, destinationLocation.coordinates
 
-#destinationLocation = destination_location_selectorDP(agent_profile, DA_home, df_business, dict_df_DAcentroids, 
+#destinationLocation = destination_location_selectorDP(agent_profile, DA_home, df_business, dict_df_DAcentroids,
 #                                                    dict_df_demostat, dict_industry, q_centre, q_other)
 #DA_work, pointB = destinationLocation.DA_id, destinationLocation.coordinates
 
@@ -31,7 +32,7 @@ dist = distance(dict_df_DAcentroids[DA_home][1, :ENU], dict_df_DAcentroids[DA_wo
 #=
 ## Buffering
 ## Condition
-if dist < 2000 
+if dist < 2000
     println("Distance between pointA and pointB is less than 2000")
     continue
 end
@@ -39,13 +40,13 @@ end
 
 routingMode = route_module_selector(agent_profile, DA_home, DA_work, dict_df_DAcentroids)
 
-additional_activity = additional_activity_selector(routingMode, agent_profile, DA_home, DA_work, 
+additional_activity = additional_activity_selector(routingMode, agent_profile, DA_home, DA_work,
                                       df_recreationComplex, df_schools, df_shopping,
-                                      dict_df_business_popstores, dict_df_DAcentroids, dict_schoolcategory, 
-                                      distance_radius_H, distance_radius_W, 
+                                      dict_df_business_popstores, dict_df_DAcentroids, dict_schoolcategory,
+                                      distance_radius_H, distance_radius_W,
                                       p_shoppingcentre, p_shoppingMale,
-                                      p_drugstore, p_petrol_station, p_supermarket, p_convinience, 
-                                      p_other_retail, p_grocery, p_discount, p_mass_merchandise, 
+                                      p_drugstore, p_petrol_station, p_supermarket, p_convinience,
+                                      p_other_retail, p_grocery, p_discount, p_mass_merchandise,
                                       p_recreation_before, p_recreation_F, p_recreation_M,
                                       p_recreation_younger, p_recreation_older, young_old_limit,
                                       p_recreation_poorer, p_recreation_richer, poor_rich_limit)
@@ -93,10 +94,10 @@ node_id = shortest.route
 
 agentProfileStatsAgregator = function(node_id) # :: DemoProfileStats
     if haskey(DemoProfileStats, node_id)
-        DemoProfileStats[node_id][1] += 1 # + aggregowanie zmiennych 
+        DemoProfileStats[node_id][1] += 1 # + aggregowanie zmiennych
     end
     # keys = nodes_id, values = array/df? pointA, pointB, before, after, ...
-    
-    
+
+
 end
 =#

@@ -53,7 +53,7 @@ Converts a vector of LLA coordinates points to ENU format
 * `mapD` : OpenStreetMap.OSMData object representing entire map
 """
 function convert_points_toENU(dataset, mapD)
-    dataset[:ENU] = ENU.(LLA.(dataset[:LATITUDE], dataset[:LONGITUDE]), center(mapD.bounds))
+    dataset[:ENU] = ENU.(LLA.(dataset[:LATITUDE], dataset[:LONGITUDE]), OpenStreetMap.center(mapD.bounds))
 end
 
 
