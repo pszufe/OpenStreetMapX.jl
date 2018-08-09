@@ -3,28 +3,24 @@ OpenStreetMap - routing and simulations library
 
 ## Installation
 
-The current version uses JuliaPro 0.6.4
+The current version uses Julia 0.7.0
 
-Before using the library you need to install Julia packages:
+Before using the library you need to install Julia packages, press `]` to go to package manager:
 
 ```julia
-Pkg.add("Winston")
-Pkg.add("Distributions")
-Pkg.add("DataFrames")
-Pkg.add("DataFramesMeta")
-Pkg.add("FreqTables")
-Pkg.add("HTTP")
-Pkg.add("Query")
-Pkg.add("Shapefile")
+add Plots
+add Distributions
+add DataFrames
+add DataFramesMeta
+add FreqTables
+add HTTP
+add Query
+add Shapefile
+add LibExpat
+add LightGraphs
 ```
 
-Once the packages are installed you need to replace the *tkwidget.jl* file that can be found (assuming a default JuliaPro installation) at: 
 
-```
-C:\JuliaPro-0.6.4.1\pkgs-0.6.4.1\v0.6\Tk\src\tkwidget.jl
-```
-
-Please use the tkwidget.jl [supplied in this project](https://github.com/pszufe/OSMsim.jl/raw/master/tkwidget.jl_for_replacement/tkwidget.jl). 
 
 
 

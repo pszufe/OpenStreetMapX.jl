@@ -1,9 +1,13 @@
 
 include("osm\\OpenStreetMap.jl")
-using OpenStreetMap
+if (VERSION >= v"0.7.0")
+	using Main.OpenStreetMap
+else
+    using OpenStreetMap
+end
 
 path_datasets = "C:\\!BIBLIOTEKA\\EA\\datasets"
-WinnipegMap = parseOSM(path_datasets*"\\winnipeg - city centre only.osm");
+WinnipegMap = parseOSM(path_datasets*"\\sgh.osm");
 
 include("sim/routing_module.jl")
 nodes, bounds, highways, roadways, intersections, segments, network = create_map(WinnipegMap);
