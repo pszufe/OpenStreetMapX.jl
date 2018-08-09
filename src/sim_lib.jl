@@ -1,31 +1,14 @@
 ###################################
-# Map snippet
+# Simulation library
 ###################################
 
 
+# Open Street Map module
 include("osm\\OpenStreetMap.jl")
-using OpenStreetMap
-using CSV
-using DataFrames, DataFramesMeta
-using Base.Dates
-using Distributions
-using FreqTables 
-using HTTP, HttpCommon
-using JSON
-using Query 
-using Revise
-using Shapefile
-using StatsBase
 
 
-include("datasets_desc_dict.jl")
-# include("datasets_parse.jl") # can be run only once to process and export datasets
-include("datasets_import.jl")
-include("starting_location.jl")
-include("agent_profile.jl")
-include("destination_location.jl")
-include("additional_activity.jl")
-include("routing_module.jl")
+# Simulation module
+include("sim\\simulation.jl")
 
 
 
@@ -113,7 +96,7 @@ nodes, bounds, highways, roadways, intersections, segments, network = create_map
 
 
 ###################################
-## Create coordinates in osm format
+## create coordinates in osm format
 
 convert_points_toENU(df_business, WinnipegMap)
 convert_points_toENU(df_business_popstores, WinnipegMap)
@@ -129,24 +112,24 @@ city_centre_ENU = convert_points_toENU(DataFrame(LATITUDE = 49.895485, LONGITUDE
 	
 	
 ###################################	
-## Create dictionaries for datasets
+## create dictionaries for datasets
 
-dict_df_business_popstores = Dict()
+dict_df_business_popstores = Dict{String, DataFrames.DataFrame}()
 for i in unique(values(desc_df_business_popstores))
     dict_df_business_popstores[i] = @where(df_business_popstores, :CATEGORY .== i)
 end
 
-dict_df_DAcentroids = Dict()
+dict_df_DAcentroids = Dict{Int, DataFrames.DataFrame}()
 for i in df_DAcentroids[:PRCDDA]
     dict_df_DAcentroids[i] = @where(df_DAcentroids, :PRCDDA .== i)
 end
 
-dict_df_demostat = Dict()
+dict_df_demostat = Dict{Int, DataFrames.DataFrame}()
 for i in df_demostat[:PRCDDA]
     dict_df_demostat[i] = @where(df_demostat, :PRCDDA .== i)
 end
 
-dict_df_hwflows = Dict()
+dict_df_hwflows = Dict{Int, DataFrames.DataFrame}()
 for i in unique(df_hwflows[:DA_home])
     dict_df_hwflows[i] = @where(df_hwflows, :DA_home .== i)
 end
@@ -154,3 +137,4 @@ end
 df_demostat_weight_var = df_demostat[[:PRCDDA, weight_var]]
 
 
+	
