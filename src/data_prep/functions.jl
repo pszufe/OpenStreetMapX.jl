@@ -13,19 +13,26 @@ function filter_df_hwflows!(table::DataFrames.DataFrame)
     table = table[(table[:DA_I] .!= "Other") .& (table[:DA_J] .!= "Other"), :]
 end
 
-function filter_df_recreationComplex!(table::DataFrames.DataFrame)
+function filter_pivot_df_recreationComplex!(table::DataFrames.DataFrame)
     table = table[table[:ARENA]  .| table[:INDOOR_POOL] .| table[:FITNESS], :]
+    table = stack(table, [:ARENA, :INDOOR_POOL, :FITNESS])
+    table = rename(table[table[:value] .== true, :], :variable => :CATEGORY)
+    delete!(table, [:value, :LOCATION])
 end
 
-function filter_df_schools!(table::DataFrames.DataFrame, categories::Dict{Int,String} = SchoolType)
-    table[:SUBCAT] = [SchoolSubcat[table[:SUBCAT][i]] for i = 1:length(table[:SUBCAT])]
+function filter_df_schools!(table::DataFrames.DataFrame, categories::Dict{Int,String} = SchoolSubcat)
+    table[:CATEGORY] = [SchoolSubcat[table[:CATEGORY][i]] for i = 1:length(table[:CATEGORY])]
     schools = ["Child Care Facility", "School", "Pre School"]
-    table = table[indexin(table[:SUBCAT], schools) .> 0,:]
+    table = table[indexin(table[:CATEGORY], schools) .> 0,:]
+end
+
+function category_df_shopping!(table::DataFrames.DataFrame)
+    table[:CATEGORY] = "shopping centre"
 end
 
 function filter_df_popstores!(table::DataFrames.DataFrame, categories::Dict{String,String})
-    df_popstores = table[indexin(table[:BUSNAME], collect(keys(categories))) .> 0,:]
-    df_popstores[:CATEGORY] = [categories[df_popstores[i, :BUSNAME]] for i in 1:size(df_popstores, 1)]
+    df_popstores = table[indexin(table[:NAME], collect(keys(categories))) .> 0,:]
+    df_popstores[:CATEGORY] = [categories[df_popstores[i, :NAME]] for i in 1:size(df_popstores, 1)]
     return df_popstores
 end
 

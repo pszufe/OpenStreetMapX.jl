@@ -8,10 +8,9 @@
 ### Businesses data dictionary
 
 desc_df_businesses = Dict(
-    :DA_ID     => "Dissemination Area id", 
     :LATITUDE  => "Latitude",
     :LONGITUDE => "Longitude",
-    :BUSNAME   => "Business name",
+    :NAME   => "Business name",
     :IEMP_DESC => "Number of employees",
     :ISAL_DESC => "Volume of annual sales",
     :ICLS_DESC => "Industry"
@@ -198,8 +197,8 @@ desc_df_demographics = Dict(
     :ECYPIM0611 => "Household Population For Period Of Immigration - 2006 To 2011",
     :ECYPIM12CY => "Household Population For Period Of Immigration - 2012 To Present",
 	:ECYTIMNAM  => "North America",
-	:ECYTIMCAM  => "Central America",
 	:ECYTIMCB   => "Caribbean And Bahamas",
+	:ECYTIMCAM  => "Central America",
 	:ECYTIMSAM  => "South America",
 	:ECYTIMWEU  => "Western Europe",
 	:ECYTIMEEU  => "Eastern Europe",
@@ -221,6 +220,7 @@ desc_df_demographics = Dict(
 
 ###################################
 ### Home-Work flow journey matrix dictionary
+
 desc_df_hwflows = Dict(
     :DA_I		=> "Unique home DA id (PRCDDA)",
     :DA_J	    => "Unique work DA id (PRCDDA)",
@@ -229,22 +229,20 @@ desc_df_hwflows = Dict(
 
 
 
-
-
 ###################################
 ### Schools data dictionary
+
 desc_df_schools = Dict(
     :NAME      => "School name",
     :LONGITUDE => "Longitude",
     :LATITUDE  => "Latitude",
-    :SUBCAT    => "School subcategory"
+    :CATEGORY  => "School subcategory"
 )
-
-SchoolType = Dict(:7372 => "School", :7377 => "College/University")
 
 SchoolSubcat = Dict(
     :7372001 => "Unspecified",
     :7372002 => "School",
+    :7372003 => "Child Care Facility",
     :7372003 => "Child Care Facility",
     :7372004 => "Pre School",
     :7372005 => "Primary School",
@@ -265,10 +263,11 @@ SchoolSubcat = Dict(
 )
 
 
+
 ###################################
 # Schopping centres data dictionary
+
 desc_df_shopping = Dict(
-    :DA_ID    => "Dissemination Area",
     :NAME => "Shopping Centre Name",
     :LATITUDE  => "Latitude",
     :LONGITUDE => "Longitude",
@@ -279,8 +278,11 @@ desc_df_shopping = Dict(
     :ANCH_CNT  => "Number of Anchor Stores"
 )
 
+
+
 ###################################
 ### Recreation complexes data dictionary
+
 desc_df_recreation = Dict(
         :NAME => "Complex name",
         :ARENA => "Arena",
@@ -289,8 +291,11 @@ desc_df_recreation = Dict(
         :LOCATION => "Location",
 )
 
+
+
 ###################################
 ### Popular stores dictionary - based on df_businesses
+
 desc_df_popstores = Dict(
     "7-ELEVEN" => "convinience",
     "DOLLARAMA" => "discount",
@@ -393,84 +398,92 @@ desc_df_popstores = Dict(
     "REGENT SHELL" => "petrol station"
 )
 
-"""
-Kolejność działań:
-1. wgrywasz zbiór
-2. rename
-3. filter cols
-4. new cols
-5. filter rows
 
-NIE zamieniaj nazw kolumn na upper
-"""
-csv_datasets = Dict("df_business" => Dict(:variables => desc_df_businesses,
-                        :NAs   => ["", "NA"],
-                        :NAs_replace => nothing,
-                        :rename => [:PRCDDA => :DA_ID],
-                        :new_col => nothing,
-                        :filter => nothing,
-                        :file_name => "Businesses2018_CMA602"
-                        ),
 
-                    "df_demostat" => Dict(:variables => desc_df_demographics,
-                        :NAs   => nothing,
-                        :NAs_replace => nothing,
-                        :rename => [:PRCDDA => :DA_ID],
-                        :new_col => [(combine_cols!,(:HouseholdsWithChildren, [:ECYHFSCWC,:ECYHFSLP], +)),
-                        (combine_cols!, (:HouseholdsWithoutChildren, [:ECYBASHHD, :HouseholdsWithChildren], -))],
-                        :filter => nothing,
-                        :file_name => "DemoStats2018_DA_CMA602"
-                        ),
-                    "df_hwflows" => Dict(:variables => nothing,
-                        :NAs   => nothing,
-                        :NAs_replace => nothing,
-                        :rename => [:Sum_Value => :Flow_Volume],
-                        :new_col => nothing,
-                        :filter => [filter_df_hwflows!],
-                        :file_name => "home_work_flows_Winnipeg_Pij_2018"
-                        ),
-                    "df_shopping" => Dict(:variables => desc_df_shopping,
-                        :NAs   => nothing,
-                        :NAs_replace => nothing,
-                        :rename => [:lat => :LATITUDE,
-                                   :lon => :LONGITUDE,
-                                   :PRCDDA => :DA_ID,
-                                   :centre_nm => :NAME,
-                                   :centre_typ => :CENTRE_TYPE,
-                                   :gla => :AREA,
-                                   :totstores => :TOTSTORES,
-                                   :parking => :PARKING,
-                                   :anch_cnt => :ANCH_CNT],
-                        :new_col => nothing,
-                        :filter => nothing,
-                        :file_name => "ShoppingCentres2018_CMA602"
-                        ),
-                     "df_recreationComplex" => Dict(:variables => desc_df_recreation,
-                        :NAs   => nothing,
-                        :NAs_replace => nothing,
-                        :rename => [:_Complex_Name => :NAME,
-                                   :Arena => :ARENA,
-                                   :Indoor_Pool => :INDOOR_POOL,
-                                   :Fitness_Leisure_Centre => :FITNESS,
-                                   :Location_1 => :LOCATION],
-                        :new_col => [(get_lon_lat!,)],
-                        :filter => [filter_df_recreationComplex!],
-                        :file_name => "Recreation_Complex" 
-                        ),
-                    "df_schools" => Dict(:variables => desc_df_schools,
-                        :NAs   => nothing,
-                        :NAs_replace => nothing,
-                        :rename => [:CentroidX => :LONGITUDE,
-                                   :CentroidY => :LATITUDE],
-                        :new_col => nothing,
-                        :filter => [filter_df_schools!],
-                        :file_name => "SAMPLE_WinnipegCMA_Schools"
-                        ),
-                  
+###################################
+### Dictionaries for datasets parsing
+
+csv_datasets = Dict(
+
+	"df_business"          => Dict(
+		:variables   => desc_df_businesses,
+		:NAs         => ["", "NA"],
+		:NAs_replace => nothing,
+		:rename      => [:BUSNAME => :NAME],
+		:new_col     => nothing,
+		:filter      => nothing,
+		:file_name   => "Businesses2018_CMA602"
+		),
+
+	"df_demostat"          => Dict(
+		:variables   => desc_df_demographics,
+		:NAs         => nothing,
+		:NAs_replace => [missing => 0],
+		:rename      => [:PRCDDA => :DA_ID],
+		:new_col     => [(combine_cols!,(:HouseholdsWithChildren, [:ECYHFSCWC,:ECYHFSLP], +)),
+						 (combine_cols!, (:HouseholdsWithoutChildren, [:ECYBASHHD, :HouseholdsWithChildren], -))],
+		:filter      => nothing,
+		:file_name   => "DemoStats2018_DA_CMA602"
+		),
+						
+	"df_hwflows"           => Dict(
+	    :variables   => nothing,
+		:NAs         => nothing,
+		:NAs_replace => nothing,
+		:rename      => [:Sum_Value => :Flow_Volume],
+		:new_col     => nothing,
+		:filter      => [filter_df_hwflows!],
+		:file_name   => "home_work_flows_Winnipeg_Pij_2018"
+		),
+		
+	"df_shopping"          => Dict(
+	    :variables => desc_df_shopping,
+		:NAs         => nothing,
+		:NAs_replace => nothing,
+		:rename      => [:lat => :LATITUDE,
+			 		     :lon => :LONGITUDE,
+			 		     :centre_nm => :NAME,
+			 		     :centre_typ => :CENTRE_TYPE,
+			 		     :gla => :AREA,
+			 		     :totstores => :TOTSTORES,
+			 		     :parking => :PARKING,
+			 		     :anch_cnt => :ANCH_CNT],
+		:new_col      => [(category_df_shopping!, )],
+		:filter      => nothing,
+		:file_name   => "ShoppingCentres2018_CMA602"
+		),
+						 
+	"df_recreationComplex" => Dict(
+		:variables   => desc_df_recreation,
+		:NAs         => nothing,
+		:NAs_replace => nothing,
+		:rename      => [:_Complex_Name => :NAME,
+			 		     :Arena => :ARENA,
+		   		 	     :Indoor_Pool => :INDOOR_POOL,
+			 		     :Fitness_Leisure_Centre => :FITNESS,
+			 		     :Location_1 => :LOCATION],
+		:new_col     => [(get_lon_lat!,)],
+		:filter      => [filter_pivot_df_recreationComplex!],
+		:file_name   => "Recreation_Complex" 
+		),
+							
+	"df_schools"           => Dict(
+	    :variables   => desc_df_schools,
+		:NAs         => nothing,
+		:NAs_replace => nothing,
+		:rename      => [:SUBCAT => :CATEGORY,
+		                 :CentroidX => :LONGITUDE,
+					     :CentroidY => :LATITUDE],
+		:new_col     => nothing,
+		:filter      => [filter_df_schools!],
+		:file_name   => "SAMPLE_WinnipegCMA_Schools"
+		),
+                 
 )
+
 derivative_datasets = Dict("df_popstores" => Dict(:source => "df_business",
-                                                 :categories => desc_df_popstores,
-                                                 :filter => filter_df_popstores!))
+                                                  :categories => desc_df_popstores,
+                                                  :filter => filter_df_popstores!))
 
 shapefile_datasets = Dict("df_DA_centroids" => "Winnipeg DAs PopWeighted Centroids")
 
