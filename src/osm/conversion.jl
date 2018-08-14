@@ -73,7 +73,7 @@ end
 
 
 # Given Bounds object for linearization
-ENU(ecef::ECEF, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ENU(ecef, center(bounds), datum)
+ENU(ecef::ECEF, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ENU(ecef, OpenStreetMap.center(bounds), datum)
 
 
 ###############################################
@@ -106,7 +106,7 @@ function ECEF(enu::ENU, lla_ref::LLA, datum::Ellipsoid = WGS84)
 end
 
 # Given Bounds object for linearization
-ECEF(enu::ENU, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ECEF(enu, center(bounds), datum)
+ECEF(enu::ENU, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ECEF(enu, OpenStreetMap.center(bounds), datum)
 
 ##############################################
 ### Conversion from LLA to ENU coordinates ###
@@ -182,7 +182,7 @@ function ENU{T<:Union{LLA,ECEF}}(nodes::Dict{Int,T},
 end
 
 # Given Bounds
-ENU(nodes::Dict, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ENU(nodes, center(bounds), datum)
+ENU(nodes::Dict, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ENU(nodes, OpenStreetMap.center(bounds), datum)
 
 ###############################################
 ### Conversion from ENU to ECEF coordinates ###
@@ -200,7 +200,7 @@ function ECEF(nodes::Dict{Int,ENU},lla_ref::LLA , datum::Ellipsoid = WGS84)
 end
 
 # Given Bounds
-ECEF(nodes::Dict, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ECEF(nodes, center(bounds), datum)
+ECEF(nodes::Dict, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ECEF(nodes, OpenStreetMap.center(bounds), datum)
 
 ###############################################
 ### Conversion from ENU to LLA coordinates ###
@@ -218,4 +218,4 @@ function LLA(nodes::Dict{Int,ENU},lla_ref::LLA , datum::Ellipsoid = WGS84)
 end
 
 # Given Bounds
-LLA(nodes::Dict, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = LLA(nodes, center(bounds), datum)
+LLA(nodes::Dict, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = LLA(nodes, OpenStreetMap.center(bounds), datum)

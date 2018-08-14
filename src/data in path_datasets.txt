@@ -1,0 +1,21 @@
+Datasets in path_datasets:
+EA csv datasets:
+	* `Businesses2018_CMA602`, 
+	* `DaytimePop2018_DA_CMA602`,
+	* `DemoStats2018_DA_CMA602`,
+	* `home_work_flows_Winnipeg_Pij_2018`,
+	* `Recreation_Complex`,
+	* `SAMPLE_WinnipegCMA_Schools`,
+	* `SAMPLE_WinnipegCMA_TRAFCAN2017Q1`,
+	* `ShoppingCentres2018_CMA602`,
+	* `vehicles_SAMPLE_RVIO2018_Winnipeg_CMA_by_DA`,
+	
+Map files:
+	* `winnipeg - city centre only.osm`,
+	* `Winnipeg CMA.osm`,
+	* `Winnipeg DAs PopWeighted Centroids.shp`,
+	* `Winnipeg DAs PopWeighted Centroids.dbf`,
+	* `Winnipeg DAs PopWeighted Centroids.shx`,
+	* `Winnipeg DAs PopWeighted Centroids.prj`
+	
+After datasetsParse.jl compliation another 10 dataframes will be exported to path_datasets. 

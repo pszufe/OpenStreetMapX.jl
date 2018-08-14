@@ -7,8 +7,9 @@
 ################################
 
 const Styles = Union{Style,Dict{Int,Style}}
+gr();
 
-####################
+const gr_linestyles = Dict("-" => :solid, ":"=>:dot, ";"=>:dashdot, "-."=>:dashdot,"--"=>:dash)                                                                                               ####################
 ### Aspect Ratio ###
 ####################
 
@@ -30,7 +31,7 @@ aspectRatio(bounds::OpenStreetMap.Bounds{ENU}) = (bounds.max_x - bounds.min_x) /
 
 ### Without defined layers ###
 
-function drawWays!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot,nodes::Dict{Int,T}, ways::Vector{OpenStreetMap.Way}, style::Styles,km::Bool)
+function drawWays!{T<:Union{LLA,ENU}}(p::Plots.Plot,nodes::Dict{Int,T}, ways::Vector{OpenStreetMap.Way}, style::Styles,km::Bool)
     for way in ways
         X = [getX(nodes[node]) for node in way.nodes]
         Y = [getY(nodes[node]) for node in way.nodes]
@@ -38,13 +39,14 @@ function drawWays!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot,nodes::Dict{Int,T}, 
             X /= 1000
             Y /= 1000
         end
-        length(X) > 1 && Winston.plot(p, X, Y, style.spec, color=style.color, linewidth=style.width)
+        #length(X) > 1 && Plots.plot(p, X, Y, style.spec, color=style.color, linewidth=style.width)
+		length(X) > 1 && Plots.plot!(p, X, Y, color=Int64(style.color),width=style.width,linestyle=gr_linestyles[style.spec])
     end
 end
 
 ### With defined Layers ###
 
-function drawWays!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot,nodes::Dict{Int,T}, ways::Vector{OpenStreetMap.Way},class::Dict{Int,Int}, style::Styles,km::Bool)
+function drawWays!{T<:Union{LLA,ENU}}(p::Plots.Plot,nodes::Dict{Int,T}, ways::Vector{OpenStreetMap.Way},class::Dict{Int,Int}, style::Styles,km::Bool)
     for i = 1:length(ways)
         lineStyle = style[class[ways[i].id]]
         X = [getX(nodes[node]) for node in ways[i].nodes]
@@ -53,7 +55,8 @@ function drawWays!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot,nodes::Dict{Int,T}, 
             X /= 1000
             Y /= 1000
         end
-        length(X) > 1 && Winston.plot(p, X, Y, lineStyle.spec, color=lineStyle.color, linewidth=lineStyle.width)
+        #length(X) > 1 && Winston.plot(p, X, Y, lineStyle.spec, color=lineStyle.color, linewidth=lineStyle.width)
+		length(X) > 1 && Plots.plot!(p, X, Y, color=Int64(lineStyle.color),width=lineStyle.width,linestyle=gr_linestyles[lineStyle.spec])
     end
 end
 
@@ -61,7 +64,7 @@ end
 ### Draw Buildings ###
 ######################
 
-function drawBuildings!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot,nodes::Dict{Int,T}, buildings::Vector{OpenStreetMap.Way}, style::Styles,km::Bool)
+function drawBuildings!{T<:Union{LLA,ENU}}(p::Plots.Plot,nodes::Dict{Int,T}, buildings::Vector{OpenStreetMap.Way}, style::Styles,km::Bool)
     if isa(style, Style)
         drawWays!(p,nodes,buildings,style,km)
     else
@@ -74,7 +77,7 @@ end
 ### Draw Roadways ###
 #####################
 
-function drawRoadways!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot,nodes::Dict{Int,T}, roadways::Vector{OpenStreetMap.Way}, style::Styles,km::Bool)
+function drawRoadways!{T<:Union{LLA,ENU}}(p::Plots.Plot,nodes::Dict{Int,T}, roadways::Vector{OpenStreetMap.Way}, style::Styles,km::Bool)
     if isa(style, Style)
         drawWays!(p,nodes,roadways,style,km)
     else
@@ -87,7 +90,7 @@ end
 ### Draw Walkways ###
 #####################
 
-function drawWalkways!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot,nodes::Dict{Int,T}, walkways::Vector{OpenStreetMap.Way}, style::Styles,km::Bool)
+function drawWalkways!{T<:Union{LLA,ENU}}(p::Plots.Plot,nodes::Dict{Int,T}, walkways::Vector{OpenStreetMap.Way}, style::Styles,km::Bool)
     if isa(style, Style)
         drawWays!(p,nodes,walkways,style,km)
     else
@@ -100,7 +103,7 @@ end
 ### Draw Cycleways ###
 ######################
 
-function drawCycleways!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot,nodes::Dict{Int,T}, cycleways::Vector{OpenStreetMap.Way}, style::Styles,km::Bool)
+function drawCycleways!{T<:Union{LLA,ENU}}(p::Plots.Plot,nodes::Dict{Int,T}, cycleways::Vector{OpenStreetMap.Way}, style::Styles,km::Bool)
     if isa(style, Style)
         drawWays!(p,nodes,cycleways,style,km)
     else
@@ -113,7 +116,7 @@ end
 ### Draw Features ###
 #####################
 
-function drawFeatures!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot,nodes::Dict{Int,T}, features::Dict{Int,Tuple{String,String}}, style::Styles,km::Bool)
+function drawFeatures!{T<:Union{LLA,ENU}}(p::Plots.Plot,nodes::Dict{Int,T}, features::Dict{Int,Tuple{String,String}}, style::Styles,km::Bool)
     if isa(style, Style)
         X = [getX(nodes[node]) for node in keys(features)]
         Y = [getY(nodes[node]) for node in keys(features)]
@@ -121,7 +124,8 @@ function drawFeatures!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot,nodes::Dict{Int,
                 X /= 1000
                 Y /= 1000
         end
-        length(X) > 1 && Winston.plot(p, X, Y, style.spec, color=style.color, linewidth=style.width) 
+        #length(X) > 1 && Winston.plot(p, X, Y, style.spec, color=style.color, linewidth=style.width)
+		length(X) > 1 && Plots.plot!(p, X, Y, color=Int64(style.color),width=style.width,linestyle=gr_linestyles[style.spec])
     else
         classes = classifyFeatures(features)
         for (key,val) in style
@@ -132,7 +136,8 @@ function drawFeatures!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot,nodes::Dict{Int,
                 X /= 1000
                 Y /= 1000
             end
-            length(X) > 1 && Winston.plot(p, X, Y, val.spec, color=val.color, linewidth=val.width) 
+            #length(X) > 1 && Winston.plot(p, X, Y, val.spec, color=val.color, linewidth=val.width)
+			length(X) > 1 && Plots.plot!(p, X, Y, color=Int64(val.color),width=val.width,linestyle=gr_linestyles[val.spec])
         end
     end
 end
@@ -140,7 +145,6 @@ end
 ########################
 ### Generic Map Plot ###
 ########################
-
 function plotMap{T<:Union{LLA,ENU}}(nodes::Dict{Int,T},
                                     bounds::Union{Void,OpenStreetMap.Bounds} = nothing;
                                     buildings::Union{Void,Vector{OpenStreetMap.Way}} = nothing,
@@ -165,16 +169,16 @@ function plotMap{T<:Union{LLA,ENU}}(nodes::Dict{Int,T},
         "East (m)", "North (m)"
     end
     # Calculating aspect Ratio:
-    height = isa(bounds,Void) ? width : round(Int, width / aspectRatio(bounds))
-    if Winston.output_surface != :none # Allow for plotting in IJulia/Jupyter to work
+    #height = isa(bounds,Void) ? width : round(Int, width / aspectRatio(bounds))
+    #if Winston.output_surface != :none # Allow for plotting in IJulia/Jupyter to work
         # Create the figure
-        fig = Winston.figure(name="OpenStreetMap Plot", width=width, height=height)
-    end
+        #fig = Winston.figure(name="OpenStreetMap Plot", width=width, height=height)
+    #end
     if isa(bounds,Void)
-        p = Winston.FramedPlot("xlabel", xlab, "ylabel", ylab)
+		p = Plots.plot(xlabel=xlab,ylabel=ylab,legend=false)
     else # Limit plot to specified bounds
-        Winston.xlim(bounds.min_x, bounds.max_x)
-        Winston.ylim(bounds.min_y, bounds.max_y)
+        #Winston.xlim(bounds.min_x, bounds.max_x)
+        #Winston.ylim(bounds.min_y, bounds.max_y)
         if km && isa(nodes, Dict{Int,ENU})
             xrange = (bounds.min_x/1000, bounds.max_x/1000)
             yrange = (bounds.min_y/1000, bounds.max_y/1000)
@@ -182,7 +186,7 @@ function plotMap{T<:Union{LLA,ENU}}(nodes::Dict{Int,T},
             xrange = (bounds.min_x, bounds.max_x)
             yrange = (bounds.min_y, bounds.max_y)
         end
-        p = Winston.FramedPlot("xlabel", xlab, "ylabel", ylab, xrange=xrange, yrange=yrange)
+        p = Plots.plot(xlabel=xlab,ylabel=ylab,xlims=xrange,ylims=yrange,legend=false)
     end
     # Draw all buildings
     if !isa(buildings,Void)
@@ -206,10 +210,10 @@ function plotMap{T<:Union{LLA,ENU}}(nodes::Dict{Int,T},
     end
     if fontsize > 0
         attr = Dict(:fontsize => fontsize)
-        Winston.setattr(p.x1, "label_style", attr)
-        Winston.setattr(p.y1, "label_style", attr)
-        Winston.setattr(p.x1, "ticklabels_style", attr)
-        Winston.setattr(p.y1, "ticklabels_style", attr)
+        #Winston.setattr(p.x1, "label_style", attr)
+        #Winston.setattr(p.y1, "label_style", attr)
+        #Winston.setattr(p.x1, "ticklabels_style", attr)
+        #Winston.setattr(p.y1, "ticklabels_style", attr)
     end
     return p
 end
@@ -218,7 +222,7 @@ end
 ### Add Routes to Plot ###
 ##########################
 
-function addRoute!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot, nodes::Dict{Int,T}, route::Vector{Int}; routeColor::UInt32 =0x000053, km::Bool=false)
+function addRoute!{T<:Union{LLA,ENU}}(p::Plots.Plot, nodes::Dict{Int,T}, route::Vector{Int}; routeColor::UInt32 =0x000053, km::Bool=false)
     routeStyle = Style(routeColor, 3, "-")
     X = [getX(nodes[node]) for node in route]
     Y = [getY(nodes[node]) for node in route]
@@ -226,5 +230,8 @@ function addRoute!{T<:Union{LLA,ENU}}(p::Winston.FramedPlot, nodes::Dict{Int,T},
         X /= 1000
         Y /= 1000
     end
-    length(X) > 1 && Winston.plot(p, X, Y, routeStyle.spec, color=routeStyle.color, linewidth=routeStyle.width)
+    #length(X) > 1 && Winston.plot(p, X, Y, routeStyle.spec, color=routeStyle.color, linewidth=routeStyle.width)
+	length(X) > 1 && Plots.plot!(p, X, Y, color=Int64(routeStyle.color),width=routeStyle.width,linestyle=gr_linestyles[routeStyle.spec])
+
+	
 end
