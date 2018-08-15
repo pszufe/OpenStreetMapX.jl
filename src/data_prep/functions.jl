@@ -1,3 +1,7 @@
+function replaceMissings!(table::DataFrames.DataFrame, col::Symbol, replacement::Union{Int,Float64,String})
+    table[col][isna.(table[col])] = replacement
+end
+
 function get_lon_lat!(table::DataFrames.DataFrame)
     x = split.(table[:LOCATION], ",")
     table[:LATITUDE] = parse.(Float64, [replace.(x[i][1], "(" => "") for i in 1:size(x, 1)])
@@ -15,9 +19,16 @@ end
 
 function filter_pivot_df_recreationComplex!(table::DataFrames.DataFrame)
     table = table[table[:ARENA]  .| table[:INDOOR_POOL] .| table[:FITNESS], :]
-    table = stack(table, [:ARENA, :INDOOR_POOL, :FITNESS])
-    table = rename(table[table[:value] .== true, :], :variable => :CATEGORY)
-    delete!(table, [:value, :LOCATION])
+    table = DataFrames.stack(table, [:ARENA, :INDOOR_POOL, :FITNESS])
+    table = DataFrames.rename!(table[table[:value] .== true, :], :variable, :CATEGORY)
+    DataFrames.delete!(table, [:value, :LOCATION])
+end
+
+function filter_df_recreationComplex!(table::DataFrames.DataFrame)
+    table = table[table[:ARENA]  .| table[:INDOOR_POOL] .| table[:FITNESS], :]
+    table[:CATEGORY] = "recreation"
+	DataFrames.delete!(table, [ :LOCATION, :ARENA, :INDOOR_POOL, :FITNESS])
+    return table
 end
 
 function filter_df_schools!(table::DataFrames.DataFrame, categories::Dict{Int,String} = SchoolSubcat)
@@ -53,6 +64,11 @@ function parse_csv_datasets(data_prep, path)
             table = readtable(path*value[:file_name]*".csv", nastrings = value[:NAs])
         else
             table = readtable(path*value[:file_name]*".csv")
+        end
+		if !isa(value[:NAs_replace],Void)
+            for rep in value[:NAs_replace]
+                replaceMissings!(table,rep.first,rep.second)
+            end
         end
         if !isa(value[:rename],Void)
             for n in value[:rename]
@@ -99,7 +115,7 @@ function parse_shapefile_data(data_prep, path::String)
     return data_frames
 end
 
-function get_data(path; prepare_datasets = SimDataPreparation.prepare_data)
+function get_data(path; prepare_datasets = SimDataPreparation.prepare_data, save_data::Bool = true)
     data_frames = Dict{String,DataFrames.DataFrame}()
     if haskey(prepare_datasets, :CSV)
         merge!(data_frames,parse_csv_datasets(prepare_datasets[:CSV],path))
@@ -116,6 +132,11 @@ function get_data(path; prepare_datasets = SimDataPreparation.prepare_data)
      else
         Error("")
     end
+	if save_data
+		for (key,value) in data_frames
+			DataFrames.writetable(path* key *".csv", value)
+		end
+	end
     return data_frames
 end
     

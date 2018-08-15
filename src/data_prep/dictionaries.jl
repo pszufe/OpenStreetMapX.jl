@@ -418,7 +418,7 @@ csv_datasets = Dict(
 	"df_demostat"          => Dict(
 		:variables   => desc_df_demographics,
 		:NAs         => nothing,
-		:NAs_replace => [missing => 0],
+		:NAs_replace => [:ECYHMAMED => 0],
 		:rename      => [:PRCDDA => :DA_ID],
 		:new_col     => [(combine_cols!,(:HouseholdsWithChildren, [:ECYHFSCWC,:ECYHFSLP], +)),
 						 (combine_cols!, (:HouseholdsWithoutChildren, [:ECYBASHHD, :HouseholdsWithChildren], -))],
@@ -463,7 +463,7 @@ csv_datasets = Dict(
 			 		     :Fitness_Leisure_Centre => :FITNESS,
 			 		     :Location_1 => :LOCATION],
 		:new_col     => [(get_lon_lat!,)],
-		:filter      => [filter_pivot_df_recreationComplex!],
+		:filter      => [filter_df_recreationComplex!],
 		:file_name   => "Recreation_Complex" 
 		),
 							
