@@ -8,6 +8,7 @@
 ### Businesses data dictionary
 
 desc_df_businesses = Dict(
+	:DA_ID     => "Dissemination Area id",
     :LATITUDE  => "Latitude",
     :LONGITUDE => "Longitude",
     :NAME   => "Business name",
@@ -243,7 +244,6 @@ SchoolSubcat = Dict(
     :7372001 => "Unspecified",
     :7372002 => "School",
     :7372003 => "Child Care Facility",
-    :7372003 => "Child Care Facility",
     :7372004 => "Pre School",
     :7372005 => "Primary School",
     :7372006 => "High School",
@@ -409,7 +409,8 @@ csv_datasets = Dict(
 		:variables   => desc_df_businesses,
 		:NAs         => ["", "NA"],
 		:NAs_replace => nothing,
-		:rename      => [:BUSNAME => :NAME],
+		:rename      => [:PRCDDA => :DA_ID,
+						:BUSNAME => :NAME],
 		:new_col     => nothing,
 		:filter      => nothing,
 		:file_name   => "Businesses2018_CMA602"

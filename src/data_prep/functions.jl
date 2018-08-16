@@ -85,7 +85,7 @@ function parse_csv_datasets(data_prep, path)
                 elseif length(ex) == 1
                     ex[1](table)
                 else
-                    Error("new column definition in wrong format!")
+                    error("new column definition in wrong format!")
                 end
             end
         end
@@ -120,17 +120,17 @@ function get_data(path; prepare_datasets = SimDataPreparation.prepare_data, save
     if haskey(prepare_datasets, :CSV)
         merge!(data_frames,parse_csv_datasets(prepare_datasets[:CSV],path))
     else
-        Error("")
+        error("")
     end
     if haskey(prepare_datasets, :SHP)
         merge!(data_frames, parse_shapefile_data(prepare_datasets[:SHP],path))
      else
-        Error("")
+        error("")
     end
     if haskey(prepare_datasets, :DERIVATIVE)
         merge!(data_frames, get_derivative_datasets(prepare_datasets[:DERIVATIVE], data_frames))
      else
-        Error("")
+        error("")
     end
 	if save_data
 		for (key,value) in data_frames
