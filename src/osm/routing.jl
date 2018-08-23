@@ -175,12 +175,12 @@ function findRoute(network::OpenStreetMap.Network, node0::Int, node1::Int, weigh
     routeNodes = getRouteNodes(network, routeIndices)
     push!(result, routeNodes, routeValues)
     if getDistance
-        distance = isempty(routeIndices) ? 0 : calculateDistance(network, network.w, routeIndices)
+        distance = length(routeIndices) < 2 ? 0 : calculateDistance(network, network.w, routeIndices)
         push!(result, distance)
     end
     if getTime
         w = createWeightsMatrix(network,networkTravelTimes(network, SPEED_ROADS_URBAN))
-        routeTime = isempty(routeIndices) ? 0 : calculateDistance(network, w, routeIndices)
+        routeTime = length(routeIndices) < 2 ? 0 : calculateDistance(network, w, routeIndices)
         push!(result, routeTime)
     end
     return result
