@@ -1,6 +1,6 @@
 pth = "osm/";
 path = "sim/";
-datapath = "../../datasets";
+datapath = "../../datasets/";
 
 include(pth*"OpenStreetMap.jl")
 include(path*"OSMSim.jl")
