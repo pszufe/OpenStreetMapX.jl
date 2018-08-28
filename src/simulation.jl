@@ -1,6 +1,6 @@
-#pth = "C:\\Users\\p\\Desktop\\OSMsim.jl\\src\\osm\\";
-#path = "C:\\Users\\p\\Desktop\\OSMsim.jl\\src\\sim\\";
-#datapath = "C:\\Users\\p\\Desktop\\data for simulation\\";
+pth = "osm/";
+path = "sim/";
+datapath = "../../datasets";
 
 include(pth*"OpenStreetMap.jl")
 include(path*"OSMSim.jl")
