@@ -83,7 +83,7 @@ end
 #############################################
 
 # only for points where inBounds(p1) != inBounds(p2)
-function boundaryPoint{T<:Union{LLA,ENU}}(p1::T, p2::T, bounds::Bounds)
+function boundaryPoint{T<:Union{LLA,ENU}}(p1::T, p2::T, bounds::Bounds{T})
     x1, y1 = getX(p1), getY(p1)
     x2, y2 = getX(p2), getY(p2)
 
