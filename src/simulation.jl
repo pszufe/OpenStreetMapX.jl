@@ -2,7 +2,7 @@
 #path = "C:\\Users\\p\\Desktop\\OSMsim.jl\\src\\sim\\";
 #datapath = "C:\\Users\\p\\Desktop\\data for simulation\\";
 
-include(pth*"OpenStreetMap.jl")
+include(path*"OpenStreetMap.jl")
 include(path*"OSMSim.jl")
 
 using OSMSim
