@@ -40,7 +40,7 @@ function drawWays!{T<:Union{LLA,ENU}}(p::Plots.Plot,nodes::Dict{Int,T}, ways::Ve
             Y /= 1000
         end
         #length(X) > 1 && Plots.plot(p, X, Y, style.spec, color=style.color, linewidth=style.width)
-		length(X) > 1 && Plots.plot!(p, X, Y, color=Int64(style.color),width=style.width,linestyle=gr_linestyles[style.spec])
+		length(X) > 1 && Plots.plot!(p, X, Y, color=style.color,width=style.width,linestyle=gr_linestyles[style.spec])
     end
 end
 
@@ -56,7 +56,7 @@ function drawWays!{T<:Union{LLA,ENU}}(p::Plots.Plot,nodes::Dict{Int,T}, ways::Ve
             Y /= 1000
         end
         #length(X) > 1 && Winston.plot(p, X, Y, lineStyle.spec, color=lineStyle.color, linewidth=lineStyle.width)
-		length(X) > 1 && Plots.plot!(p, X, Y, color=Int64(lineStyle.color),width=lineStyle.width,linestyle=gr_linestyles[lineStyle.spec])
+		length(X) > 1 && Plots.plot!(p, X, Y, color=lineStyle.color,width=lineStyle.width,linestyle=gr_linestyles[lineStyle.spec])
     end
 end
 
@@ -125,7 +125,7 @@ function drawFeatures!{T<:Union{LLA,ENU}}(p::Plots.Plot,nodes::Dict{Int,T}, feat
                 Y /= 1000
         end
         #length(X) > 1 && Winston.plot(p, X, Y, style.spec, color=style.color, linewidth=style.width)
-		length(X) > 1 && Plots.plot!(p, X, Y, color=Int64(style.color),width=style.width,linestyle=gr_linestyles[style.spec])
+		length(X) > 1 && Plots.plot!(p, X, Y, color=style.color,width=style.width,linestyle=gr_linestyles[style.spec])
     else
         classes = classifyFeatures(features)
         for (key,val) in style
@@ -137,7 +137,7 @@ function drawFeatures!{T<:Union{LLA,ENU}}(p::Plots.Plot,nodes::Dict{Int,T}, feat
                 Y /= 1000
             end
             #length(X) > 1 && Winston.plot(p, X, Y, val.spec, color=val.color, linewidth=val.width)
-			length(X) > 1 && Plots.plot!(p, X, Y, color=Int64(val.color),width=val.width,linestyle=gr_linestyles[val.spec])
+			length(X) > 1 && Plots.plot!(p, X, Y, color=val.color,width=val.width,linestyle=gr_linestyles[val.spec])
         end
     end
 end
@@ -146,17 +146,17 @@ end
 ### Generic Map Plot ###
 ########################
 function plotMap{T<:Union{LLA,ENU}}(nodes::Dict{Int,T},
-                                    bounds::Union{Void,OpenStreetMap.Bounds} = nothing;
+                                    bounds::Union{Void,OpenStreetMap.Bounds{T}} = nothing;
                                     buildings::Union{Void,Vector{OpenStreetMap.Way}} = nothing,
-                                    buildingStyle::Styles=Style(0x000000, 1, "-"),
+                                    buildingStyle::Styles=Style("0x000000", 1, "-"),
                                     roadways::Union{Void,Vector{OpenStreetMap.Way}} = nothing,
-                                    roadwayStyle::Styles=Style(0x007CFF, 1.5, "-"),
+                                    roadwayStyle::Styles=Style("0x007CFF", 1.5, "-"),
                                     walkways::Union{Void,Vector{OpenStreetMap.Way}} = nothing,
-                                    walkwayStyle::Styles=Style(0x007CFF, 1.5, "-"),
+                                    walkwayStyle::Styles=Style("0x007CFF", 1.5, "-"),
                                     cycleways::Union{Void,Vector{OpenStreetMap.Way}} = nothing,
-                                    cyclewayStyle::Styles=Style(0x007CFF, 1.5, "-"),
+                                    cyclewayStyle::Styles=Style("0x007CFF", 1.5, "-"),
                                     features::Union{Void,Dict{Int64,Tuple{String,String}}} = nothing,
-                                    featureStyle::Styles=Style(0xCC0000, 2.5, "."),
+                                    featureStyle::Styles=Style("0xCC0000", 2.5, "."),
                                     width::Int=500,
                                     fontsize::Integer=0,
                                     km::Bool=false)
@@ -222,7 +222,7 @@ end
 ### Add Routes to Plot ###
 ##########################
 
-function addRoute!{T<:Union{LLA,ENU}}(p::Plots.Plot, nodes::Dict{Int,T}, route::Vector{Int}; routeColor::UInt32 =0x000053, km::Bool=false)
+function addRoute!{T<:Union{LLA,ENU}}(p::Plots.Plot, nodes::Dict{Int,T}, route::Vector{Int}; routeColor::String ="0x000053", km::Bool=false)
     routeStyle = Style(routeColor, 3, "-")
     X = [getX(nodes[node]) for node in route]
     Y = [getY(nodes[node]) for node in route]
@@ -231,7 +231,7 @@ function addRoute!{T<:Union{LLA,ENU}}(p::Plots.Plot, nodes::Dict{Int,T}, route::
         Y /= 1000
     end
     #length(X) > 1 && Winston.plot(p, X, Y, routeStyle.spec, color=routeStyle.color, linewidth=routeStyle.width)
-	length(X) > 1 && Plots.plot!(p, X, Y, color=Int64(routeStyle.color),width=routeStyle.width,linestyle=gr_linestyles[routeStyle.spec])
+	length(X) > 1 && Plots.plot!(p, X, Y, color=routeStyle.color,width=routeStyle.width,linestyle=gr_linestyles[routeStyle.spec])
 
 	
 end

@@ -176,7 +176,7 @@ end
 
 ### Rendering style data (tu moze zmienic bedzie trzeba)
 struct Style
-    color::UInt32
+    color::String
     width::Real
     spec::AbstractString
 end
