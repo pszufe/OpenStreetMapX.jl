@@ -157,7 +157,8 @@ function plotMap{T<:Union{LLA,ENU}}(nodes::Dict{Int,T},
                                     cyclewayStyle::Styles=Style("0x007CFF", 1.5, "-"),
                                     features::Union{Void,Dict{Int64,Tuple{String,String}}} = nothing,
                                     featureStyle::Styles=Style("0xCC0000", 2.5, "."),
-                                    width::Int=500,
+                                    width::Int=600,
+									height::Int=600,								
                                     fontsize::Integer=0,
                                     km::Bool=false)
     # Chose labels according to point type and scale
@@ -175,7 +176,7 @@ function plotMap{T<:Union{LLA,ENU}}(nodes::Dict{Int,T},
         #fig = Winston.figure(name="OpenStreetMap Plot", width=width, height=height)
     #end
     if isa(bounds,Void)
-		p = Plots.plot(xlabel=xlab,ylabel=ylab,legend=false)
+		p = Plots.plot(xlabel=xlab,ylabel=ylab,legend=false,size=(width,height))
     else # Limit plot to specified bounds
         #Winston.xlim(bounds.min_x, bounds.max_x)
         #Winston.ylim(bounds.min_y, bounds.max_y)
@@ -186,7 +187,7 @@ function plotMap{T<:Union{LLA,ENU}}(nodes::Dict{Int,T},
             xrange = (bounds.min_x, bounds.max_x)
             yrange = (bounds.min_y, bounds.max_y)
         end
-        p = Plots.plot(xlabel=xlab,ylabel=ylab,xlims=xrange,ylims=yrange,legend=false)
+        p = Plots.plot(xlabel=xlab,ylabel=ylab,xlims=xrange,ylims=yrange,legend=false,size=(width,height))
     end
     # Draw all buildings
     if !isa(buildings,Void)
