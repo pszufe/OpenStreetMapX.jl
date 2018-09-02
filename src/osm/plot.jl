@@ -224,7 +224,7 @@ end
 ##########################
 
 function addRoute!{T<:Union{LLA,ENU}}(p::Plots.Plot, nodes::Dict{Int,T}, route::Vector{Int}; routeColor::String ="0x000053", km::Bool=false)
-    routeStyle = Style(routeColor, 3, "-")
+    routeStyle = Style(routeColor, 3, ";")
     X = [getX(nodes[node]) for node in route]
     Y = [getY(nodes[node]) for node in route]
     if isa(nodes,Dict{Int,ENU}) && km
@@ -232,7 +232,10 @@ function addRoute!{T<:Union{LLA,ENU}}(p::Plots.Plot, nodes::Dict{Int,T}, route::
         Y /= 1000
     end
     #length(X) > 1 && Winston.plot(p, X, Y, routeStyle.spec, color=routeStyle.color, linewidth=routeStyle.width)
-	length(X) > 1 && Plots.plot!(p, X, Y, color=routeStyle.color,width=routeStyle.width,linestyle=gr_linestyles[routeStyle.spec])
-
+	if length(X) > 1 
+		Plots.plot!(p, X, Y, color=routeStyle.color,width=routeStyle.width,linestyle=gr_linestyles[routeStyle.spec])
+		Plots.annotate!(p,X[1],Y[1],text("A",15))
+		Plots.annotate!(p,X[end],Y[end],text("B",15))		
+	end
 	
 end
