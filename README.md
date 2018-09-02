@@ -18,6 +18,7 @@ add Query
 add Shapefile
 add LibExpat
 add LightGraphs
+add StatsBase
 ```
 
 
