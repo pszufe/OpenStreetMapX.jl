@@ -5,20 +5,20 @@
 function parseElement(handler::LibExpat.XPStreamHandler,
                       name::AbstractString,
                       attr::Dict{AbstractString,AbstractString})
-    data = handler.data::DataHandle
+    data = handler.data::OpenStreetMap.DataHandle
     if name == "node"
         data.element = :Tuple
         data.node = (parse(Int, attr["id"]),
-                         LLA(float(attr["lat"]), float(attr["lon"])))
+                         OpenStreetMap.LLA(parse(Float64,attr["lat"]), parse(Float64,attr["lon"])))
     elseif name == "way"
         data.element = :Way
-        data.way = Way(parse(Int, attr["id"]))
+        data.way = OpenStreetMap.Way(parse(Int, attr["id"]))
     elseif name == "relation"
         data.element = :Relation
-        data.relation = Relation(parse(Int, attr["id"]))
+        data.relation = OpenStreetMap.Relation(parse(Int, attr["id"]))
     elseif name == "bounds"
         data.element =:Bounds
-        data.bounds = Bounds(float(attr["minlat"]), float(attr["maxlat"]), float(attr["minlon"]), float(attr["maxlon"]))
+        data.bounds = OpenStreetMap.Bounds(parse(Float64,attr["minlat"]), parse(Float64,attr["maxlat"]), parse(Float64,attr["minlon"]), parse(Float64,attr["maxlon"]))
     elseif name == "tag" 
         k = attr["k"]; v = attr["v"]
         if  data.element == :Tuple
@@ -61,9 +61,9 @@ function parseOSM(filename::AbstractString; args...)
     callbacks = LibExpat.XPCallbacks()
     callbacks.start_element = parseElement
     callbacks.end_element = collectElement
-    data = DataHandle()
+    data = OpenStreetMap.DataHandle()
     LibExpat.parsefile(filename, callbacks, data=data; args...)
-    data.osm::OSMData
+    data.osm::OpenStreetMap.OSMData
 end
 
 

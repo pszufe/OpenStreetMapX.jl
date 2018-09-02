@@ -5,7 +5,7 @@ datapath = "../../datasets/";
 include(pth*"OpenStreetMap.jl")
 include(path*"OSMSim.jl")
 
-using OSMSim
+using Main.OSMSim
 
 mutable struct RouteData
     shortest_route

@@ -2,16 +2,16 @@
 ### Auxiliary Functions ###
 ###########################
 
-function hasLanes(w::Way)
+function hasLanes(w::OpenStreetMap.Way)
     v = get(w.tags, "lanes", "")
     length(v)==1 && '1' <= v[1] <= '9'
 end
 
-getLanes(w::Way) = parse(Int, w.tags["lanes"])
+getLanes(w::OpenStreetMap.Way) = parse(Int, w.tags["lanes"])
 
-visible{T <: OSMElement}(obj::T) = (get(obj.tags, "visible", "") != "false")
+visible(obj::T) where T <: OSMElement = (get(obj.tags, "visible", "") != "false") 
 
-services(w::Way) = (get(w.tags,"highway", "") == "services")
+services(w::OpenStreetMap.Way) = (get(w.tags,"highway", "") == "services")
 
 ########################
 ### Extract Highways ###
@@ -19,7 +19,7 @@ services(w::Way) = (get(w.tags,"highway", "") == "services")
 
 extractHighways(ways::Vector{OpenStreetMap.Way}) = [way for way in ways if isdefined(way,:tags) && haskey(way.tags, "highway")]
 
-filterHighways(ways::Vector{OpenStreetMap.Way}) = [way for way in ways if visible(way) && !services(way)]
+filterHighways(ways::Vector{OpenStreetMap.Way}) = [way for way in ways if OpenStreetMap.visible(way) && !OpenStreetMap.services(way)]
 
 ##############################################
 ### Filter and Classify Highways for Cars ###
@@ -119,7 +119,7 @@ end
 
 extractBuildings(ways::Vector{OpenStreetMap.Way}) = [way for way in ways if isdefined(way,:tags) && haskey(way.tags, "building")]
 
-filterBuildings(buildings::Vector{OpenStreetMap.Way}, classes::Dict{String, Int} = OpenStreetMap.BUILDING_CLASSES; levels::Set{Int} = Set(1:length(OpenStreetMap.BUILDING_CLASSES))) = [building for building in buildings if (building.tags["building"] in keys(classes)) && (classes[building.tags["building"]] in levels) && visible(building)]
+filterBuildings(buildings::Vector{OpenStreetMap.Way}, classes::Dict{String, Int} = OpenStreetMap.BUILDING_CLASSES; levels::Set{Int} = Set(1:length(OpenStreetMap.BUILDING_CLASSES))) = [building for building in buildings if (building.tags["building"] in keys(classes)) && (classes[building.tags["building"]] in levels) && OpenStreetMap.visible(building)]
 
 classifyBuildings(buildings::Vector{OpenStreetMap.Way}, classes::Dict{String, Int} = OpenStreetMap.BUILDING_CLASSES) = Dict{Int,Int}(building.id => classes[building.tags["building"]] for  building in buildings if haskey(classes, building.tags["building"]))
 
@@ -130,7 +130,7 @@ classifyBuildings(buildings::Vector{OpenStreetMap.Way}, classes::Dict{String, In
 filterFeatures(features::Dict{Int,Tuple{String,String}}, classes::Dict{String, Int} = OpenStreetMap.FEATURE_CLASSES; levels::Set{Int} = Set(1:length(OpenStreetMap.FEATURE_CLASSES))) = Dict{Int,Tuple{String,String}}(key => feature for (key,feature) in features if classes[feature[1]] in levels)
 
 function filterFeatures!(osmdata::OpenStreetMap.OSMData, classes::Dict{String, Int} = OpenStreetMap.FEATURE_CLASSES; levels::Set{Int} = Set(1:length(OpenStreetMap.FEATURE_CLASSES)))
-	osmdata.features = filterFeatures(osmdata.features, levels, classes)
+	osmdata.features = filterFeatures(osmdata.features, classes, levels = levels)
 end
 
 classifyFeatures(features::Dict{Int,Tuple{String,String}}, classes::Dict{String, Int} = OpenStreetMap.FEATURE_CLASSES) = Dict{Int,Int}(key =>  classes[feature[1]] for (key, feature) in features if haskey(classes, feature[1]))
