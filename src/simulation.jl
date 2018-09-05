@@ -7,7 +7,7 @@ include(path*"OSMSim.jl")
 
 using Main.OSMSim
 
-N = 1000;
+N = 10;
 mode = "business";
 
 sim_data = get_sim_data(datapath);
