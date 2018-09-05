@@ -3,24 +3,25 @@ module OpenStreetMap
 using LibExpat
 using LightGraphs
 using Plots
+using SparseArrays
 
 export WGS84, OSGB36, NAD27 # Coordinate systems constants
 export distance, getX, getY, getZ  # Auxiliary functions to calculate distances and get coordinates of points
-export center, inBounds, onBounds, boundaryPoint #Functions for map bounds
+export center, inbounds, onbounds, boundary_point #Functions for map bounds
 export ECEF, LLA, ENU #Conversion functions
 export parseOSM #parsing XML file
-export extractHighways, filterHighways #Highways extraction 
-export filterRoadways, classifyRoadways,  filterWalkways, classifyWalkways, filterCycleways, classifyCycleways,fillterGraphFeatures #Filtering and classification of cars, cycles and pedestrian Highways
-export extractBuildings, filterBuildings, classifyBuildings #Building extraction, filtering and classification 
-export filterFeatures, filterFeatures!, classifyFeatures #Features filtering and classification
+export extract_highways, filter_highways #Highways extraction 
+export filter_roadways, classify_roadways,  filter_walkways, classify_walkways, filter_cycleways, classify_cycleways #Filtering and classification of cars, cycles and pedestrian Highways
+export extract_buildings, filter_buildings, classify_buildings #Building extraction, filtering and classification 
+export filter_features, filter_features!, classify_features, filter_graph_features #Features filtering and classification
 export crop! #crop map elements
-export nearestNode, nodesWithinRange, centroid #Nodes functions
-export findIntersections, findSegments #Get intersections or segments of the road
-export createGraph #Create a routing network
-export featuresToGraph, findOptimalWaypointApprox, findOptimalWaypointExact
-export findRoute, shortestRoute, fastestRoute #Routing funcions
-export nodesWithinWeights, nodesWithinDrivingDistance, nodesWithinDrivingTime #Find nodes within specified range
-export plotMap, addRoute! #Plotting
+export nearest_node, nodes_within_range, centroid #Nodes functions
+export find_intersections, find_segments #Get intersections or segments of the road
+export create_graph #Create a routing network
+export features_to_graph, find_optimal_waypoint_approx, find_optimal_waypoint_exact
+export find_route, shortest_route, fastest_route #Routing funcions
+export nodes_within_weights, nodes_within_driving_distance, nodes_within_driving_time #Find nodes within specified range
+export plotmap, addroute! #Plotting
 
 include("types.jl") #types used in the package
 include("classes.jl") #grouping highways into classes for routing and plotting

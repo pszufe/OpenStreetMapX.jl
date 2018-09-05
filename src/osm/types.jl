@@ -62,7 +62,7 @@ end
 function ellipsoid(a::BigFloat, b::BigFloat)
     e² = (a^2 - b^2) / a^2
     e′² = (a^2 - b^2) / b^2
-    Ellipsoid(a, b, e², e′²)
+    OpenStreetMap.Ellipsoid(a, b, e², e′²)
 end
 #constructor
 function Ellipsoid(; a::Float64 = NaN, b::Float64= NaN, f_inv::Float64= NaN)
@@ -70,9 +70,9 @@ function Ellipsoid(; a::Float64 = NaN, b::Float64= NaN, f_inv::Float64= NaN)
         throw(ArgumentError("Specify parameter 'a' and either 'b' or 'f_inv'"))
     elseif isnan(b)
 		b = BigFloat(a) * (1 - inv(BigFloat(f_inv)))
-		ellipsoid(BigFloat(a), BigFloat(b))
+		OpenStreetMap.ellipsoid(BigFloat(a), BigFloat(b))
     else
-        ellipsoid(BigFloat(a), BigFloat(b))
+        OpenStreetMap.ellipsoid(BigFloat(a), BigFloat(b))
     end
 end
 
@@ -94,7 +94,7 @@ function Bounds(min_lat, max_lat, min_lon, max_lon)
         throw(ArgumentError("Bounds out of range of LLA coordinate system. " *
                             "Perhaps you're looking for Bounds{ENU}(...)"))
     end
-    Bounds{LLA}(min_lat, max_lat, min_lon, max_lon)
+    OpenStreetMap.Bounds{OpenStreetMap.LLA}(min_lat, max_lat, min_lon, max_lon)
 end
 
 ##################
@@ -138,7 +138,7 @@ mutable struct Network
     g::LightGraphs.SimpleGraphs.SimpleDiGraph{Int64}                # Graph object
     v::Dict{Int,Int}  												# (node id) => (graph vertex)
 	e::Array{Tuple{Int64,Int64},1}     								#edges in graph, stored as a tuple (source,destination)	
-	w::SparseMatrixCSC{Float64, Int}    							# Edge weights, indexed by graph id
+	w::SparseArrays.SparseMatrixCSC{Float64, Int}    							# Edge weights, indexed by graph id
 	class::Vector{Int}                 								# Road class of each edge
 end
 
@@ -148,24 +148,24 @@ end
 ######################
 
 mutable struct OSMData
-    nodes::Dict{Int,LLA}
-    ways::Vector{Way}
-    relations::Vector{Relation}
+    nodes::Dict{Int,OpenStreetMap.LLA}
+    ways::Vector{OpenStreetMap.Way}
+    relations::Vector{OpenStreetMap.Relation}
 	features::Dict{Int,Tuple{String,String}}
-	bounds::Bounds
+	bounds::OpenStreetMap.Bounds
     way_tags::Set{String}
     relation_tags::Set{String}
 end
-OSMData() = OSMData(Dict{Int,LLA}(), Vector{Way}(), Vector{Relation}(), Dict{Int,String}(), Bounds(0.0,0.0,0.0,0.0), Set{String}(), Set{String}())
+OSMData() = OSMData(Dict{Int,OpenStreetMap.LLA}(), Vector{OpenStreetMap.Way}(), Vector{OpenStreetMap.Relation}(), Dict{Int,String}(), Bounds(0.0,0.0,0.0,0.0), Set{String}(), Set{String}())
 
 mutable struct DataHandle
     element::Symbol
-    osm::OSMData
-    node::Tuple{Int64,LLA} # initially undefined
-    way::Way # initially undefined
-    relation::Relation # initially undefined
-	bounds::Bounds # initially undefined
-    DataHandle() = new(:None, OSMData())
+    osm::OpenStreetMap.OSMData
+    node::Tuple{Int64,OpenStreetMap.LLA} # initially undefined
+    way::OpenStreetMap.Way # initially undefined
+    relation::OpenStreetMap.Relation # initially undefined
+	bounds::OpenStreetMap.Bounds # initially undefined
+    DataHandle() = new(:None, OpenStreetMap.OSMData())
 end
 
 
@@ -174,7 +174,7 @@ end
 ### Rendering Style Data ###
 ############################
 
-### Rendering style data (tu moze zmienic bedzie trzeba)
+
 struct Style
     color::String
     width::Real
