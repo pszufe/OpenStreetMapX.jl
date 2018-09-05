@@ -48,7 +48,7 @@ end
 
 function find_routes(pointA::Tuple{Float64,Float64},pointB::Tuple{Float64,Float64},
                     pointC::Tuple{Float64,Float64},
-                    mapD::MapData,google = false, googleapi_key::Union{String,Nothing} = nothing, plotting = true, p = :none)::RouteData
+                    mapD::MapData,google = false, googleapi_key::Union{String,Nothing} = nothing, plotting = true, p = :none; width::Int=600, height::Int=600)::RouteData
     pointA = point_to_nodes(pointA, mapD)
     pointB = point_to_nodes(pointB, mapD)
     pointC = point_to_nodes(pointC, mapD)
@@ -61,7 +61,7 @@ function find_routes(pointA::Tuple{Float64,Float64},pointB::Tuple{Float64,Float6
 	end
     if plotting
         if p == :none
-            p = OpenStreetMap.plotmap(mapD.nodes, OpenStreetMap.ENU(mapD.bounds), roadways=mapD.roadways,roadwayStyle = OpenStreetMap.LAYER_STANDARD)
+            p = OpenStreetMap.plotmap(mapD.nodes, OpenStreetMap.ENU(mapD.bounds), roadways=mapD.roadways,roadwayStyle = OpenStreetMap.LAYER_STANDARD, width=width, height=height)
         end
         p = OpenStreetMap.addroute!(p,mapD.nodes,fastest_route, route_color = "0x000000")
         p = OpenStreetMap.addroute!(p,mapD.nodes,shortest_route,  route_color = "0xFF0000")
