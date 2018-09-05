@@ -23,7 +23,11 @@ add StatsBase
 
 
 
+TODO:
 
+
+
+Document DA_centroids format - externally provided file
 
 
 

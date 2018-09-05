@@ -7,8 +7,8 @@ include(path*"OSMSim.jl")
 
 using Main.OSMSim
 
-N = 10;
+N = 50;
 mode = "business";
 
 sim_data = get_sim_data(datapath);
-nodes, buffer = run_simulation(sim_data,mode,N)
+nodes, buffer = run_simulation(sim_data,mode,N);
