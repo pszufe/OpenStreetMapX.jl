@@ -18,7 +18,7 @@ end
 
 ### Check if Way is Reverse ###
 
-reverseWay(w::OpenStreetMap.Way) = (get(w.tags,"oneway", "") == "-1")
+reverseway(w::OpenStreetMap.Way) = (get(w.tags,"oneway", "") == "-1")
 
 ### Compute the distance of a route ###
 
@@ -33,7 +33,7 @@ end
 ### Find Intersections of Highways ###
 ######################################
 
-function findIntersections(highways::Vector{OpenStreetMap.Way})
+function find_intersections(highways::Vector{OpenStreetMap.Way})
     seen = Set{Int}()
     intersections = Dict{Int,Set{Int}}()
     for highway in highways
@@ -59,14 +59,14 @@ end
 ### Find Segments of Highways ###
 #################################
 
-function findSegments(nodes::Dict{Int,T}, highways::Vector{OpenStreetMap.Way}, intersections::Dict{Int,Set{Int}}) where T<:Union{OpenStreetMap.ENU,OpenStreetMap.ECEF}
+function find_segments(nodes::Dict{Int,T}, highways::Vector{OpenStreetMap.Way}, intersections::Dict{Int,Set{Int}}) where T<:Union{OpenStreetMap.ENU,OpenStreetMap.ECEF}
     segments = OpenStreetMap.Segment[]
     intersect = Set(keys(intersections))
     for highway in highways
         firstNode = 1
         for j = 2:length(highway.nodes)
             if highway.nodes[firstNode] != highway.nodes[j] && (in(highway.nodes[j], intersect)|| j == length(highway.nodes))
-                if !reverseWay(highway)
+                if !reverseway(highway)
                     seg = OpenStreetMap.Segment(highway.nodes[firstNode],highway.nodes[j],highway.nodes[firstNode:j], OpenStreetMap.distance(nodes, highway.nodes[firstNode:j]), highway.id)
                     push!(segments,seg)
                 else

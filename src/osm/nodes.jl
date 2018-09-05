@@ -2,7 +2,7 @@
 ### Add a New Node ###
 ######################
 
-function addNewNode!(nodes::Dict{Int,T},loc::T, start_id::Int = reinterpret((Int), hash(loc))) where T <: (Union{OpenStreetMap.LLA,OpenStreetMap.ENU})
+function add_new_node!(nodes::Dict{Int,T},loc::T, start_id::Int = reinterpret((Int), hash(loc))) where T <: (Union{OpenStreetMap.LLA,OpenStreetMap.ENU})
     id = start_id
     while id <= typemax(Int)
         if !haskey(nodes, id)
@@ -21,7 +21,7 @@ end
 #############################
 
 ### Find the nearest node to a given location ###
-function nearestNode(nodes::Dict{Int,T}, loc::T) where T<:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF})
+function nearest_node(nodes::Dict{Int,T}, loc::T) where T<:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF})
     min_dist = Inf
     best_ind = 0
 
@@ -37,7 +37,7 @@ function nearestNode(nodes::Dict{Int,T}, loc::T) where T<:(Union{OpenStreetMap.E
 end
 
 ### Find nearest node in a list of nodes ###
-function nearestNode(nodes::Dict{Int,T}, loc::T, node_list::Vector{Int}) where T<:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF})
+function nearest_node(nodes::Dict{Int,T}, loc::T, node_list::Vector{Int}) where T<:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF})
     min_dist = Inf
     best_ind = 0
 
@@ -54,14 +54,14 @@ end
 
 
 ### Find nearest node serving as a vertex in a routing network ###
-nearestNode(nodes::Dict{Int,T}, loc::T, network::OpenStreetMap.Network) where T<:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF}) = OpenStreetMap.nearestNode(nodes,loc,collect(keys(network.v)))
+nearest_node(nodes::Dict{Int,T}, loc::T, network::OpenStreetMap.Network) where T<:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF}) = OpenStreetMap.nearest_node(nodes,loc,collect(keys(network.v)))
 
 #############################
 ### Find Node Within Range###
 #############################
 
 ### Find all nodes within range of a location ###
-function nodesWithinRange(nodes::Dict{Int,T}, loc::T, range::Float64 = Inf) where T<:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF})
+function nodes_within_range(nodes::Dict{Int,T}, loc::T, range::Float64 = Inf) where T<:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF})
     if range == Inf
         return keys(nodes)
     end
@@ -76,7 +76,7 @@ function nodesWithinRange(nodes::Dict{Int,T}, loc::T, range::Float64 = Inf) wher
 end
 
 ### Find nodes within range of a location using a subset of nodes ###
-function nodesWithinRange(nodes::Dict{Int,T}, loc::T, node_list::Vector{Int}, range::Float64 = Inf) where T<:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF})
+function nodes_within_range(nodes::Dict{Int,T}, loc::T, node_list::Vector{Int}, range::Float64 = Inf) where T<:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF})
     if range == Inf
         return node_list
     end
@@ -91,7 +91,7 @@ function nodesWithinRange(nodes::Dict{Int,T}, loc::T, node_list::Vector{Int}, ra
 end
 
 ### Find vertices of a routing network within range of a location ###
-nodesWithinRange(nodes::Dict{Int,T},loc::T, network::OpenStreetMap.Network, range::Float64 = Inf) where T <:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF}) = OpenStreetMap.nodesWithinRange(nodes,loc,collect(keys(network.v)),range)
+nodes_within_range(nodes::Dict{Int,T},loc::T, network::OpenStreetMap.Network, range::Float64 = Inf) where T <:(Union{OpenStreetMap.ENU,OpenStreetMap.ECEF}) = OpenStreetMap.nodes_within_range(nodes,loc,collect(keys(network.v)),range)
 
 #########################################
 ### Compute Centroid of List of Nodes ###

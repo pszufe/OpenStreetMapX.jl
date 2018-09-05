@@ -58,21 +58,21 @@ end
 ### Check Whether a Location is Within Bounds ###
 #################################################
 
-function inBounds(loc::OpenStreetMap.ENU, bounds::OpenStreetMap.Bounds{OpenStreetMap.ENU})
+function inbounds(loc::OpenStreetMap.ENU, bounds::OpenStreetMap.Bounds{OpenStreetMap.ENU})
     x, y = OpenStreetMap.getX(loc), OpenStreetMap.getY(loc)
     bounds.min_x <= x <= bounds.max_x &&
     bounds.min_y <= y <= bounds.max_y
 end
 
-function inBounds(loc::OpenStreetMap.LLA, bounds::OpenStreetMap.Bounds{OpenStreetMap.LLA})
+function inbounds(loc::OpenStreetMap.LLA, bounds::OpenStreetMap.Bounds{OpenStreetMap.LLA})
     x, y = OpenStreetMap.getX(loc), OpenStreetMap.getY(loc)
     min_x, max_x = bounds.min_x, bounds.max_x
     (min_x > max_x ? !(max_x < x < min_x) : min_x <= x <= max_x) &&
     bounds.min_y <= y <= bounds.max_y
 end
 
-# only for points that have passed the inBounds test
-function onBounds(loc::T, bounds::OpenStreetMap.Bounds{T}) where T<:Union{OpenStreetMap.LLA,OpenStreetMap.ENU}
+# only for points that have passed the inbounds test
+function onbounds(loc::T, bounds::OpenStreetMap.Bounds{T}) where T<:Union{OpenStreetMap.LLA,OpenStreetMap.ENU}
     x, y = OpenStreetMap.getX(loc), OpenStreetMap.getY(loc)
     x == bounds.min_x || x == bounds.max_x ||
     y == bounds.min_y || y == bounds.max_y
@@ -82,8 +82,8 @@ end
 ### Find the Closest Point  Within Bounds ###
 #############################################
 
-# only for points where inBounds(p1) != inBounds(p2)
-function boundaryPoint(p1::T, p2::T, bounds::OpenStreetMap.Bounds{T}) where T<:Union{OpenStreetMap.LLA,OpenStreetMap.ENU}
+# only for points where inbounds(p1) != inbounds(p2)
+function boundary_point(p1::T, p2::T, bounds::OpenStreetMap.Bounds{T}) where T<:Union{OpenStreetMap.LLA,OpenStreetMap.ENU}
     x1, y1 = OpenStreetMap.getX(p1), OpenStreetMap.getY(p1)
     x2, y2 = OpenStreetMap.getX(p2), OpenStreetMap.getY(p2)
 
@@ -100,7 +100,7 @@ function boundaryPoint(p1::T, p2::T, bounds::OpenStreetMap.Bounds{T}) where T<:U
         end
         
         p3 = T(OpenStreetMap.XY(x, y))
-        OpenStreetMap.inBounds(p3, bounds) && return p3
+        OpenStreetMap.inbounds(p3, bounds) && return p3
     end
     
     # Move x to x bound if segment crosses boundary
@@ -113,7 +113,7 @@ function boundaryPoint(p1::T, p2::T, bounds::OpenStreetMap.Bounds{T}) where T<:U
     end
 
     p3 = T(OpenStreetMap.XY(x, y))
-    OpenStreetMap.inBounds(p3, bounds) && return p3
+    OpenStreetMap.inbounds(p3, bounds) && return p3
 
     # Move y to y bound if segment crosses boundary
     if y1 < bounds.min_y < y2 || y1 > bounds.min_y > y2
@@ -125,7 +125,7 @@ function boundaryPoint(p1::T, p2::T, bounds::OpenStreetMap.Bounds{T}) where T<:U
     end
 
     p3 = T(OpenStreetMap.XY(x, y))
-    OpenStreetMap.inBounds(p3, bounds) && return p3
+    OpenStreetMap.inbounds(p3, bounds) && return p3
 
     error("Failed to find boundary point.")
 end

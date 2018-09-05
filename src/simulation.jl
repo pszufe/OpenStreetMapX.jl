@@ -5,7 +5,7 @@ datapath = "../../datasets/";
 include(pth*"OpenStreetMap.jl")
 include(path*"OSMSim.jl")
 
-using OSMSim
+using Main.OSMSim
 
 N = 1000;
 mode = "business";

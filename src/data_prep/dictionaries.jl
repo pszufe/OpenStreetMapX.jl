@@ -418,8 +418,8 @@ csv_datasets = Dict(
 
 	"df_demostat"          => Dict(
 		:variables   => desc_df_demographics,
-		:NAs         => nothing,
-		:NAs_replace => [:ECYHMAMED => 0],
+		:NAs         => ["", "NA"],
+		:NAs_replace => [:ECYHMAMED => 0,:ECYHTAMED => 0, :ECYHFAMED => 0],
 		:rename      => [:PRCDDA => :DA_ID],
 		:new_col     => [(combine_cols!,(:HouseholdsWithChildren, [:ECYHFSCWC,:ECYHFSLP], +)),
 						 (combine_cols!, (:HouseholdsWithoutChildren, [:ECYBASHHD, :HouseholdsWithChildren], -))],

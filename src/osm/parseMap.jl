@@ -2,7 +2,7 @@
 ### Parse Elements of Map ###
 #############################
 
-function parseElement(handler::LibExpat.XPStreamHandler,
+function parse_element(handler::LibExpat.XPStreamHandler,
                       name::AbstractString,
                       attr::Dict{AbstractString,AbstractString})
     data = handler.data::OpenStreetMap.DataHandle
@@ -41,7 +41,7 @@ function parseElement(handler::LibExpat.XPStreamHandler,
     end
 end
 
-function collectElement(handler::LibExpat.XPStreamHandler, name::AbstractString)
+function collect_element(handler::LibExpat.XPStreamHandler, name::AbstractString)
     if name == "node"
         handler.data.osm.nodes[handler.data.node[1]] = handler.data.node[2]
         handler.data.element = :None
@@ -59,8 +59,8 @@ end
 
 function parseOSM(filename::AbstractString; args...)
     callbacks = LibExpat.XPCallbacks()
-    callbacks.start_element = parseElement
-    callbacks.end_element = collectElement
+    callbacks.start_element = parse_element
+    callbacks.end_element = collect_element
     data = OpenStreetMap.DataHandle()
     LibExpat.parsefile(filename, callbacks, data=data; args...)
     data.osm::OpenStreetMap.OSMData
