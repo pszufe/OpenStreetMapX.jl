@@ -3,7 +3,7 @@ OpenStreetMap - routing and simulations library
 
 ## Installation
 
-The current version uses Julia 0.7.0
+The current version uses Julia 1.0.0
 
 Before using the library you need to install Julia packages, press `]` to go to package manager:
 
