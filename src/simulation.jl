@@ -5,6 +5,7 @@ Distributed.addprocs(2)
 @everywhere begin
     using Random
     using Dates
+    using Distributed
     pth = "osm/";
     path = "sim/";
     datapath = "../../datasets/";
