@@ -10,8 +10,8 @@ const SPEED_ROADS_URBAN = Dict(
     4 => 70,    # Secondary
     5 => 50,    # Tertiary
     6 => 40,    # Residential/Unclassified
-    7 => 40,     # Service
-    8 => 30)     # Living street
+    7 => 20,     # Service
+    8 => 10)     # Living street
 
 const SPEED_ROADS_RURAL = Dict(
     1 => 100,
