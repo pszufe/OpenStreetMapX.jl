@@ -5,11 +5,12 @@ datapath = "../../datasets/";
 include(pth*"OpenStreetMap.jl")
 include(path*"OSMSim.jl")
 
-using Main.OSMSim, LinearAlgebra, SparseArrays
+using  Main.OSMSim,LinearAlgebra, SparseArrays
+
 
 struct MapData
     bounds::OpenStreetMap.Bounds{OpenStreetMap.LLA}
-    nodes::Dict{Int,OpenStreetMap.ENU} 
+    nodes::Dict{Int,OpenStreetMap.ENU}
     roadways::Array{OpenStreetMap.Way,1}
     intersections::Dict{Int,Set{Int}}
     network::OpenStreetMap.Network
@@ -47,8 +48,8 @@ function map_data_to_sim_data(mapD::MapData,googleapi_key::String)::OSMSim.SimDa
 end
 
 function find_routes(pointA::Tuple{Float64,Float64},pointB::Tuple{Float64,Float64},
-                    pointC::Tuple{Float64,Float64},
-                    mapD::MapData,google = false, googleapi_key::Union{String,Nothing} = nothing, plotting = true, p = :none; width::Int=600, height::Int=600)::RouteData
+                    pointC::Tuple{Float64,Float64},google = false, googleapi_key::Union{String,Nothing} = nothing
+                    mapD::MapData, plotting = true, p = :none; width::Int=600, height::Int=600)::RouteData
     pointA = point_to_nodes(pointA, mapD)
     pointB = point_to_nodes(pointB, mapD)
     pointC = point_to_nodes(pointC, mapD)
@@ -71,7 +72,6 @@ function find_routes(pointA::Tuple{Float64,Float64},pointB::Tuple{Float64,Float6
     end
     return RouteData(shortest_route,
     fastest_route,
-    google_route,
+	google_route,
     p)
 end
-
