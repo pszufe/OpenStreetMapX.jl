@@ -1,4 +1,4 @@
-module OpenStreetMap
+module OpenStreetMap2
 
 using LibExpat
 using LightGraphs

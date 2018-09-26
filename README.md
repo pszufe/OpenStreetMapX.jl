@@ -1,5 +1,5 @@
 # OSMsim.jl
-OpenStreetMap - routing and simulations library
+OpenStreetMap2 - routing and simulations library
 
 ## Installation
 

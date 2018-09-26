@@ -6,7 +6,7 @@ datafile = "SAMPLE_WinnipegCMA_TRAFCAN2017Q1.csv"
 sim_results = "counts.csv"
 mapfile = "Winnipeg CMA.osm"
 
-include(joinpath(pth,"OpenStreetMap.jl"))
+include(joinpath(pth,"OpenStreetMap2.jl"))
 include(joinpath(path,"OSMsim.jl"))
 
 using Main.OSMSim
@@ -20,7 +20,7 @@ function compare_data(datapath::String,mapfile::String,resultfile::String, testf
     traffic = Nanocsv.read_csv(joinpath(datapath,testfile))
     traffic_data = Dict()
     for i in 1:nrow(traffic)
-        key = OpenStreetMap.nearest_node(nodes,OpenStreetMap.ENU(OpenStreetMap.LLA(traffic[:LATITUDE][i],traffic[:LONGITUDE][i]),bounds),collect(keys(intersections)))
+        key = OpenStreetMap2.nearest_node(nodes,OpenStreetMap2.ENU(OpenStreetMap2.LLA(traffic[:LATITUDE][i],traffic[:LONGITUDE][i]),bounds),collect(keys(intersections)))
         if haskey(traffic_data, key)
             traffic_data[key][:TRAFFIC1][1] += traffic[i,:TRAFFIC1]
         else

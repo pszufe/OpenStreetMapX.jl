@@ -1,4 +1,4 @@
-### Julia OpenStreetMap Package ###
+### Julia OpenStreetMap2 Package ###
 ### MIT License                 ###
 ### Copyright 2014              ###
 

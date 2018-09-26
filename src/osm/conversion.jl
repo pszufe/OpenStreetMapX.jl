@@ -7,7 +7,7 @@
 ###############################################
 
 
-function ECEF(lla::OpenStreetMap.LLA, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84)
+function ECEF(lla::OpenStreetMap2.LLA, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84)
     ϕdeg, λdeg, h = lla.lat, lla.lon, lla.alt
     d = datum
 
@@ -20,14 +20,14 @@ function ECEF(lla::OpenStreetMap.LLA, datum::OpenStreetMap.Ellipsoid = OpenStree
     y = (N + h) * cosϕ * sinλ
     z = (N * (1 - d.e²) + h) * sinϕ
 
-    return OpenStreetMap.ECEF(x, y, z)
+    return OpenStreetMap2.ECEF(x, y, z)
 end
 
 ###############################################
 ### Conversion from ECEF to LLA coordinates ###
 ###############################################
 
-function LLA(ecef::OpenStreetMap.ECEF, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84)
+function LLA(ecef::OpenStreetMap2.ECEF, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84)
     x, y, z = ecef.x, ecef.y, ecef.z
     d = datum
 
@@ -39,7 +39,7 @@ function LLA(ecef::OpenStreetMap.ECEF, datum::OpenStreetMap.Ellipsoid = OpenStre
     N = d.a / sqrt(1 - d.e² * sin(ϕ)^2)  # Radius of curvature (meters)
     h = p / cos(ϕ) - N
 
-    return OpenStreetMap.LLA(rad2deg(ϕ), rad2deg(λ), h)
+    return OpenStreetMap2.LLA(rad2deg(ϕ), rad2deg(λ), h)
 end
 
 ###############################################
@@ -47,10 +47,10 @@ end
 ###############################################
 
 # Given a reference point for linarization
-function ENU(ecef::OpenStreetMap.ECEF, lla_ref::OpenStreetMap.LLA, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84)
+function ENU(ecef::OpenStreetMap2.ECEF, lla_ref::OpenStreetMap2.LLA, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84)
     ϕdeg, λdeg = lla_ref.lat, lla_ref.lon
 
-    ecef_ref = OpenStreetMap.ECEF(lla_ref, datum)
+    ecef_ref = OpenStreetMap2.ECEF(lla_ref, datum)
     ∂x = ecef.x - ecef_ref.x
     ∂y = ecef.y - ecef_ref.y
     ∂z = ecef.z - ecef_ref.z
@@ -68,22 +68,22 @@ function ENU(ecef::OpenStreetMap.ECEF, lla_ref::OpenStreetMap.LLA, datum::OpenSt
     north = ∂x * -cosλ*sinϕ + ∂y * -sinλ*sinϕ + ∂z * cosϕ
     up    = ∂x * cosλ*cosϕ  + ∂y * sinλ*cosϕ  + ∂z * sinϕ
 
-    return OpenStreetMap.ENU(east, north, up)
+    return OpenStreetMap2.ENU(east, north, up)
 end
 
 
 # Given Bounds object for linearization
-ENU(ecef::OpenStreetMap.ECEF, bounds::OpenStreetMap.Bounds{OpenStreetMap.LLA}, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84) = OpenStreetMap.ENU(ecef, OpenStreetMap.center(bounds), datum)
+ENU(ecef::OpenStreetMap2.ECEF, bounds::OpenStreetMap2.Bounds{OpenStreetMap2.LLA}, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84) = OpenStreetMap2.ENU(ecef, OpenStreetMap2.center(bounds), datum)
 
 
 ###############################################
 ### Conversion from ENU to ECEF coordinates ###
 ###############################################
 
-function ECEF(enu::OpenStreetMap.ENU, lla_ref::OpenStreetMap.LLA, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84)
+function ECEF(enu::OpenStreetMap2.ENU, lla_ref::OpenStreetMap2.LLA, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84)
     ϕdeg, λdeg = lla_ref.lat, lla_ref.lon
 
-    ecef_ref = OpenStreetMap.ECEF(lla_ref, datum)
+    ecef_ref = OpenStreetMap2.ECEF(lla_ref, datum)
 
     # Compute rotation matrix
     sinλ, cosλ = sind(λdeg), cosd(λdeg)
@@ -102,31 +102,31 @@ function ECEF(enu::OpenStreetMap.ENU, lla_ref::OpenStreetMap.LLA, datum::OpenStr
     y = cosλ*enu.east +  -sinϕ*sinλ*enu.north + cosϕ*sinλ*enu.up + ecef_ref.y
     z    = 0.0*enu.east + cosϕ*enu.north + sinϕ*enu.up + ecef_ref.z
 
-    return OpenStreetMap.ECEF(x, y, z)
+    return OpenStreetMap2.ECEF(x, y, z)
 end
 
 # Given Bounds object for linearization
-ECEF(enu::OpenStreetMap.ENU, bounds::OpenStreetMap.Bounds{OpenStreetMap.LLA}, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84) = OpenStreetMap.ECEF(enu, OpenStreetMap.center(bounds), datum)
+ECEF(enu::OpenStreetMap2.ENU, bounds::OpenStreetMap2.Bounds{OpenStreetMap2.LLA}, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84) = OpenStreetMap2.ECEF(enu, OpenStreetMap2.center(bounds), datum)
 
 ##############################################
 ### Conversion from LLA to ENU coordinates ###
 ##############################################
 
 # Given a reference point for linarization
-ENU(lla::OpenStreetMap.LLA, lla_ref::OpenStreetMap.LLA, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84) = OpenStreetMap.ENU(OpenStreetMap.ECEF(lla, datum), lla_ref, datum)
+ENU(lla::OpenStreetMap2.LLA, lla_ref::OpenStreetMap2.LLA, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84) = OpenStreetMap2.ENU(OpenStreetMap2.ECEF(lla, datum), lla_ref, datum)
 
 # Given Bounds object for linearization
-ENU(lla::OpenStreetMap.LLA, bounds::OpenStreetMap.Bounds{OpenStreetMap.LLA}, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84) = OpenStreetMap.ENU(OpenStreetMap.ECEF(lla, datum), bounds, datum)
+ENU(lla::OpenStreetMap2.LLA, bounds::OpenStreetMap2.Bounds{OpenStreetMap2.LLA}, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84) = OpenStreetMap2.ENU(OpenStreetMap2.ECEF(lla, datum), bounds, datum)
 
 ##############################################
 ### Conversion from ENU to LLA coordinates ###
 ##############################################
 
 # Given a reference point for linarization
-LLA(enu::OpenStreetMap.ENU, lla_ref::OpenStreetMap.LLA, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84) = OpenStreetMap.LLA(OpenStreetMap.ECEF(enu,lla_ref))
+LLA(enu::OpenStreetMap2.ENU, lla_ref::OpenStreetMap2.LLA, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84) = OpenStreetMap2.LLA(OpenStreetMap2.ECEF(enu,lla_ref))
 
 # Given Bounds object for linearization
-LLA(enu::OpenStreetMap.ENU, bounds::OpenStreetMap.Bounds{OpenStreetMap.LLA}, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84) = OpenStreetMap.LLA(OpenStreetMap.ECEF(enu,bounds))
+LLA(enu::OpenStreetMap2.ENU, bounds::OpenStreetMap2.Bounds{OpenStreetMap2.LLA}, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84) = OpenStreetMap2.LLA(OpenStreetMap2.ECEF(enu,bounds))
 
 #########################################
 ### Dictionaries of Nodes Conversions ###
@@ -136,12 +136,12 @@ LLA(enu::OpenStreetMap.ENU, bounds::OpenStreetMap.Bounds{OpenStreetMap.LLA}, dat
 ### Conversion from LLA to ECEF coordinates ###
 ###############################################
 
-function ECEF(nodes::Dict{Int,OpenStreetMap.LLA}, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84)
-    r = Dict{Int,OpenStreetMap.ECEF}()
+function ECEF(nodes::Dict{Int,OpenStreetMap2.LLA}, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84)
+    r = Dict{Int,OpenStreetMap2.ECEF}()
     sizehint!(r, ceil(Int, 1.5*length(nodes)))
 
     for (key, node) in nodes
-        r[key] = OpenStreetMap.ECEF(node, datum)
+        r[key] = OpenStreetMap2.ECEF(node, datum)
     end
 
     return r
@@ -151,12 +151,12 @@ end
 ### Conversion from ECEF to LLA coordinates ###
 ###############################################
 
-function LLA(nodes::Dict{Int,OpenStreetMap.ECEF}, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84)
-    r = Dict{Int,OpenStreetMap.LLA}()
+function LLA(nodes::Dict{Int,OpenStreetMap2.ECEF}, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84)
+    r = Dict{Int,OpenStreetMap2.LLA}()
     sizehint!(r, ceil(Int, 1.5*length(nodes)))
 
     for (key, node) in nodes
-        r[key] = OpenStreetMap.LLA(node, datum)
+        r[key] = OpenStreetMap2.LLA(node, datum)
     end
 
     return r
@@ -168,53 +168,53 @@ end
 ######################################################
 
 # Given a reference point
-function ENU(nodes::Dict{Int,T}, lla_ref::OpenStreetMap.LLA,
-            datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84) where T<:Union{OpenStreetMap.LLA,OpenStreetMap.ECEF}
-    r = Dict{Int,OpenStreetMap.ENU}()
+function ENU(nodes::Dict{Int,T}, lla_ref::OpenStreetMap2.LLA,
+            datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84) where T<:Union{OpenStreetMap2.LLA,OpenStreetMap2.ECEF}
+    r = Dict{Int,OpenStreetMap2.ENU}()
     sizehint!(r, ceil(Int, 1.5*length(nodes)))
 
     for (key, node) in nodes
-        r[key] = OpenStreetMap.ENU(node, lla_ref, datum)
+        r[key] = OpenStreetMap2.ENU(node, lla_ref, datum)
     end
 
     return r
 end
 
 # Given Bounds
-ENU(nodes::Dict{Int,T}, bounds::OpenStreetMap.Bounds{OpenStreetMap.LLA}, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84) where T<:Union{OpenStreetMap.LLA,OpenStreetMap.ECEF} = OpenStreetMap.ENU(nodes, OpenStreetMap.center(bounds), datum)
+ENU(nodes::Dict{Int,T}, bounds::OpenStreetMap2.Bounds{OpenStreetMap2.LLA}, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84) where T<:Union{OpenStreetMap2.LLA,OpenStreetMap2.ECEF} = OpenStreetMap2.ENU(nodes, OpenStreetMap2.center(bounds), datum)
 
 ###############################################
 ### Conversion from ENU to ECEF coordinates ###
 ###############################################
 
-function ECEF(nodes::Dict{Int,OpenStreetMap.ENU},lla_ref::OpenStreetMap.LLA , datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84)
-    r = Dict{Int,OpenStreetMap.ECEF}()
+function ECEF(nodes::Dict{Int,OpenStreetMap2.ENU},lla_ref::OpenStreetMap2.LLA , datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84)
+    r = Dict{Int,OpenStreetMap2.ECEF}()
     sizehint!(r, ceil(Int, 1.5*length(nodes)))
 
     for (key, node) in nodes
-        r[key] = OpenStreetMap.ECEF(node, lla_ref, datum)
+        r[key] = OpenStreetMap2.ECEF(node, lla_ref, datum)
     end
 
     return r
 end
 
 # Given Bounds
-ECEF(nodes::Dict{Int,OpenStreetMap.ENU}, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ECEF(nodes, OpenStreetMap.center(bounds), datum)
+ECEF(nodes::Dict{Int,OpenStreetMap2.ENU}, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ECEF(nodes, OpenStreetMap2.center(bounds), datum)
 
 ###############################################
 ### Conversion from ENU to LLA coordinates ###
 ###############################################
 
-function LLA(nodes::Dict{Int,OpenStreetMap.ENU},lla_ref::OpenStreetMap.LLA , datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84)
-    r = Dict{Int,OpenStreetMap.LLA}()
+function LLA(nodes::Dict{Int,OpenStreetMap2.ENU},lla_ref::OpenStreetMap2.LLA , datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84)
+    r = Dict{Int,OpenStreetMap2.LLA}()
     sizehint!(r, ceil(Int, 1.5*length(nodes)))
 
     for (key, node) in nodes
-        r[key] = OpenStreetMap.LLA(node, lla_ref, datum)
+        r[key] = OpenStreetMap2.LLA(node, lla_ref, datum)
     end
 
     return r
 end
 
 # Given Bounds
-LLA(nodes::Dict{Int,OpenStreetMap.ENU}, bounds::OpenStreetMap.Bounds{OpenStreetMap.LLA}, datum::OpenStreetMap.Ellipsoid = OpenStreetMap.WGS84) = OpenStreetMap.LLA(nodes, OpenStreetMap.center(bounds), datum)
+LLA(nodes::Dict{Int,OpenStreetMap2.ENU}, bounds::OpenStreetMap2.Bounds{OpenStreetMap2.LLA}, datum::OpenStreetMap2.Ellipsoid = OpenStreetMap2.WGS84) = OpenStreetMap2.LLA(nodes, OpenStreetMap2.center(bounds), datum)

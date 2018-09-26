@@ -2,7 +2,7 @@ pth = "osm/";
 path = "sim/";
 datapath = "../../datasets/";
 
-include(pth*"OpenStreetMap.jl")
+include(pth*"OpenStreetMap2.jl")
 include(path*"OSMSim.jl")
 
 using Main.OSMSim
@@ -40,24 +40,24 @@ function find_routes(sim_data::OSMSim.SimData,
         if google
             google_route, mode = OSMSim.get_google_route(start_node,fin_node,sim_data)
         end
-        shortest_route, shortest_distance, shortest_time = OpenStreetMap.shortest_route(sim_data.network, start_node,fin_node)
-        fastest_route, fastest_distance, fastest_time = OpenStreetMap.fastest_route(sim_data.network, start_node,fin_node)
+        shortest_route, shortest_distance, shortest_time = OpenStreetMap2.shortest_route(sim_data.network, start_node,fin_node)
+        fastest_route, fastest_distance, fastest_time = OpenStreetMap2.fastest_route(sim_data.network, start_node,fin_node)
     else
         waypoint = OSMSim.get_waypoint(start_node,fin_node,activity,sim_data,false)
         if google
             google_route, mode = OSMSim.get_google_route(start_node,fin_node,waypoint,sim_data)
         end
-        shortest_route, shortest_distance, shortest_time = OpenStreetMap.shortest_route(sim_data.network, start_node, waypoint,fin_node)
-        fastest_route, fastest_distance, fastest_time = OpenStreetMap.fastest_route(sim_data.network, start_node, waypoint,fin_node)
+        shortest_route, shortest_distance, shortest_time = OpenStreetMap2.shortest_route(sim_data.network, start_node, waypoint,fin_node)
+        fastest_route, fastest_distance, fastest_time = OpenStreetMap2.fastest_route(sim_data.network, start_node, waypoint,fin_node)
     end
     if plotting
         if p == :none
-            p = OpenStreetMap.plotmap(sim_data.nodes, OpenStreetMap.ENU(sim_data.bounds), roadways=sim_data.roadways)
+            p = OpenStreetMap2.plotmap(sim_data.nodes, OpenStreetMap2.ENU(sim_data.bounds), roadways=sim_data.roadways)
         end
-        p = OpenStreetMap.addroute!(p,sim_data.nodes,fastest_route, route_color = "0x000000")
-        p = OpenStreetMap.addroute!(p,sim_data.nodes,shortest_route,  route_color = "0xFF0000")
+        p = OpenStreetMap2.addroute!(p,sim_data.nodes,fastest_route, route_color = "0x000000")
+        p = OpenStreetMap2.addroute!(p,sim_data.nodes,shortest_route,  route_color = "0xFF0000")
         if google
-            p = OpenStreetMap.addroute!(p,sim_data.nodes,google_route,  route_color = "0xCC00CC")
+            p = OpenStreetMap2.addroute!(p,sim_data.nodes,google_route,  route_color = "0xCC00CC")
         end
     end
     return RouteData(shortest_route,

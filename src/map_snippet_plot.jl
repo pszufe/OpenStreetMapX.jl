@@ -2,18 +2,18 @@ pth = "osm/";
 path = "sim/";
 datapath = "../../datasets/";
 
-include(pth*"OpenStreetMap.jl")
+include(pth*"OpenStreetMap2.jl")
 include(path*"OSMSim.jl")
 
 using  Main.OSMSim,LinearAlgebra, SparseArrays
 
 
 struct MapData
-    bounds::OpenStreetMap.Bounds{OpenStreetMap.LLA}
-    nodes::Dict{Int,OpenStreetMap.ENU}
-    roadways::Array{OpenStreetMap.Way,1}
+    bounds::OpenStreetMap2.Bounds{OpenStreetMap2.LLA}
+    nodes::Dict{Int,OpenStreetMap2.ENU}
+    roadways::Array{OpenStreetMap2.Way,1}
     intersections::Dict{Int,Set{Int}}
-    network::OpenStreetMap.Network
+    network::OpenStreetMap2.Network
 end
 
 mutable struct RouteData
@@ -30,8 +30,8 @@ function generate_point_in_bounds(mapD::MapData)
 end
 
 function point_to_nodes(point::Tuple{Float64,Float64}, map_data::MapData)
-    point = OpenStreetMap.LLA(point[1],point[2])
-    point = OpenStreetMap.nearest_node(map_data.nodes,OpenStreetMap.ENU(point, map_data.bounds), map_data.network)
+    point = OpenStreetMap2.LLA(point[1],point[2])
+    point = OpenStreetMap2.nearest_node(map_data.nodes,OpenStreetMap2.ENU(point, map_data.bounds), map_data.network)
 end
 
 function map_data_to_sim_data(mapD::MapData,googleapi_key::String)::OSMSim.SimData
@@ -53,8 +53,8 @@ function find_routes(pointA::Tuple{Float64,Float64},pointB::Tuple{Float64,Float6
     pointA = point_to_nodes(pointA, mapD)
     pointB = point_to_nodes(pointB, mapD)
     pointC = point_to_nodes(pointC, mapD)
-    shortest_route, shortest_distance, shortest_time = OpenStreetMap.shortest_route(mapD.network, pointA, pointB,pointC)
-    fastest_route, fastest_distance, fastest_time = OpenStreetMap.fastest_route(mapD.network, pointA, pointB,pointC)
+    shortest_route, shortest_distance, shortest_time = OpenStreetMap2.shortest_route(mapD.network, pointA, pointB,pointC)
+    fastest_route, fastest_distance, fastest_time = OpenStreetMap2.fastest_route(mapD.network, pointA, pointB,pointC)
 	google_route = nothing
 	if google
 		sim_data = map_data_to_sim_data(mapD,googleapi_key)
@@ -62,12 +62,12 @@ function find_routes(pointA::Tuple{Float64,Float64},pointB::Tuple{Float64,Float6
 	end
     if plotting
         if p == :none
-            p = OpenStreetMap.plotmap(mapD.nodes, OpenStreetMap.ENU(mapD.bounds), roadways=mapD.roadways,roadwayStyle = OpenStreetMap.LAYER_STANDARD, width=width, height=height)
+            p = OpenStreetMap2.plotmap(mapD.nodes, OpenStreetMap2.ENU(mapD.bounds), roadways=mapD.roadways,roadwayStyle = OpenStreetMap2.LAYER_STANDARD, width=width, height=height)
         end
-        p = OpenStreetMap.addroute!(p,mapD.nodes,fastest_route, route_color = "0x000000")
-        p = OpenStreetMap.addroute!(p,mapD.nodes,shortest_route,  route_color = "0xFF0000")
+        p = OpenStreetMap2.addroute!(p,mapD.nodes,fastest_route, route_color = "0x000000")
+        p = OpenStreetMap2.addroute!(p,mapD.nodes,shortest_route,  route_color = "0xFF0000")
 		if google
-			p = OpenStreetMap.addroute!(p,mapD.nodes,google_route,  route_color = "0xCC00CC")
+			p = OpenStreetMap2.addroute!(p,mapD.nodes,google_route,  route_color = "0xCC00CC")
 		end
     end
     return RouteData(shortest_route,

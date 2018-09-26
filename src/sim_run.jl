@@ -17,7 +17,7 @@ begin
     pth = "osm/";
     path = "sim/";
     datapath = "../datasets/";
-    include(joinpath(pth,"OpenStreetMap.jl"))
+    include(joinpath(pth,"OpenStreetMap2.jl"))
     include(joinpath(path,"OSMSim.jl"))
     using Main.OSMSim
     mode = "flows";
