@@ -26,7 +26,6 @@ export MapData
 
 include("types.jl") #types used in the package
 include("classes.jl") #grouping highways into classes for routing and plotting
-include("layers.jl")  #layers used in plotting
 include("speeds.jl") # speed limits in kilometers per hour
 
 include("points.jl") # points coordinates and constants
