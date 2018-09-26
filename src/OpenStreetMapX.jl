@@ -24,6 +24,8 @@ export nodes_within_weights, nodes_within_driving_distance, nodes_within_driving
 export get_map_data
 export MapData
 
+export get_google_route
+
 include("types.jl") #types used in the package
 include("classes.jl") #grouping highways into classes for routing and plotting
 include("speeds.jl") # speed limits in kilometers per hour
@@ -35,6 +37,8 @@ include("conversion.jl") #conversion of geographical coordinates
 include("parseMap.jl") #map parsing funcions
 include("classification.jl") #highways, features and buildings classification functions
 include("crop.jl") #cropping nodes and ways
+
+include("google_routing.jl")
 
 include("nodes.jl") #finding nearest nodes or nodes within some range
 include("intersections.jl") #finding intersections
