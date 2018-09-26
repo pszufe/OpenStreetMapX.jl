@@ -1,4 +1,4 @@
-# OpenStreetMap2.jl
+# OpenStreetMapX.jl
 This is a complete re-write of OpenStreetMap.jl package.  
 
 Compared to the original package major changes include:
@@ -15,7 +15,7 @@ Compared to the original package major changes include:
 The current version uses Julia 1.0.0
 
 ```julia
-using Pkg; Pkg.add(PackageSpec(url="https://github.com/pszufe/OpenStreetMap2.jl"))
+using Pkg; Pkg.add(PackageSpec(url="https://github.com/pszufe/OpenStreetMapX.jl"))
 ```
 
 
@@ -23,10 +23,10 @@ using Pkg; Pkg.add(PackageSpec(url="https://github.com/pszufe/OpenStreetMap2.jl"
 ## Usage
 
 ```julia
-using OpenStreetMap2
-map_data = OpenStreetMap2.get_map_data("/home/ubuntu/", "mymap.osm");
+using OpenStreetMapX
+map_data = OpenStreetMapX.get_map_data("/home/ubuntu/", "mymap.osm");
 
-p = OpenStreetMap2.plotmap(map_data.nodes, OpenStreetMap2.ENU(mapD.bounds), roadways=map_data.roadways,roadwayStyle = OpenStreetMap2.LAYER_STANDARD, width=600, height=600)
+p = OpenStreetMapX.plotmap(map_data.nodes, OpenStreetMapX.ENU(mapD.bounds), roadways=map_data.roadways,roadwayStyle = OpenStreetMapX.LAYER_STANDARD, width=600, height=600)
 ```
 
 See the `samples` directory for a more complete example.  

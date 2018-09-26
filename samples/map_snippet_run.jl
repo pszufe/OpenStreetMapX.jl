@@ -1,10 +1,10 @@
-include("osm/OpenStreetMap2.jl")
+include("osm/OpenStreetMapX.jl")
 
 
 
 mapfile = "map2.osm";
 datapath = "../datasets/";
-map_data = OpenStreetMap2.get_map_data(datapath, mapfile);
+map_data = OpenStreetMapX.get_map_data(datapath, mapfile);
 
 
 include("map_snippet_plot.jl")

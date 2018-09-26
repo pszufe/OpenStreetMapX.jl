@@ -4,7 +4,7 @@
 
 ### Check if Way is One - Way ### 
 
-function oneway(w::OpenStreetMap2.Way)
+function oneway(w::OpenStreetMapX.Way)
     v = get(w.tags,"oneway", "")
     if v == "false" || v == "no" || v == "0"
         return false
@@ -18,11 +18,11 @@ end
 
 ### Check if Way is Reverse ###
 
-reverseway(w::OpenStreetMap2.Way) = (get(w.tags,"oneway", "") == "-1")
+reverseway(w::OpenStreetMapX.Way) = (get(w.tags,"oneway", "") == "-1")
 
 ### Compute the distance of a route ###
 
-function distance(nodes::Dict{Int,T}, route::Vector{Int}) where T<:(Union{OpenStreetMap2.ENU,OpenStreetMap2.ECEF})
+function distance(nodes::Dict{Int,T}, route::Vector{Int}) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
     if length(route) == 0
         return Inf
     end
@@ -33,7 +33,7 @@ end
 ### Find Intersections of Highways ###
 ######################################
 
-function find_intersections(highways::Vector{OpenStreetMap2.Way})
+function find_intersections(highways::Vector{OpenStreetMapX.Way})
     seen = Set{Int}()
     intersections = Dict{Int,Set{Int}}()
     for highway in highways
@@ -59,22 +59,22 @@ end
 ### Find Segments of Highways ###
 #################################
 
-function find_segments(nodes::Dict{Int,T}, highways::Vector{OpenStreetMap2.Way}, intersections::Dict{Int,Set{Int}}) where T<:Union{OpenStreetMap2.ENU,OpenStreetMap2.ECEF}
-    segments = OpenStreetMap2.Segment[]
+function find_segments(nodes::Dict{Int,T}, highways::Vector{OpenStreetMapX.Way}, intersections::Dict{Int,Set{Int}}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
+    segments = OpenStreetMapX.Segment[]
     intersect = Set(keys(intersections))
     for highway in highways
         firstNode = 1
         for j = 2:length(highway.nodes)
             if highway.nodes[firstNode] != highway.nodes[j] && (in(highway.nodes[j], intersect)|| j == length(highway.nodes))
                 if !reverseway(highway)
-                    seg = OpenStreetMap2.Segment(highway.nodes[firstNode],highway.nodes[j],highway.nodes[firstNode:j], OpenStreetMap2.distance(nodes, highway.nodes[firstNode:j]), highway.id)
+                    seg = OpenStreetMapX.Segment(highway.nodes[firstNode],highway.nodes[j],highway.nodes[firstNode:j], OpenStreetMapX.distance(nodes, highway.nodes[firstNode:j]), highway.id)
                     push!(segments,seg)
                 else
-                    seg = OpenStreetMap2.Segment(highway.nodes[j],highway.nodes[firstNode],reverse(highway.nodes[firstNode:j]), OpenStreetMap2.distance(nodes, highway.nodes[firstNode:j]), highway.id)
+                    seg = OpenStreetMapX.Segment(highway.nodes[j],highway.nodes[firstNode],reverse(highway.nodes[firstNode:j]), OpenStreetMapX.distance(nodes, highway.nodes[firstNode:j]), highway.id)
                     push!(segments,seg)
                 end
                 if !oneway(highway)
-                    seg = OpenStreetMap2.Segment(highway.nodes[j],highway.nodes[firstNode],reverse(highway.nodes[firstNode:j]), OpenStreetMap2.distance(nodes, highway.nodes[firstNode:j]), highway.id)
+                    seg = OpenStreetMapX.Segment(highway.nodes[j],highway.nodes[firstNode],reverse(highway.nodes[firstNode:j]), OpenStreetMapX.distance(nodes, highway.nodes[firstNode:j]), highway.id)
                     push!(segments,seg)
                 end
 				firstNode = j

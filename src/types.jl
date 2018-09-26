@@ -7,7 +7,7 @@
 #########################
 
 ### Point in Latitude-Longitude-Altitude (LLA) coordinates
-# Used to store node data in OpenStreetMap2 XML files
+# Used to store node data in OpenStreetMapX XML files
 struct LLA
     lat::Float64
     lon::Float64
@@ -62,7 +62,7 @@ end
 function ellipsoid(a::BigFloat, b::BigFloat)
     e² = (a^2 - b^2) / a^2
     e′² = (a^2 - b^2) / b^2
-    OpenStreetMap2.Ellipsoid(a, b, e², e′²)
+    OpenStreetMapX.Ellipsoid(a, b, e², e′²)
 end
 #constructor
 function Ellipsoid(; a::Float64 = NaN, b::Float64= NaN, f_inv::Float64= NaN)
@@ -70,9 +70,9 @@ function Ellipsoid(; a::Float64 = NaN, b::Float64= NaN, f_inv::Float64= NaN)
         throw(ArgumentError("Specify parameter 'a' and either 'b' or 'f_inv'"))
     elseif isnan(b)
 		b = BigFloat(a) * (1 - inv(BigFloat(f_inv)))
-		OpenStreetMap2.ellipsoid(BigFloat(a), BigFloat(b))
+		OpenStreetMapX.ellipsoid(BigFloat(a), BigFloat(b))
     else
-        OpenStreetMap2.ellipsoid(BigFloat(a), BigFloat(b))
+        OpenStreetMapX.ellipsoid(BigFloat(a), BigFloat(b))
     end
 end
 
@@ -94,7 +94,7 @@ function Bounds(min_lat, max_lat, min_lon, max_lon)
         throw(ArgumentError("Bounds out of range of LLA coordinate system. " *
                             "Perhaps you're looking for Bounds{ENU}(...)"))
     end
-    OpenStreetMap2.Bounds{OpenStreetMap2.LLA}(min_lat, max_lat, min_lon, max_lon)
+    OpenStreetMapX.Bounds{OpenStreetMapX.LLA}(min_lat, max_lat, min_lon, max_lon)
 end
 
 ##################
@@ -148,24 +148,24 @@ end
 ######################
 
 mutable struct OSMData
-    nodes::Dict{Int,OpenStreetMap2.LLA}
-    ways::Vector{OpenStreetMap2.Way}
-    relations::Vector{OpenStreetMap2.Relation}
+    nodes::Dict{Int,OpenStreetMapX.LLA}
+    ways::Vector{OpenStreetMapX.Way}
+    relations::Vector{OpenStreetMapX.Relation}
 	features::Dict{Int,Tuple{String,String}}
-	bounds::OpenStreetMap2.Bounds
+	bounds::OpenStreetMapX.Bounds
     way_tags::Set{String}
     relation_tags::Set{String}
 end
-OSMData() = OSMData(Dict{Int,OpenStreetMap2.LLA}(), Vector{OpenStreetMap2.Way}(), Vector{OpenStreetMap2.Relation}(), Dict{Int,String}(), Bounds(0.0,0.0,0.0,0.0), Set{String}(), Set{String}())
+OSMData() = OSMData(Dict{Int,OpenStreetMapX.LLA}(), Vector{OpenStreetMapX.Way}(), Vector{OpenStreetMapX.Relation}(), Dict{Int,String}(), Bounds(0.0,0.0,0.0,0.0), Set{String}(), Set{String}())
 
 mutable struct DataHandle
     element::Symbol
-    osm::OpenStreetMap2.OSMData
-    node::Tuple{Int64,OpenStreetMap2.LLA} # initially undefined
-    way::OpenStreetMap2.Way # initially undefined
-    relation::OpenStreetMap2.Relation # initially undefined
-	bounds::OpenStreetMap2.Bounds # initially undefined
-    DataHandle() = new(:None, OpenStreetMap2.OSMData())
+    osm::OpenStreetMapX.OSMData
+    node::Tuple{Int64,OpenStreetMapX.LLA} # initially undefined
+    way::OpenStreetMapX.Way # initially undefined
+    relation::OpenStreetMapX.Relation # initially undefined
+	bounds::OpenStreetMapX.Bounds # initially undefined
+    DataHandle() = new(:None, OpenStreetMapX.OSMData())
 end
 
 
@@ -187,9 +187,9 @@ Style(x, y) = Style(x, y, "-")
 ##############################
 
 struct MapData
-    bounds::OpenStreetMap2.Bounds{OpenStreetMap2.LLA}
-    nodes::Dict{Int,OpenStreetMap2.ENU}
-    roadways::Array{OpenStreetMap2.Way,1}
+    bounds::OpenStreetMapX.Bounds{OpenStreetMapX.LLA}
+    nodes::Dict{Int,OpenStreetMapX.ENU}
+    roadways::Array{OpenStreetMapX.Way,1}
     intersections::Dict{Int,Set{Int}}
-    network::OpenStreetMap2.Network
+    network::OpenStreetMapX.Network
 end
