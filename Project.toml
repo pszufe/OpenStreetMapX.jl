@@ -1,0 +1,15 @@
+authors = ["Przemyslaw Szufel <pszufe@gmail.com>", "Bartosz Pankratz <bartosz.pankratz@gmail.com>", "Anna Szczurek <annaszczurek2@gmail.com>",
+"Bogumil Kaminski <bogumil.kaminski@gmail.com>","Pawel Pralat <pralat@ryerson.ca>"]
+name = "OpenStreetMapX"
+uuid = "5c67c38e-c187-11e8-2be6-e3a6a3a5610f"
+version = "0.1.0"
+
+[deps]
+
+
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
