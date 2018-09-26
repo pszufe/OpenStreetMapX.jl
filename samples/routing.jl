@@ -1,6 +1,6 @@
 using OpenStreetMapX
 
-mapfile = "map2.osm";
+mapfile = "mymap.osm";
 datapath = "/home/ubuntu/";
 map_data = OpenStreetMapX.get_map_data(datapath, mapfile);
 
@@ -29,7 +29,16 @@ pointB = point_to_nodes(destination, map_data)
 
 shortest_route, shortest_distance, shortest_time = OpenStreetMapX.shortest_route(map_data.network, pointA, pointB)
 fastest_route, fastest_distance, fastest_time = OpenStreetMapX.fastest_route(map_data.network, pointA, pointB)
-   
+
 
 println("shortest_route:",shortest_route)
 println("fastest_route",fastest_route)
+
+google_api_file = joinpath(datapath,"googleapi.key")
+
+
+if isfile(google_api_file)
+    google_api_key = readlines(google_api_file)[1]
+
+    dump(OpenStreetMapX.get_google_route(pointA, pointB,map_data,google_api_key))
+end

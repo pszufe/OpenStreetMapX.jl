@@ -146,9 +146,9 @@ Get route based on Google Distances API with three points (origin, destination, 
 
 """
 function get_google_route(origin::Int,destination::Int,waypoint::Int,
-                            map_data::OpenStreetMapX.OpenStreetMapX.MapData;
+                            map_data::OpenStreetMapX.OpenStreetMapX.MapData, googleapi_key::String;
                             googleapi_parameters::Dict{Symbol,String} = OpenStreetMapX.googleAPI_parameters)
-    url = OpenStreetMapX.get_googleapi_url(origin, destination, waypoint,map_data;googleapi_parameters = googleapi_parameters)
+    url = OpenStreetMapX.get_googleapi_url(origin, destination, waypoint,map_data,googleapi_key,googleapi_parameters = googleapi_parameters)
     status, routes = OpenStreetMapX.parse_google_url(url)
     if status == "OK"
         route = OpenStreetMapX.extract_google_route(routes[1])
@@ -185,7 +185,7 @@ Get route based on Google Distances API with two points (origin and destination)
 function get_google_route(origin::Int,destination::Int,
                             map_data::OpenStreetMapX.MapData,googleapi_key::String;
                             googleapi_parameters::Dict{Symbol,String} = OpenStreetMapX.googleAPI_parameters)
-    url = OpenStreetMapX.get_googleapi_url(origin, destination,map_data;googleapi_parameters = googleapi_parameters)
+    url = OpenStreetMapX.get_googleapi_url(origin, destination,map_data,googleapi_key,googleapi_parameters = googleapi_parameters)
     status, routes = OpenStreetMapX.parse_google_url(url)
     if status == "OK"
         route = OpenStreetMapX.extract_google_route(routes[1])
