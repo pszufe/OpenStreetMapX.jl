@@ -26,7 +26,7 @@ using Pkg; Pkg.add(PackageSpec(url="https://github.com/pszufe/OpenStreetMapX.jl"
 using OpenStreetMapX
 map_data = OpenStreetMapX.get_map_data("/home/ubuntu/", "mymap.osm");
 
-p = OpenStreetMapX.plotmap(map_data.nodes, OpenStreetMapX.ENU(mapD.bounds), roadways=map_data.roadways,roadwayStyle = OpenStreetMapX.LAYER_STANDARD, width=600, height=600)
+p = OpenStreetMapX.plotmap(map_data.nodes, OpenStreetMapX.ENU(map_data.bounds), roadways=map_data.roadways,roadwayStyle = OpenStreetMapX.LAYER_STANDARD, width=600, height=600)
 ```
 
 See the `samples` directory for a more complete example.  
