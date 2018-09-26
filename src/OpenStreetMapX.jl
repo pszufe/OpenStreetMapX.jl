@@ -27,11 +27,12 @@ export get_map_data
 export MapData
 
 export get_google_route
+export encode,decode
 
 include("types.jl") #types used in the package
 include("classes.jl") #grouping highways into classes for routing and plotting
 include("speeds.jl") # speed limits in kilometers per hour
-
+include("polyline.jl")
 include("points.jl") # points coordinates and constants
 include("bounds.jl") #bounds of the map
 include("conversion.jl") #conversion of geographical coordinates
