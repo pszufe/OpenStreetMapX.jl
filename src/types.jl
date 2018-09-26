@@ -175,6 +175,17 @@ end
 ##############################
 ### Map data for analytics ###
 ##############################
+"""
+The `MapData` represents all data that have been processed from OpenStreetMap osm file
+
+**Fields**
+
+* `bounds` :  bounds of the area map (stored as a OpenStreetMapX.Bounds object)
+* `nodes` :  dictionary of nodes representing all the objects on the map (with coordinates in East, North, Up system)
+* `roadways` :  unique roads stored as a OpenStreetMapX.Way objects
+* `intersections` : roads intersections
+* `network` : graph representing a road network in the area limited by *bounds* (with intersections used as vertices)
+"""
 
 struct MapData
     bounds::OpenStreetMapX.Bounds{OpenStreetMapX.LLA}
