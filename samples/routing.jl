@@ -31,14 +31,17 @@ shortest_route, shortest_distance, shortest_time = OpenStreetMapX.shortest_route
 fastest_route, fastest_distance, fastest_time = OpenStreetMapX.fastest_route(map_data.network, pointA, pointB)
 
 
-println("shortest_route:",shortest_route)
-println("fastest_route",fastest_route)
+println("shortest_route nodes: ",shortest_route)
+println("fastest route nodes: ",fastest_route)
 
+### Create this file if you want to test routing with Google API
+### The file should only contain your Google API key
 google_api_file = joinpath(datapath,"googleapi.key")
 
 
 if isfile(google_api_file)
     google_api_key = readlines(google_api_file)[1]
 
-    dump(OpenStreetMapX.get_google_route(pointA, pointB,map_data,google_api_key))
+    google_route = OpenStreetMapX.get_google_route(pointA, pointB,map_data,google_api_key)[1]
+    println("Google API route nodes : ",google_route)
 end
