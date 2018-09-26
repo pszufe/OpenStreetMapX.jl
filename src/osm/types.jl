@@ -101,7 +101,7 @@ end
 ### Main Types ###
 ##################
 
-abstract type 
+abstract type
 	OSMElement
 end
 
@@ -137,7 +137,7 @@ end
 mutable struct Network
     g::LightGraphs.SimpleGraphs.SimpleDiGraph{Int64}                # Graph object
     v::Dict{Int,Int}  												# (node id) => (graph vertex)
-	e::Array{Tuple{Int64,Int64},1}     								#edges in graph, stored as a tuple (source,destination)	
+	e::Array{Tuple{Int64,Int64},1}     								#edges in graph, stored as a tuple (source,destination)
 	w::SparseArrays.SparseMatrixCSC{Float64, Int}    							# Edge weights, indexed by graph id
 	class::Vector{Int}                 								# Road class of each edge
 end
@@ -181,3 +181,15 @@ struct Style
     spec::AbstractString
 end
 Style(x, y) = Style(x, y, "-")
+
+##############################
+### Map data for analytics ###
+##############################
+
+struct MapData
+    bounds::OpenStreetMap2.Bounds{OpenStreetMap2.LLA}
+    nodes::Dict{Int,OpenStreetMap2.ENU}
+    roadways::Array{OpenStreetMap2.Way,1}
+    intersections::Dict{Int,Set{Int}}
+    network::OpenStreetMap2.Network
+end

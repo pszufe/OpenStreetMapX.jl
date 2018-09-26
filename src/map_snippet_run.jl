@@ -1,9 +1,8 @@
 if !@isdefined map_data
 	include("map_snippet_plot.jl")
-
 	mapfile = "map.osm";
-
-	map_data = MapData(OSMSim.read_map_file(datapath, mapfile)...);
+	datapath = "../datasets/";
+	map_data = OpenStreetMap2.get_map_data(datapath, mapfile);
 end
 
 
