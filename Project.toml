@@ -1,12 +1,11 @@
 name = "OpenStreetMapX"
 uuid = "5c67c38e-c187-11e8-2be6-e3a6a3a5610f"
 authors = ["Przemyslaw Szufel <pszufe@gmail.com>", "Bartosz Pankratz <bartosz.pankratz@gmail.com>", "Anna Szczurek <annaszczurek2@gmail.com>", "Bogumil Kaminski <bogumil.kaminski@gmail.com>", "Pawel Pralat <pralat@ryerson.ca>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 LibExpat = "522f3ed2-3f36-55e3-b6df-e94fee9b0c07"
 LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
-Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 

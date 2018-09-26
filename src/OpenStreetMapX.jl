@@ -2,7 +2,6 @@ module OpenStreetMapX
 
 using LibExpat
 using LightGraphs
-using Plots
 using SparseArrays
 using Serialization
 
@@ -22,7 +21,6 @@ export create_graph #Create a routing network
 export features_to_graph, find_optimal_waypoint_approx, find_optimal_waypoint_exact
 export find_route, shortest_route, fastest_route #Routing funcions
 export nodes_within_weights, nodes_within_driving_distance, nodes_within_driving_time #Find nodes within specified range
-export plotmap, addroute! #Plotting
 export get_map_data
 export MapData
 
@@ -42,6 +40,6 @@ include("crop.jl") #cropping nodes and ways
 include("nodes.jl") #finding nearest nodes or nodes within some range
 include("intersections.jl") #finding intersections
 include("routing.jl") #routing functions
-include("plot.jl") #plotting
+
 
 end

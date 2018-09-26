@@ -170,17 +170,7 @@ end
 
 
 
-############################
-### Rendering Style Data ###
-############################
 
-
-struct Style
-    color::String
-    width::Real
-    spec::AbstractString
-end
-Style(x, y) = Style(x, y, "-")
 
 ##############################
 ### Map data for analytics ###
