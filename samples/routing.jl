@@ -27,8 +27,8 @@ destination = generate_point_in_bounds(map_data);
 pointA = point_to_nodes(origin, map_data)
 pointB = point_to_nodes(destination, map_data)
 
-shortest_route, shortest_distance, shortest_time = OpenStreetMapX.shortest_route(mapD.network, pointA, pointB)
-fastest_route, fastest_distance, fastest_time = OpenStreetMapX.fastest_route(mapD.network, pointA, pointB)
+shortest_route, shortest_distance, shortest_time = OpenStreetMapX.shortest_route(map_data.network, pointA, pointB)
+fastest_route, fastest_distance, fastest_time = OpenStreetMapX.fastest_route(map_data.network, pointA, pointB)
    
 
 println("shortest_route:",shortest_route)
