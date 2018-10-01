@@ -69,8 +69,8 @@ function Ellipsoid(; a::Float64 = NaN, b::Float64= NaN, f_inv::Float64= NaN)
     if isnan(a) || isnan(b) == isnan(f_inv)
         throw(ArgumentError("Specify parameter 'a' and either 'b' or 'f_inv'"))
     elseif isnan(b)
-		b = BigFloat(a) * (1 - inv(BigFloat(f_inv)))
-		OpenStreetMapX.ellipsoid(BigFloat(a), BigFloat(b))
+        b = BigFloat(a) * (1 - inv(BigFloat(f_inv)))
+        OpenStreetMapX.ellipsoid(BigFloat(a), BigFloat(b))
     else
         OpenStreetMapX.ellipsoid(BigFloat(a), BigFloat(b))
     end
@@ -102,7 +102,7 @@ end
 ##################
 
 abstract type
-	OSMElement
+    OSMElement
 end
 
 mutable struct Way <: OSMElement
@@ -135,11 +135,11 @@ end
 
 # Transporation network graph data and helpers to increase routing speed (do koniecznej zmiany)
 mutable struct Network
-    g::LightGraphs.SimpleGraphs.SimpleDiGraph{Int64}                # Graph object
-    v::Dict{Int,Int}  												# (node id) => (graph vertex)
-	e::Array{Tuple{Int64,Int64},1}     								#edges in graph, stored as a tuple (source,destination)
-	w::SparseArrays.SparseMatrixCSC{Float64, Int}    							# Edge weights, indexed by graph id
-	class::Vector{Int}                 								# Road class of each edge
+    g::LightGraphs.SimpleGraphs.SimpleDiGraph{Int64} # Graph object
+    v::Dict{Int,Int}                                 # (node id) => (graph vertex)
+    e::Array{Tuple{Int64,Int64},1}                   # Edges in graph, stored as a tuple (source,destination)
+    w::SparseArrays.SparseMatrixCSC{Float64, Int}    # Edge weights, indexed by graph id
+    class::Vector{Int}                               # Road class of each edge
 end
 
 
@@ -151,12 +151,14 @@ mutable struct OSMData
     nodes::Dict{Int,OpenStreetMapX.LLA}
     ways::Vector{OpenStreetMapX.Way}
     relations::Vector{OpenStreetMapX.Relation}
-	features::Dict{Int,Tuple{String,String}}
-	bounds::OpenStreetMapX.Bounds
+    features::Dict{Int,Tuple{String,String}}
+    bounds::OpenStreetMapX.Bounds
     way_tags::Set{String}
     relation_tags::Set{String}
 end
-OSMData() = OSMData(Dict{Int,OpenStreetMapX.LLA}(), Vector{OpenStreetMapX.Way}(), Vector{OpenStreetMapX.Relation}(), Dict{Int,String}(), Bounds(0.0,0.0,0.0,0.0), Set{String}(), Set{String}())
+OSMData() = OSMData(Dict{Int, OpenStreetMapX.LLA}(), Vector{OpenStreetMapX.Way}(),
+	            Vector{OpenStreetMapX.Relation}(), Dict{Int,String}(),
+	            Bounds(0.0, 0.0, 0.0, 0.0), Set{String}(), Set{String}())
 
 mutable struct DataHandle
     element::Symbol
@@ -164,13 +166,9 @@ mutable struct DataHandle
     node::Tuple{Int64,OpenStreetMapX.LLA} # initially undefined
     way::OpenStreetMapX.Way # initially undefined
     relation::OpenStreetMapX.Relation # initially undefined
-	bounds::OpenStreetMapX.Bounds # initially undefined
+    bounds::OpenStreetMapX.Bounds # initially undefined
     DataHandle() = new(:None, OpenStreetMapX.OSMData())
 end
-
-
-
-
 
 ##############################
 ### Map data for analytics ###
