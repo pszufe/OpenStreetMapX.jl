@@ -6,7 +6,7 @@ Compared to the original package major changes include:
 - `Plots.jl` with GR is used as backend for map vizualization (via a separate package   [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl))
 - `LightGraphs.jl` is used for map data storage
 - Several changes with routing algorithm (currently finding a route in a 1 million people city takes around 250ms)
-- Data structure adjusment to make the library more suitable to run simulations of cities. 
+- Data structure adjustment to make the library more suitable to run simulations of cities. 
 
 ## Installation
 
