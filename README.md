@@ -28,3 +28,10 @@ println("The map contains $(length(map_data.nodes)) nodes")
 See the `samples` directory for a more complete example.  
 
 **Any pull requests are welcome!**
+
+
+
+
+#### Acknowledgments
+<sup>This code is a major re-write of [https://github.com/tedsteiner/OpenStreetMap.jl](https://github.com/tedsteiner/OpenStreetMap.jl) project.
+The creation of this source code was partially financed by research project supported by the Ontario Centres of Excellence ("OCE") under Voucher for Innovation and Productivity (VIP) program, OCE Project Number: 30293, project name: "Agent-based simulation modelling of out-of-home advertising viewing opportunity conducted in cooperation with Environics Analytics of Toronto, Canada. </sup>
