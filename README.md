@@ -8,7 +8,7 @@ Compared to the original package major changes include:
 - Several changes with routing algorithm (currently finding a route in a 1 million people city takes around 250ms)
 - Data structure adjustment to make the library more suitable to run simulations of cities. 
 
-The goal of this package is to provide a backbone for multi-agent simulation of cities. The prototype simulator has been implemented in [`OpenStreetMapXPSim.jl`](https://github.com/pszufe/OpenStreetMapXSim.jl)).
+The goal of this package is to provide a backbone for multi-agent simulation of cities. The prototype simulator has been implemented in [`OpenStreetMapXSim.jl`](https://github.com/pszufe/OpenStreetMapXSim.jl)).
 
 ## Installation
 
