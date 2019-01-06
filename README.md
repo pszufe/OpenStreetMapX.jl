@@ -18,6 +18,11 @@ The current version uses Julia 1.0.0
 using Pkg; Pkg.add(PackageSpec(url="https://github.com/pszufe/OpenStreetMapX.jl"))
 ```
 
+Note that on Linux platform you need to separately install `libexpat` used by the library to parse XML (on Windows this step is not required). For example, on Ubuntu run in bash shell:
+```bash
+sudo apt install libexpat-dev
+```
+
 ## Usage
 
 ```julia
