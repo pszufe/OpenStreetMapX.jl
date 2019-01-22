@@ -129,18 +129,7 @@ mutable struct Segment
     parent::Int         # ID of parent highway
 end
 
-#######################################
-### Graph Representation of Network ###
-#######################################
 
-# Transporation network graph data and helpers to increase routing speed (do koniecznej zmiany)
-mutable struct Network
-    g::LightGraphs.SimpleGraphs.SimpleDiGraph{Int64} # Graph object
-    v::Dict{Int,Int}                                 # (node id) => (graph vertex)
-    e::Array{Tuple{Int64,Int64},1}                   # Edges in graph, stored as a tuple (source,destination)
-    w::SparseArrays.SparseMatrixCSC{Float64, Int}    # Edge weights, indexed by graph id
-    class::Vector{Int}                               # Road class of each edge
-end
 
 
 ######################
@@ -185,10 +174,16 @@ The `MapData` represents all data that have been processed from OpenStreetMap os
 * `network` : graph representing a road network in the area limited by *bounds* (with intersections used as vertices)
 """
 
-struct MapData
+struct MapData  
     bounds::OpenStreetMapX.Bounds{OpenStreetMapX.LLA}
     nodes::Dict{Int,OpenStreetMapX.ENU}
     roadways::Array{OpenStreetMapX.Way,1}
     intersections::Dict{Int,Set{Int}}
-    network::OpenStreetMapX.Network
+    # Transporation network graph data and helpers to increase routing speed
+    g::LightGraphs.SimpleGraphs.SimpleDiGraph{Int64} # Graph object
+    v::Dict{Int,Int}                             # (node id) => (graph vertex)
+    e::Array{Tuple{Int64,Int64},1}                # Edges in graph, stored as a tuple (source,destination)
+    w::SparseArrays.SparseMatrixCSC{Float64, Int}   # Edge weights, indexed by graph id
+    class::Vector{Int}                           # Road class of each edge
+	#MapData(bounds, nodes, roadways, intersections) = new(bounds, nodes, roadways, intersections, LightGraphs.SimpleGraphs.SimpleDiGraph{Int64}(), Dict{Int,Int}(), Tuple{Int64,Int64}[],  SparseMatrixCSC(Matrix{Float64}(undef,0,0)),Int[]) 
 end

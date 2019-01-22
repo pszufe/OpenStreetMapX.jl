@@ -54,7 +54,7 @@ end
 
 
 ### Find nearest node serving as a vertex in a routing network ###
-nearest_node(nodes::Dict{Int,T}, loc::T, network::OpenStreetMapX.Network) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nearest_node(nodes,loc,collect(keys(network.v)))
+nearest_node(nodes::Dict{Int,T}, loc::T, m::OpenStreetMapX.MapData) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nearest_node(nodes,loc,collect(keys(m.v)))
 
 #############################
 ### Find Node Within Range###
@@ -91,7 +91,7 @@ function nodes_within_range(nodes::Dict{Int,T}, loc::T, node_list::Vector{Int}, 
 end
 
 ### Find vertices of a routing network within range of a location ###
-nodes_within_range(nodes::Dict{Int,T},loc::T, network::OpenStreetMapX.Network, range::Float64 = Inf) where T <:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nodes_within_range(nodes,loc,collect(keys(network.v)),range)
+nodes_within_range(nodes::Dict{Int,T},loc::T, m::OpenStreetMapX.MapData, range::Float64 = Inf) where T <:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nodes_within_range(nodes,loc,collect(keys(m.v)),range)
 
 #########################################
 ### Compute Centroid of List of Nodes ###

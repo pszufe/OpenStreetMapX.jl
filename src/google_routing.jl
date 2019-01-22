@@ -121,10 +121,10 @@ Match Google route with vertices of map network
 """
 function google_route_to_network(route::Array{Tuple{Float64,Float64},1},map_data::OpenStreetMapX.MapData)
     route = [OpenStreetMapX.ENU(OpenStreetMapX.LLA(coords[1], coords[2]),map_data.bounds) for coords in route]
-    res = [OpenStreetMapX.nearest_node(map_data.nodes, route[1], map_data.network)]
+    res = [OpenStreetMapX.nearest_node(map_data, route[1])]
     index = 2
     for i = 2:length(route)
-        node = OpenStreetMapX.nearest_node(map_data.nodes, route[i], map_data.network)
+        node = OpenStreetMapX.nearest_node(map_data, route[i])
         if node != res[index-1]
             push!(res,node)
             index += 1
@@ -162,10 +162,10 @@ function get_google_route(origin::Int,destination::Int,waypoint::Int,
         #get route based on OSM routing
         warn("Google Distances API cannot get a proper results - route will be calculated with OSMSim Routing module")
 		if rand() < 0.5
-			route_nodes, distance, route_time = OpenStreetMapX.shortest_route(map_data.network, origin, waypoint, destination)
+			route_nodes, distance, route_time = OpenStreetMapX.shortest_route(map_data, origin, waypoint, destination)
 			return route_nodes, "shortest"
 		else
-			route_nodes, distance, route_time = OpenStreetMapX.fastest_route(map_data.network, origin, waypoint, destination)
+			route_nodes, distance, route_time = OpenStreetMapX.fastest_route(map_data, origin, waypoint, destination)
 			return route_nodes, "fastest"
 		end
     end
@@ -199,10 +199,10 @@ function get_google_route(origin::Int,destination::Int,
         #get route based on OSM routing
         warn("Google Distances API cannot get a proper results - route will be calculated with OSMSim Routing module")
 		if rand() < 0.5
-			route_nodes, distance, route_time = OpenStreetMapX.shortest_route(map_data.network, origin, destination)
+			route_nodes, distance, route_time = OpenStreetMapX.shortest_route(map_data, origin, destination)
 			return route_nodes, "shortest"
 		else
-			route_nodes, distance, route_time = OpenStreetMapX.fastest_route(map_data.network, origin, destination)
+			route_nodes, distance, route_time = OpenStreetMapX.fastest_route(map_data, origin, destination)
 			return route_nodes, "fastest"
 		end
     end

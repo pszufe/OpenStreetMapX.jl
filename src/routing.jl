@@ -46,77 +46,47 @@ end
 ###	For Each Feature Find the Nearest Graph Node ###
 ####################################################
 
-function features_to_graph(nodes::Dict{Int,T}, features::Dict{Int,Tuple{String,String}}, network::OpenStreetMapX.Network) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
+function features_to_graph(nodes::Dict{Int,T}, features::Dict{Int,Tuple{String,String}}, m::OpenStreetMapX.MapData) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
     features_to_nodes = Dict{Int,Int}()
     sizehint!(features_to_nodes,length(features))
     for (key,value) in features
-        if !haskey(network.v,key)
-            features_to_nodes[key] = OpenStreetMapX.nearest_node(nodes,nodes[key],network)
+        if !haskey(m.v,key)
+            features_to_nodes[key] = OpenStreetMapX.nearest_node(nodes,nodes[key],m)
         else
             features_to_nodes[key] = key
         end
     end
-    return features_to_nodes 
+    return features_to_nodes
 end
 
-############################
-### Create Network Graph ###
-############################
 
-### Create Network with all nodes ###
 
-function create_graph(nodes::Dict{Int,T},roadways::Vector{OpenStreetMapX.Way}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
-    e,class = OpenStreetMapX.get_edges(nodes,roadways)
-    v = OpenStreetMapX.get_vertices(e)
-    weights = OpenStreetMapX.distance(nodes,e)
-    edges = [v[id] for id in reinterpret(Int, e)]
-    I = edges[1:2:end] 
-    J = edges[2:2:end] 
-    w = SparseArrays.sparse(I, J, weights, length(v), length(v))
-    OpenStreetMapX.Network(LightGraphs.DiGraph(w),v,e,w,class)
-end
-
-### Create Network with Roads intersections only### 
-
-function create_graph(segments::Vector{Segment}, intersections::Dict{Int,Set{Int}},classified_roadways::Dict{Int,Int})
-    vals = Dict((segment.node0,segment.node1) => (segment.distance,segment.parent) for segment in segments)
-	e = collect(keys(vals))
-	vals = collect(values(vals))
-	weights = map(val -> val[1],vals)
-	class =  [classified_roadways[id] for id in map(val -> val[2],vals)]
-	v = OpenStreetMapX.get_vertices(e)
-    edges = [v[id] for id in reinterpret(Int, e)]
-    I = edges[1:2:end] 
-    J = edges[2:2:end] 
-    w = SparseArrays.sparse(I, J, weights, length(v), length(v))
-    OpenStreetMapX.Network(LightGraphs.DiGraph(w),v,e,w,class)
-end
 
 #########################################
 ### Find Routes - Auxiliary Functions ###
 #########################################
 
 ### Dijkstra's Algorithm ###
-function dijkstra(network::OpenStreetMapX.Network, w::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_vertex::Int)
-    return LightGraphs.dijkstra_shortest_paths(network.g, start_vertex, w)
+function dijkstra(m::OpenStreetMapX.MapData, w::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_vertex::Int)
+    return LightGraphs.dijkstra_shortest_paths(m.g, start_vertex, w)
 end
 
 ### Transpose distances to times ###
 
-function network_travel_times(network::OpenStreetMapX.Network, class_speeds::Dict{Int,Int} = OpenStreetMapX.SPEED_ROADS_URBAN)
-    @assert length(network.e) == length(network.w.nzval)
-    indices = [(network.v[i],network.v[j]) for (i,j) in network.e]
-    w = Array{Float64}(undef,length(network.e))
+function network_travel_times(m::OpenStreetMapX.MapData, class_speeds::Dict{Int,Int} = OpenStreetMapX.SPEED_ROADS_URBAN)
+    @assert length(m.e) == length(m.w.nzval)
+    indices = [(m.v[i],m.v[j]) for (i,j) in m.e]
+    w = Array{Float64}(undef,length(m.e))
     for i = 1:length(w)
-        w[i] = 3.6 * (network.w[indices[i]]/class_speeds[network.class[i]])
+        w[i] = 3.6 * (m.w[indices[i]]/class_speeds[m.class[i]])
     end
     return w
 end
 
 ### Create a Sparse Matrix for a given vector of weights ###
 
-function create_weights_matrix(network::OpenStreetMapX.Network,weights::Vector{Float64})
-    return SparseArrays.sparse(map(i -> network.v[i[1]], network.e), map(i -> network.v[i[2]], network.e),weights)
+function create_weights_matrix(m::OpenStreetMapX.MapData,weights::Vector{Float64})
+    return SparseArrays.sparse(map(i -> m.v[i[1]], m.e), map(i -> m.v[i[2]], m.e),weights)
 end
 
 ### Extract route from Dijkstra results object ###
@@ -138,9 +108,9 @@ end
 
 ### Extract nodes ID's from route object ###
 
-function get_route_nodes(network::OpenStreetMapX.Network, route_indices::Array{Int64,1})
+function get_route_nodes(m::OpenStreetMapX.MapData, route_indices::Array{Int64,1})
     route_nodes = Array{Int}(undef,length(route_indices))
-    v = Dict{Int,Int}(reverse(p) for p = pairs(network.v))
+    v = Dict{Int,Int}(reverse(p) for p = pairs(m.v))
     for n = 1:length(route_nodes)
         route_nodes[n] = v[route_indices[n]]
     end
@@ -149,49 +119,49 @@ end
 
 ### Generate an ordered list of edges traversed in route ###
 
-function route_edges(network::OpenStreetMapX.Network, route_nodes::Vector{Int})
+function route_edges(m::OpenStreetMapX.MapData, route_nodes::Vector{Int})
 	e = Array{Int}(undef,length(route_nodes)-1)
 	for i = 2:length(route_nodes)
-		e[i-1] = findfirst(isequal((route_nodes[i-1], route_nodes[i])), network.e)
+		e[i-1] = findfirst(isequal((route_nodes[i-1], route_nodes[i])), m.e)
 	end
 	return e
 end
 
 ### Calculate distance with a given weights ###
 
-calculate_distance(network::OpenStreetMapX.Network, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, route_indices::Array{Int64,1}) = sum(weights[(route_indices[i-1], route_indices[i])] for i = 2:length(route_indices))
+calculate_distance(m::OpenStreetMapX.MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, route_indices::Array{Int64,1}) = sum(weights[(route_indices[i-1], route_indices[i])] for i = 2:length(route_indices))
 
 
 #####################################
 ### Find Route with Given Weights ###
 #####################################
 
-function find_route(network::OpenStreetMapX.Network, node0::Int, node1::Int, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, get_distance::Bool = false, get_time::Bool = false)
+function find_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, get_distance::Bool = false, get_time::Bool = false)
     result = Any[]
-    start_vertex = network.v[node0]
-    dijkstra_result = OpenStreetMapX.dijkstra(network, weights, start_vertex)
-    finish_vertex= network.v[node1]
+    start_vertex = m.v[node0]
+    dijkstra_result = OpenStreetMapX.dijkstra(m, weights, start_vertex)
+    finish_vertex= m.v[node1]
     route_indices, route_values = OpenStreetMapX.extract_route(dijkstra_result, start_vertex, finish_vertex)
-    route_nodes = OpenStreetMapX.get_route_nodes(network, route_indices)
+    route_nodes = OpenStreetMapX.get_route_nodes(m, route_indices)
     push!(result, route_nodes, route_values)
     if get_distance
 		if isempty(route_indices)
 			distance = Inf
 		elseif length(route_indices) == 1
-			distance = 0 
+			distance = 0
 		else
-			distance = OpenStreetMapX.calculate_distance(network, network.w, route_indices)
+			distance = OpenStreetMapX.calculate_distance(m, m.w, route_indices)
 		end
         push!(result, distance)
     end
     if get_time
-        w = OpenStreetMapX.create_weights_matrix(network,network_travel_times(network))
+        w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m))
 		if isempty(route_indices)
 			route_time = Inf
 		elseif length(route_indices) == 1
 			route_time = 0
         else
-			route_time = OpenStreetMapX.calculate_distance(network, w, route_indices)
+			route_time = OpenStreetMapX.calculate_distance(m, w, route_indices)
 		end
         push!(result, route_time)
     end
@@ -203,10 +173,10 @@ end
 ### Find Route Connecting 3 Points with Given Weights ###
 #########################################################
 
-function find_route(network::OpenStreetMapX.Network, node0::Int, node1::Int, node2::Int, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, get_distance::Bool = false, get_time::Bool = false)
+function find_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, node2::Int, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, get_distance::Bool = false, get_time::Bool = false)
 	result = Any[]
-	route1 = OpenStreetMapX.find_route(network, node0, node1, weights, get_distance, get_time)
-	route2 = OpenStreetMapX.find_route(network, node1, node2, weights, get_distance, get_time)
+	route1 = OpenStreetMapX.find_route(m, node0, node1, weights, get_distance, get_time)
+	route2 = OpenStreetMapX.find_route(m, node1, node2, weights, get_distance, get_time)
 	push!(result,vcat(route1[1],route2[1]))
 	for i = 2:length(route1)
 		push!(result,route1[i] + route2[i])
@@ -218,8 +188,8 @@ end
 ### Find Shortest Route ###
 ###########################
 
-function shortest_route(network::OpenStreetMapX.Network, node0::Int, node1::Int)
-	route_nodes, distance, route_time = OpenStreetMapX.find_route(network,node0,node1,network.w,false,true)
+function shortest_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int)
+	route_nodes, distance, route_time = OpenStreetMapX.find_route(m,node0,node1,m.w,false,true)
 	return route_nodes, distance, route_time
 end
 
@@ -227,8 +197,8 @@ end
 ### Find Shortest Route Connecting 3 Points with Given Weights ###
 ##################################################################
 
-function shortest_route(network::OpenStreetMapX.Network, node0::Int, node1::Int, node2::Int)
-	route_nodes, distance, route_time = OpenStreetMapX.find_route(network,node0,node1, node2, network.w,false,true)
+function shortest_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, node2::Int)
+	route_nodes, distance, route_time = OpenStreetMapX.find_route(m,node0,node1, node2, m.w,false,true)
 	return route_nodes, distance, route_time
 end
 
@@ -236,9 +206,9 @@ end
 ### Find Fastest Route ###
 ##########################
 
-function fastest_route(network::OpenStreetMapX.Network, node0::Int, node1::Int, speeds=OpenStreetMapX.SPEED_ROADS_URBAN)
-	w = OpenStreetMapX.create_weights_matrix(network,network_travel_times(network, speeds))
-	route_nodes, route_time, distance = OpenStreetMapX.find_route(network,node0,node1,w,true, false)
+function fastest_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, speeds=OpenStreetMapX.SPEED_ROADS_URBAN)
+	w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
+	route_nodes, route_time, distance = OpenStreetMapX.find_route(m,node0,node1,w,true, false)
 	return route_nodes, distance, route_time
 end
 
@@ -246,9 +216,9 @@ end
 ### Find Fastest Route Connecting 3 Points with Given Weights ###
 #################################################################
 
-function fastest_route(network::OpenStreetMapX.Network, node0::Int, node1::Int, node2::Int, speeds=OpenStreetMapX.SPEED_ROADS_URBAN)
-	w = OpenStreetMapX.create_weights_matrix(network,network_travel_times(network, speeds))
-	route_nodes, route_time, distance = OpenStreetMapX.find_route(network,node0,node1, node2, w,true, false)
+function fastest_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, node2::Int, speeds=OpenStreetMapX.SPEED_ROADS_URBAN)
+	w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
+	route_nodes, route_time, distance = OpenStreetMapX.find_route(m,node0,node1, node2, w,true, false)
 	return route_nodes, distance, route_time
 end
 
@@ -258,13 +228,13 @@ end
 
 ### Approximate solution ###
 
-function find_optimal_waypoint_approx(network::OpenStreetMapX.Network, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
-    dists_start_waypoint = LightGraphs.dijkstra_shortest_paths(network.g, network.v[node0], weights).dists
-    dists_waypoint_fin = LightGraphs.dijkstra_shortest_paths(network.g, network.v[node1], weights).dists
+function find_optimal_waypoint_approx(m::OpenStreetMapX.MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
+    dists_start_waypoint = LightGraphs.dijkstra_shortest_paths(m.g, m.v[node0], weights).dists
+    dists_waypoint_fin = LightGraphs.dijkstra_shortest_paths(m.g, m.v[node1], weights).dists
     node_id = NaN
     min_dist = Inf
     for (key,value) in waypoints
-        dist  = dists_start_waypoint[network.v[value]] + dists_waypoint_fin[network.v[value]] 
+        dist  = dists_start_waypoint[m.v[value]] + dists_waypoint_fin[m.v[value]]
         if dist < min_dist
             min_dist = dist
             node_id = value
@@ -275,13 +245,13 @@ end
 
 ### Exact solution ###
 
-function find_optimal_waypoint_exact(network::OpenStreetMapX.Network, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
-    dists_start_waypoint = LightGraphs.dijkstra_shortest_paths(network.g, network.v[node0], weights).dists
+function find_optimal_waypoint_exact(m::OpenStreetMapX.MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
+    dists_start_waypoint = LightGraphs.dijkstra_shortest_paths(m.g, m.v[node0], weights).dists
     node_id = NaN
     min_dist = Inf
     for (key,value) in waypoints
-        dist_to_fin = LightGraphs.dijkstra_shortest_paths(network.g, network.v[value], weights).dists[network.v[node1]]
-        dist  = dists_start_waypoint[network.v[value]] + dist_to_fin
+        dist_to_fin = LightGraphs.dijkstra_shortest_paths(m.g, m.v[value], weights).dists[m.v[node1]]
+        dist  = dists_start_waypoint[m.v[value]] + dist_to_fin
         if dist < min_dist
             min_dist = dist
             node_id = value
@@ -295,8 +265,8 @@ end
 ########################################################################
 
 ### Bellman Ford's Algorithm ###
-function bellman_ford(network::OpenStreetMapX.Network, w::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_vertices::Vector{Int})
-    return LightGraphs.bellman_ford_shortest_paths(network.g, start_vertices, w)
+function bellman_ford(m::OpenStreetMapX.MapData, w::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_vertices::Vector{Int})
+    return LightGraphs.bellman_ford_shortest_paths(m.g, start_vertices, w)
 end
 
 ### Filter vertices from bellman_fordStates object ###
@@ -323,40 +293,53 @@ end
 ### Based on Weights													   ###
 ##############################################################################
 
-function nodes_within_weights(network::OpenStreetMapX.Network, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_indices::Vector{Int}, limit::Float64=Inf)
-	start_vertices = [network.v[i] for i in start_indices]
-    bellman_ford = OpenStreetMapX.bellman_ford(network, weights, start_vertices)
-    return OpenStreetMapX.filter_vertices(network.v, bellman_ford.dists, limit)
+function nodes_within_weights(m::OpenStreetMapX.MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_indices::Vector{Int}, limit::Float64=Inf)
+	start_vertices = [m.v[i] for i in start_indices]
+    bellman_ford = OpenStreetMapX.bellman_ford(m, weights, start_vertices)
+    return OpenStreetMapX.filter_vertices(m.v, bellman_ford.dists, limit)
 end
 
-nodes_within_weights(nodes::Dict{Int,T}, network::OpenStreetMapX.Network, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, loc::T, limit::Float64=Inf,locrange::Float64=500.0) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nodes_within_weights(network, weights, nodes_within_range(nodes, loc, network, locrange), limit)
+nodes_within_weights(nodes::Dict{Int,T}, m::OpenStreetMapX.MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, loc::T, limit::Float64=Inf,locrange::Float64=500.0) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nodes_within_weights(m, weights, nodes_within_range(nodes, loc, network, locrange), limit)
 
 ##############################################################################
 ### Extract Nodes from bellman_fordStates Object Within an (Optional) Limit ###
 ### Based on Driving Distance											   ###
 ##############################################################################
 
-function nodes_within_driving_distance(network::OpenStreetMapX.Network, start_indices::Vector{Int}, limit::Float64=Inf)
-    start_vertices = [network.v[i] for i in start_indices]
-    bellman_ford = OpenStreetMapX.bellman_ford(network, network.w, start_vertices)
-    return OpenStreetMapX.filter_vertices(network.v, bellman_ford.dists, limit)
+function nodes_within_driving_distance(m::OpenStreetMapX.MapData, start_indices::Vector{Int}, limit::Float64=Inf)
+    start_vertices = [m.v[i] for i in start_indices]
+    bellman_ford = OpenStreetMapX.bellman_ford(m, m.w, start_vertices)
+    return OpenStreetMapX.filter_vertices(m.v, bellman_ford.dists, limit)
 end
 
-nodes_within_driving_distance(nodes::Dict{Int,T}, network::OpenStreetMapX.Network, loc::T, limit::Float64=Inf,locrange::Float64=500.0) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})= OpenStreetMapX.nodes_within_driving_distance(network, nodes_within_range(nodes, loc ,network, locrange), limit)
+nodes_within_driving_distance(nodes::Dict{Int,T}, m::OpenStreetMapX.MapData, loc::T, limit::Float64=Inf,locrange::Float64=500.0) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})= OpenStreetMapX.nodes_within_driving_distance(m, nodes_within_range(nodes, loc ,network, locrange), limit)
 
 ##############################################################################
 ### Extract Nodes from bellman_fordStates Object Within an (Optional) Limit ###
 ### Based on Driving Time												   ###
 ##############################################################################
 
-function nodes_within_driving_time(network::OpenStreetMapX.Network, start_indices::Vector{Int}, limit::Float64=Inf, speeds::Dict{Int,Int}=OpenStreetMapX.SPEED_ROADS_URBAN)
-	w = OpenStreetMapX.create_weights_matrix(network,network_travel_times(network, speeds))
-	start_vertices = [network.v[i] for i in start_indices]
-    bellman_ford = OpenStreetMapX.bellman_ford(network, w, start_vertices)
-    return OpenStreetMapX.filter_vertices(network.v, bellman_ford.dists, limit)
+function nodes_within_driving_time(m::OpenStreetMapX.MapData, start_indices::Vector{Int}, limit::Float64=Inf, speeds::Dict{Int,Int}=OpenStreetMapX.SPEED_ROADS_URBAN)
+	w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
+	start_vertices = [m.v[i] for i in start_indices]
+    bellman_ford = OpenStreetMapX.bellman_ford(m, w, start_vertices)
+    return OpenStreetMapX.filter_vertices(m.v, bellman_ford.dists, limit)
 end
 
-function nodes_within_driving_time(nodes::Dict{Int,T}, network::OpenStreetMapX.Network, loc::T, limit::Float64=Inf, locrange::Float64=500.0, speeds::Dict{Int,Int}=OpenStreetMapX.SPEED_ROADS_URBAN) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
-	w = OpenStreetMapX.create_weights_matrix(network,network_travel_times(network, speeds))
-	return OpenStreetMapX.nodes_within_driving_time(network,nodes_within_range(nodes, loc, network,locrange),limit,speeds)
+function nodes_within_driving_time(nodes::Dict{Int,T}, m::OpenStreetMapX.MapData, loc::T, limit::Float64=Inf, locrange::Float64=500.0, speeds::Dict{Int,Int}=OpenStreetMapX.SPEED_ROADS_URBAN) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
+	w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
+	return OpenStreetMapX.nodes_within_driving_time(m,nodes_within_range(nodes, loc, m,locrange),limit,speeds)
 end
+
+function generate_point_in_bounds(mapD::OpenStreetMapX.MapData)
+    boundaries = mapD.bounds
+    (rand() * (boundaries.max_y -  boundaries.min_y) + boundaries.min_y,
+    rand() * (boundaries.max_x -  boundaries.min_x) + boundaries.min_x)
+end
+
+function point_to_nodes(point::Tuple{Float64,Float64}, map_data::OpenStreetMapX.MapData)
+    point = OpenStreetMapX.LLA(point[1],point[2])
+    point = OpenStreetMapX.nearest_node(map_data.nodes,OpenStreetMapX.ENU(point, map_data.bounds), map_data)
+end
+
+
