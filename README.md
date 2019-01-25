@@ -18,6 +18,11 @@ The current version uses Julia 1.0.0
 using Pkg; Pkg.add(PackageSpec(url="https://github.com/pszufe/OpenStreetMapX.jl"))
 ```
 
+Note that on Linux platform you need to separately install `libexpat` used by the library to parse XML (on Windows this step is not required). For example, on Ubuntu run in bash shell:
+```bash
+sudo apt install libexpat-dev
+```
+
 ## Usage
 
 ```julia
@@ -28,6 +33,18 @@ println("The map contains $(length(map_data.nodes)) nodes")
 ```
 
 See the `samples` directory for a more complete example.  
+
+## Obtaining map data
+
+The simplest way to get the map data is to go to the Open Street Map project [web page](https://www.openstreetmap.org/).
+
+In order to obtain the `*.osm` file follow the steps below:
+
+1. Got to the area of your interest at [https://www.openstreetmap.org/](https://www.openstreetmap.org/)
+2. Click the "*Export*" button at the top of the page
+3. Click "*Manually select a different area*" to select the area of your interest
+4. Press the "*Export*" button on the left. Note that sometimes the *Export* link does not work - in this case click one of the links below the Export button (for example the *Overpass API* link)
+
 
 **Any pull requests are welcome!**
 
