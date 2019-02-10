@@ -6,44 +6,93 @@
 ### Coordinates Types ###
 #########################
 
-### Point in Latitude-Longitude-Altitude (LLA) coordinates
-# Used to store node data in OpenStreetMapX XML files
+"""
+    LLA
+
+Point in Latitude-Longitude-Altitude (LLA) coordinates
+Used to store node data in OpenStreetMapX XML files
+
+**Constructors**
+
+    LLA(lat::Float64, lon::Float64)
+	LLA(lat::Float64, lon::Float64, alt::Float64)
+	LLA(xyz::XYZ)
+
+**Arguments**
+
+* `lat` : lattitude
+* `lon` : Longitude
+* `alt` : altitude
+
+"""
 struct LLA
     lat::Float64
     lon::Float64
     alt::Float64
 end
-#constructor
 LLA(lat, lon) = LLA(lat, lon, 0.0)
 
-### Point in Earth-Centered-Earth-Fixed (ECEF) coordinates
-# Global cartesian coordinate system rotating with the Earth
+
+"""
+    ECEF
+
+Point in Earth-Centered-Earth-Fixed (ECEF) coordinates.
+Global cartesian coordinate system rotating with the Earth.
+
+**Constructors**
+
+	ECEF(x::Float64, y::Float64, z::Float64)
+
+"""
 struct ECEF
     x::Float64
     y::Float64
     z::Float64
 end
 
-### Point in East-North-Up (ENU) coordinates
-# Local cartesian coordinate system
-# Linearized about a reference point
+
+"""
+    ENU
+
+Point in East-North-Up (ENU) coordinates.
+
+Local cartesian coordinate system.
+Linearized about a reference point.
+
+**Constructors**
+
+	ENU(east::Float64, north::Float64, up::Float64)
+	ENU(east::Float64, north::Float64)
+	ENU(xyz::XYZ)
+
+"""
 struct ENU
     east::Float64
     north::Float64
     up::Float64
 end
-#constructor
-ENU(x, y) = ENU(x, y, 0.0)
+ENU(east, north) = ENU(east, north, 0.0)
 
 
 ### XYZ
-# Helper for creating other point types in generic code
-# e.g. myfunc{T <: Union(ENU, LLA)}(...) = (x, y = ...; T(XY(x, y)))
+#
+"""
+    XYZ
+
+Helper for creating other point types in generic code
+e.g. myfunc{T <: Union(ENU, LLA)}(...) = (x, y = ...; T(XY(x, y)))
+
+**Constructors**
+
+	XYZ(x::Float64, y::Float64, z::Float64)
+	XY(x::Float64, y::Float64)
+"""
 struct XYZ
     x::Float64
     y::Float64
     z::Float64
 end
+
 XY(x, y) = XYZ(x, y, 0.0)
 LLA(xyz::XYZ) = LLA(xyz.y, xyz.x, xyz.z)
 ENU(xyz::XYZ) = ENU(xyz.x, xyz.y, xyz.z)
@@ -76,10 +125,11 @@ function Ellipsoid(; a::Float64 = NaN, b::Float64= NaN, f_inv::Float64= NaN)
     end
 end
 
-###################
-### Bounds Type ###
-###################
+"""
+    Bounds{T <: Union{LLA, ENU}}
 
+Bounds for the `LLA` or `ENU `coordinates.
+"""
 struct Bounds{T <: Union{LLA, ENU}}
     min_y::Float64
     max_y::Float64
@@ -159,11 +209,9 @@ mutable struct DataHandle
     DataHandle() = new(:None, OpenStreetMapX.OSMData())
 end
 
-##############################
-### Map data for analytics ###
-##############################
 """
 The `MapData` represents all data that have been processed from OpenStreetMap osm file
+This is the main data structure used fot map data analytics.
 
 **Fields**
 
@@ -171,11 +219,14 @@ The `MapData` represents all data that have been processed from OpenStreetMap os
 * `nodes` :  dictionary of nodes representing all the objects on the map (with coordinates in East, North, Up system)
 * `roadways` :  unique roads stored as a OpenStreetMapX.Way objects
 * `intersections` : roads intersections
-* `network` : graph representing a road network in the area limited by *bounds* (with intersections used as vertices)
+* `g` : `LightGraphs` directed graph representing a road network
+* `v` : vertices in the road network
+* `e` : edges in the graph represented as a tuple (source,destination)
+* `w` : edge weights, indexed by graph id
+* `class` : road class of each edge
 """
-
-struct MapData  
-    bounds::OpenStreetMapX.Bounds{OpenStreetMapX.LLA}
+struct MapData
+    bounds::Bounds{OpenStreetMapX.LLA}
     nodes::Dict{Int,OpenStreetMapX.ENU}
     roadways::Array{OpenStreetMapX.Way,1}
     intersections::Dict{Int,Set{Int}}
@@ -185,5 +236,5 @@ struct MapData
     e::Array{Tuple{Int64,Int64},1}                # Edges in graph, stored as a tuple (source,destination)
     w::SparseArrays.SparseMatrixCSC{Float64, Int}   # Edge weights, indexed by graph id
     class::Vector{Int}                           # Road class of each edge
-	#MapData(bounds, nodes, roadways, intersections) = new(bounds, nodes, roadways, intersections, LightGraphs.SimpleGraphs.SimpleDiGraph{Int64}(), Dict{Int,Int}(), Tuple{Int64,Int64}[],  SparseMatrixCSC(Matrix{Float64}(undef,0,0)),Int[]) 
+	#MapData(bounds, nodes, roadways, intersections) = new(bounds, nodes, roadways, intersections, LightGraphs.SimpleGraphs.SimpleDiGraph{Int64}(), Dict{Int,Int}(), Tuple{Int64,Int64}[],  SparseMatrixCSC(Matrix{Float64}(undef,0,0)),Int[])
 end

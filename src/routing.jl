@@ -46,12 +46,12 @@ end
 ###	For Each Feature Find the Nearest Graph Node ###
 ####################################################
 
-function features_to_graph(nodes::Dict{Int,T}, features::Dict{Int,Tuple{String,String}}, m::OpenStreetMapX.MapData) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
+function features_to_graph(m::OpenStreetMapX.MapData, features::Dict{Int,Tuple{String,String}}) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
     features_to_nodes = Dict{Int,Int}()
     sizehint!(features_to_nodes,length(features))
     for (key,value) in features
         if !haskey(m.v,key)
-            features_to_nodes[key] = OpenStreetMapX.nearest_node(nodes,nodes[key],m)
+            features_to_nodes[key] = OpenStreetMapX.nearest_node(m,nodes[key])
         else
             features_to_nodes[key] = key
         end
@@ -73,7 +73,7 @@ end
 
 ### Transpose distances to times ###
 
-function network_travel_times(m::OpenStreetMapX.MapData, class_speeds::Dict{Int,Int} = OpenStreetMapX.SPEED_ROADS_URBAN)
+function network_travel_times(m::OpenStreetMapX.MapData, class_speeds::Dict{Int,Float64} = OpenStreetMapX.SPEED_ROADS_URBAN)
     @assert length(m.e) == length(m.w.nzval)
     indices = [(m.v[i],m.v[j]) for (i,j) in m.e]
     w = Array{Float64}(undef,length(m.e))
@@ -185,40 +185,53 @@ function find_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, node2::In
 end
 
 ###########################
-### Find Shortest Route ###
+###  ###
 ###########################
+"""
+    shortest_route(m::MapData, node1::Int, node2::Int)
 
-function shortest_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int)
-	route_nodes, distance, route_time = OpenStreetMapX.find_route(m,node0,node1,m.w,false,true)
+Find Shortest route between `node1` and `node2` on map `m`.
+
+"""
+function shortest_route(m::MapData, node1::Int, node2::Int)
+	route_nodes, distance, route_time = OpenStreetMapX.find_route(m,node1,node2,m.w,false,true)
 	return route_nodes, distance, route_time
 end
 
-##################################################################
-### Find Shortest Route Connecting 3 Points with Given Weights ###
-##################################################################
+"""
+    shortest_route(m::MapData, node1::Int, node2::Int, node3::Int)
 
-function shortest_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, node2::Int)
-	route_nodes, distance, route_time = OpenStreetMapX.find_route(m,node0,node1, node2, m.w,false,true)
+Find Shortest route between `node1` and `node2` and `node3` on map `m`.
+
+"""
+function shortest_route(m::MapData, node1::Int, node2::Int, node3::Int)
+	route_nodes, distance, route_time = OpenStreetMapX.find_route(m,node1,node2, node3, m.w,false,true)
 	return route_nodes, distance, route_time
 end
 
-##########################
-### Find Fastest Route ###
-##########################
+"""
+    fastest_route(m::MapData, node1::Int, node2::Int,
+	              speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
 
-function fastest_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, speeds=OpenStreetMapX.SPEED_ROADS_URBAN)
+Find fastest route between `node1` and `node2`  on map `m` with assuming `speeds` for road classes.
+
+"""
+function fastest_route(m::MapData, node1::Int, node2::Int, speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
 	w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
-	route_nodes, route_time, distance = OpenStreetMapX.find_route(m,node0,node1,w,true, false)
+	route_nodes, route_time, distance = OpenStreetMapX.find_route(m,node1,node2,w,true, false)
 	return route_nodes, distance, route_time
 end
 
-#################################################################
-### Find Fastest Route Connecting 3 Points with Given Weights ###
-#################################################################
+"""
+    fastest_route(m::MapData, node1::Int, node2::Int, node3::Int,
+	              speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
 
-function fastest_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, node2::Int, speeds=OpenStreetMapX.SPEED_ROADS_URBAN)
+Find fastest route between `node1` and `node2` and `node3`  on map `m` with assuming `speeds` for road classes.
+
+"""
+function fastest_route(m::MapData, node1::Int, node2::Int, node3::Int, speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
 	w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
-	route_nodes, route_time, distance = OpenStreetMapX.find_route(m,node0,node1, node2, w,true, false)
+	route_nodes, route_time, distance = OpenStreetMapX.find_route(m,node1,node2, node3, w,true, false)
 	return route_nodes, distance, route_time
 end
 
@@ -319,27 +332,48 @@ nodes_within_driving_distance(nodes::Dict{Int,T}, m::OpenStreetMapX.MapData, loc
 ### Based on Driving Time												   ###
 ##############################################################################
 
-function nodes_within_driving_time(m::OpenStreetMapX.MapData, start_indices::Vector{Int}, limit::Float64=Inf, speeds::Dict{Int,Int}=OpenStreetMapX.SPEED_ROADS_URBAN)
+function nodes_within_driving_time(m::OpenStreetMapX.MapData, start_indices::Vector{Int}, limit::Float64=Inf, speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
 	w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
 	start_vertices = [m.v[i] for i in start_indices]
     bellman_ford = OpenStreetMapX.bellman_ford(m, w, start_vertices)
     return OpenStreetMapX.filter_vertices(m.v, bellman_ford.dists, limit)
 end
 
-function nodes_within_driving_time(nodes::Dict{Int,T}, m::OpenStreetMapX.MapData, loc::T, limit::Float64=Inf, locrange::Float64=500.0, speeds::Dict{Int,Int}=OpenStreetMapX.SPEED_ROADS_URBAN) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
+function nodes_within_driving_time(nodes::Dict{Int,T}, m::OpenStreetMapX.MapData, loc::T, limit::Float64=Inf, locrange::Float64=500.0, speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
 	w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
 	return OpenStreetMapX.nodes_within_driving_time(m,nodes_within_range(nodes, loc, m,locrange),limit,speeds)
 end
 
-function generate_point_in_bounds(mapD::OpenStreetMapX.MapData)
-    boundaries = mapD.bounds
+"""
+    generate_point_in_bounds(m::MapData)
+
+Generates a random pair of Latitude-Longitude coordinates within
+boundaries of map `m`
+"""
+function generate_point_in_bounds(m::MapData)
+    boundaries = m.bounds
     (rand() * (boundaries.max_y -  boundaries.min_y) + boundaries.min_y,
     rand() * (boundaries.max_x -  boundaries.min_x) + boundaries.min_x)
 end
 
-function point_to_nodes(point::Tuple{Float64,Float64}, map_data::OpenStreetMapX.MapData)
-    point = OpenStreetMapX.LLA(point[1],point[2])
-    point = OpenStreetMapX.nearest_node(map_data.nodes,OpenStreetMapX.ENU(point, map_data.bounds), map_data)
+"""
+    point_to_nodes(point::Tuple{Float64,Float64}, m::MapData)
+
+Converts a pair of coordinates LLA `point` to a node on a map `m`
+The result is a node indentifier.
+
+"""
+function point_to_nodes(point::Tuple{Float64,Float64}, m::MapData)
+    pointLLA = LLA(point[1],point[2])
+    point_to_nodes(pointLLA, m)
 end
+"""
+    point_to_nodes(point::LLA, m::MapData)
 
+Converts a pair of coordinates LLA `point` to a node on a map `m`
+The result is a node indentifier.
 
+"""
+function point_to_nodes(point::LLA, m::MapData)
+    OpenStreetMapX.nearest_node(m.nodes,OpenStreetMapX.ENU(point, m.bounds), m)
+end

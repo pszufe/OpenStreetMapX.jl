@@ -56,6 +56,8 @@ end
 ### Find nearest node serving as a vertex in a routing network ###
 nearest_node(nodes::Dict{Int,T}, loc::T, m::OpenStreetMapX.MapData) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nearest_node(nodes,loc,collect(keys(m.v)))
 
+nearest_node(loc::T, m::OpenStreetMapX.MapData) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nearest_node(m.nodes,loc,collect(keys(m.v)))
+
 #############################
 ### Find Node Within Range###
 #############################
