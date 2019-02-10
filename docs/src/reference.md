@@ -29,4 +29,14 @@ shortest_route(::MapData, ::Int, ::Int)
 shortest_route(::MapData, ::Int, ::Int, ::Int)
 fastest_route(::MapData, ::Int, ::Int, ::Dict{Int,Float64})
 fastest_route(::MapData, ::Int, ::Int, ::Int, ::Dict{Int,Float64})
+
+```
+
+Google API routing
+------------------
+```@docs
+get_google_route(::Int,::Int,::MapData,::String; ::Dict{Symbol,String})
+get_google_route(::Int,::Int,::Int,::MapData,::String; ::Dict{Symbol,String})
+node_to_string(::Int,::MapData)
+googleAPI_parameters
 ```

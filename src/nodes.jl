@@ -20,6 +20,7 @@ end
 ### Find the Nearest Node ###
 #############################
 
+
 ### Find the nearest node to a given location ###
 function nearest_node(nodes::Dict{Int,T}, loc::T) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
     min_dist = Inf
@@ -36,8 +37,13 @@ function nearest_node(nodes::Dict{Int,T}, loc::T) where T<:(Union{OpenStreetMapX
     return best_ind
 end
 
+function nearest_node(m::MapData, loc::ENU, vs_only::Bool=true)
+	vs_only ? nearest_node(m.nodes,loc, keys(m.v)) : nearest_node(m.nodes,loc)
+end
+
+
 ### Find nearest node in a list of nodes ###
-function nearest_node(nodes::Dict{Int,T}, loc::T, node_list::Vector{Int}) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
+function nearest_node(nodes::Dict{Int,T}, loc::T, node_list::AbstractSet{Int}) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
     min_dist = Inf
     best_ind = 0
 
@@ -52,11 +58,6 @@ function nearest_node(nodes::Dict{Int,T}, loc::T, node_list::Vector{Int}) where 
     return best_ind
 end
 
-
-### Find nearest node serving as a vertex in a routing network ###
-nearest_node(nodes::Dict{Int,T}, loc::T, m::OpenStreetMapX.MapData) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nearest_node(nodes,loc,collect(keys(m.v)))
-
-nearest_node(loc::T, m::OpenStreetMapX.MapData) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nearest_node(m.nodes,loc,collect(keys(m.v)))
 
 #############################
 ### Find Node Within Range###
@@ -78,7 +79,7 @@ function nodes_within_range(nodes::Dict{Int,T}, loc::T, range::Float64 = Inf) wh
 end
 
 ### Find nodes within range of a location using a subset of nodes ###
-function nodes_within_range(nodes::Dict{Int,T}, loc::T, node_list::Vector{Int}, range::Float64 = Inf) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
+function nodes_within_range(nodes::Dict{Int,T}, loc::T, node_list::AbstractSet{Int}, range::Float64 = Inf) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
     if range == Inf
         return node_list
     end
@@ -119,3 +120,4 @@ function centroid(nodes::Dict{Int,T}, node_list::Vector{Int}) where T<:(Union{Op
         return OpenStreetMapX.ENU(sum_1/length(node_list),sum_2/length(node_list),sum_3/length(node_list))
     end
 end
+

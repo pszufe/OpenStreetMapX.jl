@@ -51,7 +51,7 @@ function features_to_graph(m::OpenStreetMapX.MapData, features::Dict{Int,Tuple{S
     sizehint!(features_to_nodes,length(features))
     for (key,value) in features
         if !haskey(m.v,key)
-            features_to_nodes[key] = OpenStreetMapX.nearest_node(m,nodes[key])
+            features_to_nodes[key] = OpenStreetMapX.nearest_node(m,features[key])
         else
             features_to_nodes[key] = key
         end
@@ -359,7 +359,8 @@ end
 """
     point_to_nodes(point::Tuple{Float64,Float64}, m::MapData)
 
-Converts a pair of coordinates LLA `point` to a node on a map `m`
+Converts a pair Latitude-Longitude of coordinates 
+`point` to a node on a map `m`
 The result is a node indentifier.
 
 """
@@ -370,10 +371,10 @@ end
 """
     point_to_nodes(point::LLA, m::MapData)
 
-Converts a pair of coordinates LLA `point` to a node on a map `m`
+Converts a pair of coordinates LLA (Latitude-Longitude-Altitude) `point` to a node on a map `m`
 The result is a node indentifier.
 
 """
 function point_to_nodes(point::LLA, m::MapData)
-    OpenStreetMapX.nearest_node(m.nodes,OpenStreetMapX.ENU(point, m.bounds), m)
+    nearest_node(m,OpenStreetMapX.ENU(point, m.bounds))
 end

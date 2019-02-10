@@ -1,8 +1,11 @@
 # OpenStreetMapX.jl
 
 * Package for spatial analysis, simulation and vizualization of Open Street Map data 
+* The plotting functionality is provided via a separate package [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl)
 
-The goal of this package is to provide a backbone for multi-agent simulation of cities. The prototype simulator has been implemented in [`OpenStreetMapXSim.jl`](https://github.com/pszufe/OpenStreetMapXSim.jl)).
+The goal of this package is to provide a backbone for multi-agent simulation of cities. 
+
+
 
 | **Documentation** | **Build Status** |
 |---------------|--------------|
@@ -38,12 +41,12 @@ sudo apt install libexpat-dev
 
 ```julia
 using OpenStreetMapX
-map_data = OpenStreetMapX.get_map_data("/home/ubuntu/", "mymap.osm");
+map_data = get_map_data("/home/ubuntu/mymap.osm");
 
 println("The map contains $(length(map_data.nodes)) nodes")
 ```
 
-See the `samples` directory for a more complete example.  
+See the [samples](https://github.com/pszufe/OpenStreetMapX.jl/tree/master/samples) directory for a more complete example and have a look at [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl) for a route plotting.  
 
 ## Obtaining map data
 
@@ -69,10 +72,11 @@ In order to obtain the `*.osm` file follow the steps below:
 Compared to the original package major changes include:
 
 - `LightGraphs.jl` is used for map data storage
-- Several changes with routing algorithm (currently finding a route in a 1 million people city takes around 250ms)
+- Several changes with routing algorithm (currently finding a route in a 1 million people city takes around 150ms)
+- Added support for using Google Maps API for routing
 - Data structure adjustment to make the library more suitable to run simulations of cities. 
 - `Plots.jl` with GR is used as backend for map vizualization (via a separate package   [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl))
 
-The creation of this source code was partially financed by research project supported by the Ontario Centres of Excellence ("OCE") under Voucher for Innovation and Productivity (VIP) program, OCE Project Number: 30293, project name: "Agent-based simulation modelling of out-of-home advertising viewing opportunity conducted in cooperation with Environics Analytics of Toronto, Canada. </sup>
+The creation of some parts of this source code was partially financed by research project supported by the Ontario Centres of Excellence ("OCE") under Voucher for Innovation and Productivity (VIP) program, OCE Project Number: 30293, project name: "Agent-based simulation modelling of out-of-home advertising viewing opportunity conducted in cooperation with Environics Analytics of Toronto, Canada. </sup>
 
 

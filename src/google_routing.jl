@@ -21,15 +21,14 @@ const googleAPI_parameters = Dict{Symbol,String}(
 
 
 """
-Convert node coordinates (stored in ENU system) to string with LLA system coordinates
+    node_to_string(node_id::Int,map_data::MapData)
 
-**Arguments**
-* `node_id` : unique node id
-* `map_data` : `OpenStreetMapX.MapData` object
+Convert node coordinates (stored in ENU system in the `nodes` field of `map_data`)
+identified by `node_id` to string with LLA system coordinates
 
 """
-function node_to_string(node_id::Int,map_data::OpenStreetMapX.MapData)
-    coords = OpenStreetMapX.LLA(map_data.nodes[node_id],map_data.bounds)
+function node_to_string(node_id::Int,map_data::MapData)
+    coords = LLA(map_data.nodes[node_id],map_data.bounds)
     return string(coords.lat,",",coords.lon)
 end
 
@@ -119,9 +118,9 @@ Match Google route with vertices of map network
 
 
 """
-function google_route_to_network(route::Array{Tuple{Float64,Float64},1},map_data::OpenStreetMapX.MapData)
-    route = [OpenStreetMapX.ENU(OpenStreetMapX.LLA(coords[1], coords[2]),map_data.bounds) for coords in route]
-    res = [OpenStreetMapX.nearest_node(map_data, route[1])]
+function google_route_to_network(route::Array{Tuple{Float64,Float64},1},map_data::MapData)
+    route = [ENU(LLA(coords[1], coords[2]),map_data.bounds) for coords in route]
+    res = [nearest_node(map_data, route[1])]
     index = 2
     for i = 2:length(route)
         node = OpenStreetMapX.nearest_node(map_data, route[i])
@@ -134,20 +133,19 @@ function google_route_to_network(route::Array{Tuple{Float64,Float64},1},map_data
 end
 
 """
-Get route based on Google Distances API with three points (origin, destination, waypoint between)
+    get_google_route(origin::Int, destination::Int, waypoint::Int,
+                     map_data:MapData, googleapi_key::String;
+                     googleapi_parameters::Dict{Symbol,String} = googleAPI_parameters)
 
-**Arguments**
-* `origin` : unique node id
-* `destination` : unique node id
-* `waypoint` : unique node id
-* `map_data` : `OpenStreetMapX.MapData;` object
-* `googleapi_key`: Google API key
-* `googleapi_parameters` : dictionary with assumptions about Google Distances API request
+Get route from to based on Google Distances API with three points
+(`origin`, `destination` and `waypoint` between)
+on map `map_data` using Google API key `googleapi_key` with optional
+Google Distances API request parameters `googleapi_parameters`.
 
 """
 function get_google_route(origin::Int,destination::Int,waypoint::Int,
                             map_data::OpenStreetMapX.OpenStreetMapX.MapData, googleapi_key::String;
-                            googleapi_parameters::Dict{Symbol,String} = OpenStreetMapX.googleAPI_parameters)
+                            googleapi_parameters::Dict{Symbol,String} = googleAPI_parameters)
     url = OpenStreetMapX.get_googleapi_url(origin, destination, waypoint,map_data,googleapi_key,googleapi_parameters = googleapi_parameters)
     status, routes = OpenStreetMapX.parse_google_url(url)
     if status == "OK"
@@ -172,19 +170,18 @@ function get_google_route(origin::Int,destination::Int,waypoint::Int,
 end
 
 """
-Get route based on Google Distances API with two points (origin and destination)
+    get_google_route(origin::Int, destination::Int,
+                     map_data:MapData, googleapi_key::String;
+                     googleapi_parameters::Dict{Symbol,String} = googleAPI_parameters)
 
-**Arguments**
-* `origin` : unique node id
-* `destination` : unique node id
-* `map_data` : `OpenStreetMapX.MapData;` object
-* `googleapi_key`: Google API key
-* `googleapi_parameters` : dictionary with assumptions about Google Distances API request
+Get route from to based on Google Distances API with two points (`origin` and `destination`)
+on map `map_data` using Google API key `googleapi_key` with optional
+Google Distances API request parameters `googleapi_parameters`.
 
 """
 function get_google_route(origin::Int,destination::Int,
-                            map_data::OpenStreetMapX.MapData,googleapi_key::String;
-                            googleapi_parameters::Dict{Symbol,String} = OpenStreetMapX.googleAPI_parameters)
+                            map_data::MapData,googleapi_key::String;
+                            googleapi_parameters::Dict{Symbol,String} = googleAPI_parameters)
     url = OpenStreetMapX.get_googleapi_url(origin, destination,map_data,googleapi_key,googleapi_parameters = googleapi_parameters)
     status, routes = OpenStreetMapX.parse_google_url(url)
     if status == "OK"

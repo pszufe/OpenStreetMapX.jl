@@ -226,9 +226,9 @@ This is the main data structure used fot map data analytics.
 * `class` : road class of each edge
 """
 struct MapData
-    bounds::Bounds{OpenStreetMapX.LLA}
-    nodes::Dict{Int,OpenStreetMapX.ENU}
-    roadways::Array{OpenStreetMapX.Way,1}
+    bounds::Bounds{LLA}
+    nodes::Dict{Int,ENU}
+    roadways::Array{Way,1}
     intersections::Dict{Int,Set{Int}}
     # Transporation network graph data and helpers to increase routing speed
     g::LightGraphs.SimpleGraphs.SimpleDiGraph{Int64} # Graph object
