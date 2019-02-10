@@ -13,11 +13,11 @@ notifications:
 
 #script: # the default script is equivalent to the following
 #  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("SimpleHypergraphs"); Pkg.test("SimpleHypergraphs"; coverage=true)';
+#  - julia -e 'Pkg.clone(pwd()); Pkg.build("OpenStreetMapX"); Pkg.test("OpenStreetMapX"; coverage=true)';
 
 after_success:
-  - julia -e 'using Pkg; cd(Pkg.dir("SimpleHypergraphs")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())';
-#  - julia -e 'if VERSION >= v"0.7.0-" using Pkg end; cd(Pkg.dir("SimpleHypergraphs")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())';
+  - julia -e 'using Pkg; cd(Pkg.dir("OpenStreetMapX")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())';
+#  - julia -e 'if VERSION >= v"0.7.0-" using Pkg end; cd(Pkg.dir("OpenStreetMapX")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())';
 
 jobs:
   include:
