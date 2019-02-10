@@ -1,7 +1,7 @@
 name = "OpenStreetMapX"
 uuid = "5c67c38e-c187-11e8-2be6-e3a6a3a5610f"
 authors = ["Przemyslaw Szufel <pszufe@gmail.com>", "Bartosz Pankratz <bartosz.pankratz@gmail.com>", "Anna Szczurek <annaszczurek2@gmail.com>", "Bogumil Kaminski <bogumil.kaminski@gmail.com>", "Pawel Pralat <pralat@ryerson.ca>"]
-version = "0.1.1"
+version = "v0.1.4"
 
 [deps]
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
