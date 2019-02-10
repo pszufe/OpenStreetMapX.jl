@@ -93,7 +93,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Reference",
     "title": "OpenStreetMapX.point_to_nodes",
     "category": "method",
-    "text": "point_to_nodes(point::Tuple{Float64,Float64}, m::MapData)\n\nConverts a pair of coordinates LLA point to a node on a map m The result is a node indentifier.\n\n\n\n\n\n"
+    "text": "point_to_nodes(point::Tuple{Float64,Float64}, m::MapData)\n\nConverts a pair Latitude-Longitude of coordinates  point to a node on a map m The result is a node indentifier.\n\n\n\n\n\n"
 },
 
 {
@@ -101,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Reference",
     "title": "OpenStreetMapX.point_to_nodes",
     "category": "method",
-    "text": "point_to_nodes(point::LLA, m::MapData)\n\nConverts a pair of coordinates LLA point to a node on a map m The result is a node indentifier.\n\n\n\n\n\n"
+    "text": "point_to_nodes(point::LLA, m::MapData)\n\nConverts a pair of coordinates LLA (Latitude-Longitude-Altitude) point to a node on a map m The result is a node indentifier.\n\n\n\n\n\n"
 },
 
 {
@@ -141,7 +141,47 @@ var documenterSearchIndex = {"docs": [
     "page": "Reference",
     "title": "Routing operations",
     "category": "section",
-    "text": "generate_point_in_bounds(::MapData)\npoint_to_nodes(::Tuple{Float64,Float64}, ::MapData)\npoint_to_nodes(::LLA, ::MapData)\nshortest_route(::MapData, ::Int, ::Int)\nshortest_route(::MapData, ::Int, ::Int, ::Int)\nfastest_route(::MapData, ::Int, ::Int, ::Dict{Int,Float64})\nfastest_route(::MapData, ::Int, ::Int, ::Int, ::Dict{Int,Float64})"
+    "text": "generate_point_in_bounds(::MapData)\npoint_to_nodes(::Tuple{Float64,Float64}, ::MapData)\npoint_to_nodes(::LLA, ::MapData)\nshortest_route(::MapData, ::Int, ::Int)\nshortest_route(::MapData, ::Int, ::Int, ::Int)\nfastest_route(::MapData, ::Int, ::Int, ::Dict{Int,Float64})\nfastest_route(::MapData, ::Int, ::Int, ::Int, ::Dict{Int,Float64})\n"
+},
+
+{
+    "location": "reference/#OpenStreetMapX.get_google_route-Tuple{Int64,Int64,MapData,String}",
+    "page": "Reference",
+    "title": "OpenStreetMapX.get_google_route",
+    "category": "method",
+    "text": "get_google_route(origin::Int, destination::Int,\n                 map_data:MapData, googleapi_key::String;\n                 googleapi_parameters::Dict{Symbol,String} = googleAPI_parameters)\n\nGet route from to based on Google Distances API with two points (origin and destination) on map map_data using Google API key googleapi_key with optional Google Distances API request parameters googleapi_parameters.\n\n\n\n\n\n"
+},
+
+{
+    "location": "reference/#OpenStreetMapX.get_google_route-Tuple{Int64,Int64,Int64,MapData,String}",
+    "page": "Reference",
+    "title": "OpenStreetMapX.get_google_route",
+    "category": "method",
+    "text": "get_google_route(origin::Int, destination::Int, waypoint::Int,\n                 map_data:MapData, googleapi_key::String;\n                 googleapi_parameters::Dict{Symbol,String} = googleAPI_parameters)\n\nGet route from to based on Google Distances API with three points (origin, destination and waypoint between) on map map_data using Google API key googleapi_key with optional Google Distances API request parameters googleapi_parameters.\n\n\n\n\n\n"
+},
+
+{
+    "location": "reference/#OpenStreetMapX.node_to_string-Tuple{Int64,MapData}",
+    "page": "Reference",
+    "title": "OpenStreetMapX.node_to_string",
+    "category": "method",
+    "text": "node_to_string(node_id::Int,map_data::MapData)\n\nConvert node coordinates (stored in ENU system in the nodes field of map_data) identified by node_id to string with LLA system coordinates\n\n\n\n\n\n"
+},
+
+{
+    "location": "reference/#OpenStreetMapX.googleAPI_parameters",
+    "page": "Reference",
+    "title": "OpenStreetMapX.googleAPI_parameters",
+    "category": "constant",
+    "text": "Dictionary for Google Distances API requests:\n\nKeys\n\n:url : url for google API, only JSON files outputs are accepted\n:mode : transportation mode used in simulation, in the current library scope only driving is accepted\n:avoid : map features to avoid (to mantain compatibility with OSM routes ferries should be avoided)\n:units : unit system for displaing distances (changing to imperial needs deeper changes in both OSMsim and OpenStreetMapX modules)\n\n\n\n\n\n"
+},
+
+{
+    "location": "reference/#Google-API-routing-1",
+    "page": "Reference",
+    "title": "Google API routing",
+    "category": "section",
+    "text": "get_google_route(::Int,::Int,::MapData,::String; ::Dict{Symbol,String})\nget_google_route(::Int,::Int,::Int,::MapData,::String; ::Dict{Symbol,String})\nnode_to_string(::Int,::MapData)\ngoogleAPI_parameters"
 },
 
 ]}
