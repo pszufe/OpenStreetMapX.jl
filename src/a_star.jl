@@ -1,7 +1,7 @@
 """
     get_distance(A::Int, B::Int, 
-				nodes::Dict{Int,T} , 
-				vertices_to_nodes::Dict{Int,Int}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
+                 nodes::Dict{Int,T} , 
+                 vertices_to_nodes::Dict{Int,Int}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
 					
 Auxiliary function - takes two vertices of graph and return the distance between them. 
 Used to compute straight line distance heuristic for A* algorithm.
@@ -14,8 +14,8 @@ Used to compute straight line distance heuristic for A* algorithm.
 * `vertices_to_nodes` : dictionary mapping graph vertices to .osm file nodes
 """
 function get_distance(A::Int, B::Int, 
-					nodes::Dict{Int,T} , 
-					vertices_to_nodes::Dict{Int,Int}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
+                     nodes::Dict{Int,T}, 
+                     vertices_to_nodes::Dict{Int,Int}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
     A,B = vertices_to_nodes[A], vertices_to_nodes[B]
     OpenStreetMapX.distance(nodes[A],nodes[B])
 end
@@ -34,10 +34,10 @@ end
 
 """
     a_star_algorithm(g::AbstractGraph{U},  
-					s::Integer,                       
-					t::Integer,                       
-					distmx::AbstractMatrix{T}=LightGraphs.weights(g),
-					heuristic::Function = n -> zero(T)) where {T, U}
+                s::Integer,                       
+                t::Integer,                       
+                distmx::AbstractMatrix{T}=LightGraphs.weights(g),
+                heuristic::Function = n -> zero(T)) where {T, U}
 
 High level function - implementation of A star search algorithm:
 (https://en.wikipedia.org/wiki/A*_search_algorithm). 
@@ -53,11 +53,10 @@ however significantly improved in terms of performance.
 * `heuristic` : search heuristic function; by default returns zero 
 """
 function a_star_algorithm(g::AbstractGraph{U},  # the g
-    s::Integer,                       # the start vertex
-    t::Integer,                       # the end vertex
-    distmx::AbstractMatrix{T}=LightGraphs.weights(g),
-    heuristic::Function = n -> zero(T)) where {T, U}
-    
+                          s::Integer,           # the start vertex
+                          t::Integer,           # the end vertex
+                          distmx::AbstractMatrix{T}=LightGraphs.weights(g),
+                          heuristic::Function = n -> zero(T)) where {T, U}
     checkbounds(distmx, Base.OneTo(nv(g)), Base.OneTo(nv(g)))
     frontier = DataStructures.PriorityQueue{Tuple{T, U},T}()
     frontier[(zero(T), U(s))] = zero(T)
