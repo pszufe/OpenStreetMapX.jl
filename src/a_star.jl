@@ -1,7 +1,7 @@
 """
     get_distance(A::Int, B::Int, 
-					nodes::Dict{Int,T} , 
-					vertices_to_nodes::Dict{Int,Int}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
+				nodes::Dict{Int,T} , 
+				vertices_to_nodes::Dict{Int,Int}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
 					
 Auxiliary function - takes two vertices of graph and return the distance between them. 
 Used to compute straight line distance heuristic for A* algorithm.
@@ -10,8 +10,8 @@ Used to compute straight line distance heuristic for A* algorithm.
 
 * `A` : start vertex
 * `B` : end vertex
-* `nodes` : dictionary of .osm nodes ID's and correspoding points coordinates in ECEF or ENU system
-* `vertices_to_nodes` : dictionary mapping graph vertices to .osm file nodes; basically it is a reversed v dictionary from MapData type
+* `nodes` : dictionary of .osm nodes ID's and correspoding points coordinates
+* `vertices_to_nodes` : dictionary mapping graph vertices to .osm file nodes
 """
 function get_distance(A::Int, B::Int, 
 					nodes::Dict{Int,T} , 
@@ -34,13 +34,15 @@ end
 
 """
     a_star_algorithm(g::AbstractGraph{U},  
-    s::Integer,                       
-    t::Integer,                       
-    distmx::AbstractMatrix{T}=LightGraphs.weights(g),
-    heuristic::Function = n -> zero(T)) where {T, U}
+					s::Integer,                       
+					t::Integer,                       
+					distmx::AbstractMatrix{T}=LightGraphs.weights(g),
+					heuristic::Function = n -> zero(T)) where {T, U}
 
-High level function - implementation of A star search algorithm (https://en.wikipedia.org/wiki/A*_search_algorithm). 
-Based on the implementation in LightGraphs library, however significantly improved in terms of performance.
+High level function - implementation of A star search algorithm:
+(https://en.wikipedia.org/wiki/A*_search_algorithm). 
+Based on the implementation in LightGraphs library, 
+however significantly improved in terms of performance.
 
 **Arguments**
 
@@ -48,7 +50,7 @@ Based on the implementation in LightGraphs library, however significantly improv
 * `S` : start vertex
 * `t` : end vertex
 * `distmx` : distance matrix
-* `heuristic` : search heuristic function; by default returns zero which reduce algorithm to Dijkstra shortest path
+* `heuristic` : search heuristic function; by default returns zero 
 """
 function a_star_algorithm(g::AbstractGraph{U},  # the g
     s::Integer,                       # the start vertex
