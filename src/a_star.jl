@@ -34,10 +34,10 @@ end
 
 """
     a_star_algorithm(g::AbstractGraph{U},  
-                s::Integer,                       
-                t::Integer,                       
-                distmx::AbstractMatrix{T}=LightGraphs.weights(g),
-                heuristic::Function = n -> zero(T)) where {T, U}
+                    s::Integer,                       
+                    t::Integer,                       
+                    distmx::AbstractMatrix{T}=LightGraphs.weights(g),
+                    heuristic::Function = n -> zero(T)) where {T, U}
 
 High level function - implementation of A star search algorithm:
 (https://en.wikipedia.org/wiki/A*_search_algorithm). 
