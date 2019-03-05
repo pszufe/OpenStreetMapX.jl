@@ -3,6 +3,7 @@ module OpenStreetMapX
 using LibExpat
 using LightGraphs
 using SparseArrays
+using DataStructures
 using Serialization
 using JSON
 using HTTP
@@ -12,6 +13,7 @@ export distance, getX, getY, getZ  # Auxiliary functions to calculate distances 
 export center, inbounds, onbounds, boundary_point #Functions for map bounds
 export ECEF, LLA, ENU #Conversion functions
 export MapData
+export get_distance, a_star_algorithm #A* search algorithm implementation
 
 export extract_highways, filter_highways #Highways extraction
 export filter_roadways, classify_roadways,  filter_walkways, classify_walkways, filter_cycleways, classify_cycleways #Filtering and classification of cars, cycles and pedestrian Highways
@@ -33,6 +35,7 @@ include("types.jl") #types used in the package
 include("classes.jl") #grouping highways into classes for routing and plotting
 include("speeds.jl") # speed limits in kilometers per hour
 include("polyline.jl")
+include("a_star.jl")
 include("points.jl") # points coordinates and constants
 include("bounds.jl") #bounds of the map
 include("conversion.jl") #conversion of geographical coordinates
