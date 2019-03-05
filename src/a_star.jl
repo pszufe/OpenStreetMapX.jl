@@ -52,7 +52,7 @@ however significantly improved in terms of performance.
 * `distmx` : distance matrix
 * `heuristic` : search heuristic function; by default returns zero 
 """
-function a_star_algorithm(g::AbstractGraph{U},  # the g
+function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
                           s::Integer,           # the start vertex
                           t::Integer,           # the end vertex
                           distmx::AbstractMatrix{T}=LightGraphs.weights(g),
