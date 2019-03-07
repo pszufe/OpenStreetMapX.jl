@@ -86,7 +86,14 @@ end
 ### Create a Sparse Matrix for a given vector of weights ###
 
 function create_weights_matrix(m::OpenStreetMapX.MapData,weights::Vector{Float64})
-    return SparseArrays.sparse(map(i -> m.v[i[1]], m.e), map(i -> m.v[i[2]], m.e),weights)
+    w = Dict{Tuple{Int,Int},Float64}()
+    sizehint!(w,length(weights))
+    for (i,edge) in enumerate(m.e)
+        w[m.v[edge[1]],m.v[edge[2]]] = weights[i]
+    end
+    return SparseArrays.sparse(map(x->getfield.(collect(keys(w)), x),
+        fieldnames(eltype(collect(keys(w)))))..., 
+        collect(values(w)),length(m.v),length(m.v))
 end
 
 ### Extract route from Dijkstra results object ###
