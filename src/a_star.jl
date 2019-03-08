@@ -64,7 +64,7 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
     visited = zeros(Bool, nvg)
     dists = fill(typemax(T), nvg)
     parents = zeros(U, nvg)
-    colormap = LightGraphs.empty_colormap(nvg)
+    colormap = zeros(UInt8, nvg)
     colormap[s] = 1
     @inbounds while !isempty(frontier)
         (cost_so_far, u) = dequeue!(frontier)
