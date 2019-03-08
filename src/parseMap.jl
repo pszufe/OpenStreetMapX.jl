@@ -125,6 +125,7 @@ function get_map_data(filepath::String,filename::Union{String,Nothing}=nothing; 
 		end
 		# (node id) => (graph vertex)
 		v = OpenStreetMapX.get_vertices(e)
+		n = Dict(reverse.(collect(v)))
 		edges = [v[id] for id in reinterpret(Int, e)]
 		I = edges[1:2:end]
 		J = edges[2:2:end]
@@ -132,7 +133,7 @@ function get_map_data(filepath::String,filename::Union{String,Nothing}=nothing; 
 		w = SparseArrays.sparse(I, J, weights, length(v), length(v))
 		g = LightGraphs.DiGraph(w)
 
-		res = OpenStreetMapX.MapData(bounds,nodes,roadways,intersections,g,v,e,w,class)
+		res = OpenStreetMapX.MapData(bounds,nodes,roadways,intersections,g,v,n,e,w,class)
 		if use_cache
 			f=open(cachefile,"w");
 			Serialization.serialize(f,res);

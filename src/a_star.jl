@@ -92,3 +92,26 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
     end
     Vector{U}(), Inf
 end
+
+"""
+    a_star_algorithm(m::OpenStreetMapX.MapData  
+                    s::Integer,                       
+                    t::Integer,                       
+                    distmx::AbstractMatrix{T}=LightGraphs.weights(g)) where {T}
+
+A star search algorithm with straight line distance heuristic
+
+**Arguments**
+
+* `m` : MapData object
+* `S` : start vertex
+* `t` : end vertex
+* `distmx` : distance matrix
+"""
+_star_algorithm(m::OpenStreetMapX.MapData  
+                    s::Integer,                       
+                    t::Integer,                       
+                    distmx::AbstractMatrix{T}=LightGraphs.weights(g)) where {T}
+    heuristic(u) = OpenStreetMapX.get_distance(u, t, m.nodes, m.n)
+	a_star_algorithm(m.g,s,t,distmx,heuristic)
+end

@@ -233,6 +233,7 @@ struct MapData
     # Transporation network graph data and helpers to increase routing speed
     g::LightGraphs.SimpleGraphs.SimpleDiGraph{Int64} # Graph object
     v::Dict{Int,Int}                             # (node id) => (graph vertex)
+	n::Dict{Int,Int}                             # (graph vertex) => (node id)
     e::Array{Tuple{Int64,Int64},1}                # Edges in graph, stored as a tuple (source,destination)
     w::SparseArrays.SparseMatrixCSC{Float64, Int}   # Edge weights, indexed by graph id
     class::Vector{Int}                           # Road class of each edge
