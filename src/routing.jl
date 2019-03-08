@@ -148,20 +148,20 @@ function find_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int,
                     routing::Symbol = :astar, heuristic::Function = n -> zero(Float64),
                     get_distance::Bool = false, get_time::Bool = false)
     result = Any[]
+	start_vertex = m.v[node0]
+	finish_vertex= m.v[node1]
     if routing == :dijkstra
-        start_vertex = m.v[node0]
         dijkstra_result = OpenStreetMapX.dijkstra(m, weights, start_vertex)
-        finish_vertex= m.v[node1]
         route_indices, route_values = OpenStreetMapX.extract_route(dijkstra_result, start_vertex, finish_vertex)
         route_nodes = OpenStreetMapX.get_route_nodes(m, route_indices)
         push!(result, route_nodes, route_values)
     elseif routing == :astar
-        route_indices, route_values = OpenStreetMapX.a_star_algorithm(m.g, node0, node1, weights, heuristic)
+        route_indices, route_values = OpenStreetMapX.a_star_algorithm(m.g, start_vertex, finish_vertex, weights, heuristic)
         route_nodes = OpenStreetMapX.get_route_nodes(m, route_indices)
         push!(result, route_nodes, route_values)
     else
         @warn "routing module declared wrongly - a star algorithm will be used instead!"
-        route_indices, route_values = OpenStreetMapX.a_star_algorithm(m.g, node0, node1, weights, heuristic)
+        route_indices, route_values = OpenStreetMapX.a_star_algorithm(m.g, start_vertex, finish_vertex, weights, heuristic)
         route_nodes = OpenStreetMapX.get_route_nodes(m, route_indices)
         push!(result, route_nodes, route_values)
     end
