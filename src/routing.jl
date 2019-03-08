@@ -117,7 +117,7 @@ end
 
 function get_route_nodes(m::OpenStreetMapX.MapData, route_indices::Array{Int64,1})
     route_nodes = Array{Int}(undef,length(route_indices))
-    v = Dict{Int,Int}(reverse(p) for p = pairs(m.v))
+    v = Dict{Int,Int}(reverse.(collect(m.v)))
     for n = 1:length(route_nodes)
         route_nodes[n] = v[route_indices[n]]
     end
