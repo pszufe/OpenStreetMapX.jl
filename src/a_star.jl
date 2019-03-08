@@ -94,7 +94,7 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
 end
 
 """
-    a_star_algorithm(m::OpenStreetMapX.MapData  
+    a_star_algorithm(m::OpenStreetMapX.MapData,  
                     s::Integer,                       
                     t::Integer,                       
                     distmx::AbstractMatrix{T}=LightGraphs.weights(g)) where {T}

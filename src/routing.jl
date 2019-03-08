@@ -216,7 +216,7 @@ end
 ###  ###
 ###########################
 """
-    shortest_route(m::MapData, node1::Int, node2::Int)
+    shortest_route(m::MapData, node1::Int, node2::Int; routing::Symbol = :astar)
 
 Find Shortest route between `node1` and `node2` on map `m`.
 
@@ -228,7 +228,7 @@ function shortest_route(m::MapData, node1::Int, node2::Int; routing::Symbol = :a
     return route_nodes, distance, route_time
 end
 """
-    shortest_route(m::MapData, node1::Int, node2::Int, node3::Int)
+    shortest_route(m::MapData, node1::Int, node2::Int, node3::Int; routing::Symbol = :astar)
 
 Find Shortest route between `node1` and `node2` and `node3` on map `m`.
 
@@ -241,8 +241,9 @@ function shortest_route(m::MapData, node1::Int, node2::Int, node3::Int; routing:
 end
 
 """
-    fastest_route(m::MapData, node1::Int, node2::Int,
-	              speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
+    ffastest_route(m::MapData, node1::Int, node2::Int;
+                        routing::Symbol = :astar, 
+                        speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
 
 Find fastest route between `node1` and `node2`  on map `m` with assuming `speeds` for road classes.
 
@@ -258,8 +259,9 @@ function fastest_route(m::MapData, node1::Int, node2::Int;
 end
 
 """
-    fastest_route(m::MapData, node1::Int, node2::Int, node3::Int,
-	              speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
+    fastest_route(m::MapData, node1::Int, node2::Int, node3::Int;
+                        routing::Symbol = :astar, 
+                        speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
 
 Find fastest route between `node1` and `node2` and `node3`  on map `m` with assuming `speeds` for road classes.
 
