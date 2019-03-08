@@ -108,10 +108,10 @@ A star search algorithm with straight line distance heuristic
 * `t` : end vertex
 * `distmx` : distance matrix
 """
-_star_algorithm(m::OpenStreetMapX.MapData  
+function a_star_algorithm(m::OpenStreetMapX.MapData,  
                     s::Integer,                       
                     t::Integer,                       
                     distmx::AbstractMatrix{T}=LightGraphs.weights(g)) where {T}
     heuristic(u) = OpenStreetMapX.get_distance(u, t, m.nodes, m.n)
-	a_star_algorithm(m.g,s,t,distmx,heuristic)
+	OpenStreetMapX.a_star_algorithm(m.g,s,t,distmx,heuristic)
 end
