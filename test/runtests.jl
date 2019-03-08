@@ -24,4 +24,7 @@ pointB = point_to_nodes(pB, m)
 sr1, shortest_distance1, shortest_time1 = shortest_route(m, pointA, pointB)
 @test (sr1[1], sr1[end]) == (pointA, pointB)
 
+@test shortest_route(m, pointA, pointB; routing = :astar) == shortest_route(m, pointA, pointB; routing = :dijkstra)
+@test fastest_route(m, pointA, pointB; routing = :astar) == fastest_route(m, pointA, pointB; routing = :dijkstra)
+ 
 end;

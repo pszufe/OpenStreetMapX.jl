@@ -158,7 +158,7 @@ function get_google_route(origin::Int,destination::Int,waypoint::Int,
         return OpenStreetMapX.get_google_route(origin,destination,waypoint,map_data,googleapi_key,googleapi_parameters = googleapi_parameters)
     else
         #get route based on OSM routing
-        warn("Google Distances API cannot get a proper results - route will be calculated with OSMSim Routing module")
+        @warn "Google Distances API cannot get a proper results - route will be calculated with OSMSim Routing module"
 		if rand() < 0.5
 			route_nodes, distance, route_time = OpenStreetMapX.shortest_route(map_data, origin, waypoint, destination)
 			return route_nodes, "shortest"
@@ -194,7 +194,7 @@ function get_google_route(origin::Int,destination::Int,
         return OpenStreetMapX.get_google_route(origin,destination,map_data,googleapi_key,googleapi_parameters = googleapi_parameters)
     else
         #get route based on OSM routing
-        warn("Google Distances API cannot get a proper results - route will be calculated with OSMSim Routing module")
+        @warn "Google Distances API cannot get a proper results - route will be calculated with OSMSim Routing module"
 		if rand() < 0.5
 			route_nodes, distance, route_time = OpenStreetMapX.shortest_route(map_data, origin, destination)
 			return route_nodes, "shortest"
