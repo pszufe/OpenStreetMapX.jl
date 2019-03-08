@@ -26,5 +26,26 @@ sr1, shortest_distance1, shortest_time1 = shortest_route(m, pointA, pointB)
 
 @test shortest_route(m, pointA, pointB; routing = :astar) == shortest_route(m, pointA, pointB; routing = :dijkstra)
 @test fastest_route(m, pointA, pointB; routing = :astar) == fastest_route(m, pointA, pointB; routing = :dijkstra)
+
+function perftest()
+  sr_len=length(shortest_route(m, pointA, pointB; routing = :astar)[1])
+  fr_len=length(fastest_route(m, pointA, pointB; routing = :astar)[1])
+  shortest_route(m, pointA, pointB; routing = :dijkstra)
+  fastest_route(m, pointA, pointB; routing = :dijkstra)
+
+  print("shortest_route(...; routing = :astar) of $sr_len nodes")
+  @time shortest_route(m, pointA, pointB; routing = :astar)
+  print("shortest_route(...; routing = :dijkstra)  of $sr_len nodes")
+  @time shortest_route(m, pointA, pointB; routing = :dijkstra)
+
+  print("fastest_route(...; routing = :astar) of $fr_len nodes")
+  @time fastest_route(m, pointA, pointB; routing = :astar)
+  print("fastest_route(...; routing = :dijkstra) of $fr_len nodes")
+  @time fastest_route(m, pointA, pointB; routing = :dijkstra)
+
+end
+
+perftest()
+
  
 end;
