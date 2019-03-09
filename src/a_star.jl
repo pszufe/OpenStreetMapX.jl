@@ -80,11 +80,11 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
                     dists[v] = path_cost
                     enqueue!(frontier,
                             (path_cost, v),
-                            path_cost + heuristic(v))
+                            path_cost + heuristic(v,t))
                 elseif path_cost < dists[v]
                     parents[v] = u
                     dists[v] = path_cost
-                    frontier[path_cost, v] = path_cost + heuristic(v)
+                    frontier[path_cost, v] = path_cost + heuristic(v,t)
                 end
             end
         end
@@ -96,9 +96,7 @@ end
 """
     a_star_algorithm(m::OpenStreetMapX.MapData,  
                     s::Integer,                       
-                    t::Integer,                       
-                    distmx::AbstractMatrix{T}=LightGraphs.weights(g)) where {T}
-
+                    t::Integer)
 A star search algorithm with straight line distance heuristic
 
 **Arguments**
@@ -110,8 +108,7 @@ A star search algorithm with straight line distance heuristic
 """
 function a_star_algorithm(m::OpenStreetMapX.MapData,  
                     s::Integer,                       
-                    t::Integer,                       
-                    distmx::AbstractMatrix{T}=LightGraphs.weights(g)) where {T}
-    heuristic(u) = OpenStreetMapX.get_distance(u, t, m.nodes, m.n)
-	OpenStreetMapX.a_star_algorithm(m.g,s,t,distmx,heuristic)
+                    t::Integer)
+    heuristic(u,v) = OpenStreetMapX.get_distance(u, v, m.nodes, m.n)
+	OpenStreetMapX.a_star_algorithm(m.g,s,t,m.w,heuristic)
 end
