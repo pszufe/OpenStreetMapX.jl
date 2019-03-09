@@ -4,6 +4,7 @@ authors = ["Przemyslaw Szufel <pszufe@gmail.com>", "Bartosz Pankratz <bartosz.pa
 version = "0.1.5"
 
 [deps]
+StatsBase =  "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
