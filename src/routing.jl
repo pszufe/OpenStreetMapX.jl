@@ -267,7 +267,7 @@ function fastest_route(m::MapData, node1::Int, node2::Int;
     w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
     route_nodes, route_time, distance = OpenStreetMapX.find_route(m, node1, node2, w,
                                                                 routing = routing, 
-																heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / mean(SparseArrays.nonzeros(OpenStreetMapX.get_velocities(m))), 
+																heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / Statistics.mean(SparseArrays.nonzeros(OpenStreetMapX.get_velocities(m))), 
                                                                 get_distance = true, get_time = false)
     return route_nodes, distance, route_time
 end
@@ -285,7 +285,7 @@ function fastest_route(m::MapData, node1::Int, node2::Int, node3::Int;
                         speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
     w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
     route_nodes, route_time, distance = OpenStreetMapX.find_route(m, node1, node2, node3, w,
-                                                                routing = routing, heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / mean(SparseArrays.nonzeros(OpenStreetMapX.get_velocities(m))), 
+                                                                routing = routing, heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / Statistics.mean(SparseArrays.nonzeros(OpenStreetMapX.get_velocities(m))), 
                                                                 get_distance = true, get_time = false)
     return route_nodes, distance, route_time
 end

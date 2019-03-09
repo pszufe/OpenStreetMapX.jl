@@ -5,6 +5,7 @@ using LightGraphs
 using SparseArrays
 using DataStructures
 using Serialization
+using Statistics
 using JSON
 using HTTP
 
