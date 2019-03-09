@@ -96,10 +96,10 @@ function create_weights_matrix(m::OpenStreetMapX.MapData,weights::Vector{Float64
         collect(values(w)),length(m.v),length(m.v))
 end
 
-### Get velocieties matrix ###
+### Get velocities matrix ###
 
 function get_velocities(m::OpenStreetMapX.MapData, 
-            class_speeds::Dict{Int,Int} = OpenStreetMapX.SPEED_ROADS_URBAN)
+            class_speeds::Dict{Int,Float64} = OpenStreetMapX.SPEED_ROADS_URBAN)
     @assert length(m.e) == length(m.w.nzval)
     indices = [(m.v[i],m.v[j]) for (i,j) in m.e]
     V = Array{Float64}(undef,length(m.e))
