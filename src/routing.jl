@@ -96,6 +96,19 @@ function create_weights_matrix(m::OpenStreetMapX.MapData,weights::Vector{Float64
         collect(values(w)),length(m.v),length(m.v))
 end
 
+### Get velocieties matrix ###
+
+function get_velocities(m::OpenStreetMapX.MapData, 
+            class_speeds::Dict{Int,Int} = OpenStreetMapX.SPEED_ROADS_URBAN)
+    @assert length(m.e) == length(m.w.nzval)
+    indices = [(m.v[i],m.v[j]) for (i,j) in m.e]
+    V = Array{Float64}(undef,length(m.e))
+    for i = 1:length(indices)
+        V[i] = class_speeds[m.class[i]]/3.6
+    end
+    return SparseArrays.sparse(map(i -> m.v[i[1]], m.e), map(i -> m.v[i[2]], m.e),V)
+end
+
 ### Extract route from Dijkstra results object ###
 
 function extract_route(dijkstra::LightGraphs.DijkstraState{Float64,Int64}, startIndex::Int, finishIndex::Int)
@@ -254,7 +267,7 @@ function fastest_route(m::MapData, node1::Int, node2::Int;
     w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
     route_nodes, route_time, distance = OpenStreetMapX.find_route(m, node1, node2, w,
                                                                 routing = routing, 
-																heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / StatsBase.mean(SparseArrays.nonzeros(w)), 
+																heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / StatsBase.mean(SparseArrays.nonzeros(OpenStreetMapX.get_velocities(m))), 
                                                                 get_distance = true, get_time = false)
     return route_nodes, distance, route_time
 end
@@ -272,7 +285,7 @@ function fastest_route(m::MapData, node1::Int, node2::Int, node3::Int;
                         speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
     w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
     route_nodes, route_time, distance = OpenStreetMapX.find_route(m, node1, node2, node3, w,
-                                                                routing = routing, heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / StatsBase.mean(SparseArrays.nonzeros(w)), 
+                                                                routing = routing, heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / StatsBase.mean(SparseArrays.nonzeros(OpenStreetMapX.get_velocities(m))), 
                                                                 get_distance = true, get_time = false)
     return route_nodes, distance, route_time
 end
