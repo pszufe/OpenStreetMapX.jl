@@ -3,7 +3,6 @@ module OpenStreetMapX
 using LibExpat
 using LightGraphs
 using SparseArrays
-using StatsBase
 using DataStructures
 using Serialization
 using JSON
