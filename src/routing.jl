@@ -86,7 +86,27 @@ end
 ### Create a Sparse Matrix for a given vector of weights ###
 
 function create_weights_matrix(m::OpenStreetMapX.MapData,weights::Vector{Float64})
-    return SparseArrays.sparse(map(i -> m.v[i[1]], m.e), map(i -> m.v[i[2]], m.e),weights)
+    w = Dict{Tuple{Int,Int},Float64}()
+    sizehint!(w,length(weights))
+    for (i,edge) in enumerate(m.e)
+        w[m.v[edge[1]],m.v[edge[2]]] = weights[i]
+    end
+    return SparseArrays.sparse(map(x->getfield.(collect(keys(w)), x),
+        fieldnames(eltype(collect(keys(w)))))..., 
+        collect(values(w)),length(m.v),length(m.v))
+end
+
+### Get velocities matrix ###
+
+function get_velocities(m::OpenStreetMapX.MapData, 
+            class_speeds::Dict{Int,Float64} = OpenStreetMapX.SPEED_ROADS_URBAN)
+    @assert length(m.e) == length(m.w.nzval)
+    indices = [(m.v[i],m.v[j]) for (i,j) in m.e]
+    V = Array{Float64}(undef,length(m.e))
+    for i = 1:length(indices)
+        V[i] = class_speeds[m.class[i]]/3.6
+    end
+    return SparseArrays.sparse(map(i -> m.v[i[1]], m.e), map(i -> m.v[i[2]], m.e),V)
 end
 
 ### Extract route from Dijkstra results object ###
@@ -110,7 +130,7 @@ end
 
 function get_route_nodes(m::OpenStreetMapX.MapData, route_indices::Array{Int64,1})
     route_nodes = Array{Int}(undef,length(route_indices))
-    v = Dict{Int,Int}(reverse(p) for p = pairs(m.v))
+    v = Dict{Int,Int}(reverse.(collect(m.v)))
     for n = 1:length(route_nodes)
         route_nodes[n] = v[route_indices[n]]
     end
@@ -136,33 +156,47 @@ calculate_distance(m::OpenStreetMapX.MapData, weights::SparseArrays.SparseMatrix
 ### Find Route with Given Weights ###
 #####################################
 
-function find_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, get_distance::Bool = false, get_time::Bool = false)
+function find_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, 
+                    weights::SparseArrays.SparseMatrixCSC{Float64,Int64};
+                    routing::Symbol = :astar, heuristic::Function = n -> zero(Float64),
+                    get_distance::Bool = false, get_time::Bool = false)
     result = Any[]
-    start_vertex = m.v[node0]
-    dijkstra_result = OpenStreetMapX.dijkstra(m, weights, start_vertex)
-    finish_vertex= m.v[node1]
-    route_indices, route_values = OpenStreetMapX.extract_route(dijkstra_result, start_vertex, finish_vertex)
-    route_nodes = OpenStreetMapX.get_route_nodes(m, route_indices)
-    push!(result, route_nodes, route_values)
+	start_vertex = m.v[node0]
+	finish_vertex= m.v[node1]
+    if routing == :dijkstra
+        dijkstra_result = OpenStreetMapX.dijkstra(m, weights, start_vertex)
+        route_indices, route_values = OpenStreetMapX.extract_route(dijkstra_result, start_vertex, finish_vertex)
+        route_nodes = OpenStreetMapX.get_route_nodes(m, route_indices)
+        push!(result, route_nodes, route_values)
+    elseif routing == :astar
+        route_indices, route_values = OpenStreetMapX.a_star_algorithm(m.g, start_vertex, finish_vertex, weights, heuristic)
+        route_nodes = OpenStreetMapX.get_route_nodes(m, route_indices)
+        push!(result, route_nodes, route_values)
+    else
+        @warn "routing module declared wrongly - a star algorithm will be used instead!"
+        route_indices, route_values = OpenStreetMapX.a_star_algorithm(m.g, start_vertex, finish_vertex, weights, heuristic)
+        route_nodes = OpenStreetMapX.get_route_nodes(m, route_indices)
+        push!(result, route_nodes, route_values)
+    end
     if get_distance
-		if isempty(route_indices)
-			distance = Inf
-		elseif length(route_indices) == 1
-			distance = 0
-		else
-			distance = OpenStreetMapX.calculate_distance(m, m.w, route_indices)
-		end
+        if isempty(route_indices)
+            distance = Inf
+        elseif length(route_indices) == 1
+            distance = 0
+        else
+            distance = OpenStreetMapX.calculate_distance(m, m.w, route_indices)
+        end
         push!(result, distance)
     end
     if get_time
         w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m))
-		if isempty(route_indices)
-			route_time = Inf
-		elseif length(route_indices) == 1
-			route_time = 0
+        if isempty(route_indices)
+            route_time = Inf
+        elseif length(route_indices) == 1
+            route_time = 0
         else
-			route_time = OpenStreetMapX.calculate_distance(m, w, route_indices)
-		end
+            route_time = OpenStreetMapX.calculate_distance(m, w, route_indices)
+        end
         push!(result, route_time)
     end
     return result
@@ -173,66 +207,87 @@ end
 ### Find Route Connecting 3 Points with Given Weights ###
 #########################################################
 
-function find_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, node2::Int, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, get_distance::Bool = false, get_time::Bool = false)
-	result = Any[]
-	route1 = OpenStreetMapX.find_route(m, node0, node1, weights, get_distance, get_time)
-	route2 = OpenStreetMapX.find_route(m, node1, node2, weights, get_distance, get_time)
-	push!(result,vcat(route1[1],route2[1]))
-	for i = 2:length(route1)
-		push!(result,route1[i] + route2[i])
-	end
-	return result
+function find_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, node2::Int, 
+                    weights::SparseArrays.SparseMatrixCSC{Float64,Int64};
+                    routing::Symbol = :astar, heuristic::Function = n -> zero(Float64), 
+                    get_distance::Bool = false, get_time::Bool = false)
+    result = Any[]
+    route1 = OpenStreetMapX.find_route(m, node0, node1, weights,
+                                        routing = routing, heuristic = heuristic,
+                                        get_distance = get_distance, get_time = get_time)
+    route2 = OpenStreetMapX.find_route(m, node1, node2, weights,
+                                        routing = routing, heuristic = heuristic,
+                                        get_distance = get_distance, get_time = get_time)
+    push!(result,vcat(route1[1],route2[1]))
+    for i = 2:length(route1)
+        push!(result,route1[i] + route2[i])
+    end
+    return result
 end
 
 ###########################
 ###  ###
 ###########################
 """
-    shortest_route(m::MapData, node1::Int, node2::Int)
+    shortest_route(m::MapData, node1::Int, node2::Int; routing::Symbol = :astar)
 
 Find Shortest route between `node1` and `node2` on map `m`.
 
 """
-function shortest_route(m::MapData, node1::Int, node2::Int)
-	route_nodes, distance, route_time = OpenStreetMapX.find_route(m,node1,node2,m.w,false,true)
-	return route_nodes, distance, route_time
+function shortest_route(m::MapData, node1::Int, node2::Int; routing::Symbol = :astar)
+    route_nodes, distance, route_time = OpenStreetMapX.find_route(m,node1,node2,m.w,
+                                                                routing = routing, heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n), 
+                                                                get_distance =false, get_time = true)
+    return route_nodes, distance, route_time
 end
-
 """
-    shortest_route(m::MapData, node1::Int, node2::Int, node3::Int)
+    shortest_route(m::MapData, node1::Int, node2::Int, node3::Int; routing::Symbol = :astar)
 
 Find Shortest route between `node1` and `node2` and `node3` on map `m`.
 
 """
-function shortest_route(m::MapData, node1::Int, node2::Int, node3::Int)
-	route_nodes, distance, route_time = OpenStreetMapX.find_route(m,node1,node2, node3, m.w,false,true)
-	return route_nodes, distance, route_time
+function shortest_route(m::MapData, node1::Int, node2::Int, node3::Int; routing::Symbol = :astar)
+    route_nodes, distance, route_time = OpenStreetMapX.find_route(m,node1,node2, node3, m.w,
+                                                                routing = routing, heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n), 
+                                                                get_distance =false, get_time = true)
+    return route_nodes, distance, route_time
 end
 
 """
-    fastest_route(m::MapData, node1::Int, node2::Int,
-	              speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
+    ffastest_route(m::MapData, node1::Int, node2::Int;
+                        routing::Symbol = :astar, 
+                        speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
 
 Find fastest route between `node1` and `node2`  on map `m` with assuming `speeds` for road classes.
 
 """
-function fastest_route(m::MapData, node1::Int, node2::Int, speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
-	w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
-	route_nodes, route_time, distance = OpenStreetMapX.find_route(m,node1,node2,w,true, false)
-	return route_nodes, distance, route_time
+function fastest_route(m::MapData, node1::Int, node2::Int;
+                        routing::Symbol = :astar,
+                        speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
+    w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
+    route_nodes, route_time, distance = OpenStreetMapX.find_route(m, node1, node2, w,
+                                                                routing = routing, 
+																heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / maximum(values(speeds)), 
+                                                                get_distance = true, get_time = false)
+    return route_nodes, distance, route_time
 end
 
 """
-    fastest_route(m::MapData, node1::Int, node2::Int, node3::Int,
-	              speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
+    fastest_route(m::MapData, node1::Int, node2::Int, node3::Int;
+                        routing::Symbol = :astar, 
+                        speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
 
 Find fastest route between `node1` and `node2` and `node3`  on map `m` with assuming `speeds` for road classes.
 
 """
-function fastest_route(m::MapData, node1::Int, node2::Int, node3::Int, speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
-	w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
-	route_nodes, route_time, distance = OpenStreetMapX.find_route(m,node1,node2, node3, w,true, false)
-	return route_nodes, distance, route_time
+function fastest_route(m::MapData, node1::Int, node2::Int, node3::Int;
+                        routing::Symbol = :astar, 
+                        speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
+    w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
+    route_nodes, route_time, distance = OpenStreetMapX.find_route(m, node1, node2, node3, w,
+                                                                routing = routing, heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / maximum(values(speeds)), 
+                                                                get_distance = true, get_time = false)
+    return route_nodes, distance, route_time
 end
 
 ###########################################
