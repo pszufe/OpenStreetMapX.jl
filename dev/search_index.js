@@ -81,62 +81,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "reference/#OpenStreetMapX.generate_point_in_bounds-Tuple{MapData}",
-    "page": "Reference",
-    "title": "OpenStreetMapX.generate_point_in_bounds",
-    "category": "method",
-    "text": "generate_point_in_bounds(m::MapData)\n\nGenerates a random pair of Latitude-Longitude coordinates within boundaries of map m\n\n\n\n\n\n"
-},
-
-{
-    "location": "reference/#OpenStreetMapX.point_to_nodes-Tuple{Tuple{Float64,Float64},MapData}",
-    "page": "Reference",
-    "title": "OpenStreetMapX.point_to_nodes",
-    "category": "method",
-    "text": "point_to_nodes(point::Tuple{Float64,Float64}, m::MapData)\n\nConverts a pair Latitude-Longitude of coordinates  point to a node on a map m The result is a node indentifier.\n\n\n\n\n\n"
-},
-
-{
-    "location": "reference/#OpenStreetMapX.point_to_nodes-Tuple{LLA,MapData}",
-    "page": "Reference",
-    "title": "OpenStreetMapX.point_to_nodes",
-    "category": "method",
-    "text": "point_to_nodes(point::LLA, m::MapData)\n\nConverts a pair of coordinates LLA (Latitude-Longitude-Altitude) point to a node on a map m The result is a node indentifier.\n\n\n\n\n\n"
-},
-
-{
-    "location": "reference/#OpenStreetMapX.shortest_route-Tuple{MapData,Int64,Int64}",
-    "page": "Reference",
-    "title": "OpenStreetMapX.shortest_route",
-    "category": "method",
-    "text": "shortest_route(m::MapData, node1::Int, node2::Int)\n\nFind Shortest route between node1 and node2 on map m.\n\n\n\n\n\n"
-},
-
-{
-    "location": "reference/#OpenStreetMapX.shortest_route-Tuple{MapData,Int64,Int64,Int64}",
-    "page": "Reference",
-    "title": "OpenStreetMapX.shortest_route",
-    "category": "method",
-    "text": "shortest_route(m::MapData, node1::Int, node2::Int, node3::Int)\n\nFind Shortest route between node1 and node2 and node3 on map m.\n\n\n\n\n\n"
-},
-
-{
-    "location": "reference/#OpenStreetMapX.fastest_route-Tuple{MapData,Int64,Int64,Dict{Int64,Float64}}",
-    "page": "Reference",
-    "title": "OpenStreetMapX.fastest_route",
-    "category": "method",
-    "text": "fastest_route(m::MapData, node1::Int, node2::Int,\n              speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)\n\nFind fastest route between node1 and node2  on map m with assuming speeds for road classes.\n\n\n\n\n\n"
-},
-
-{
-    "location": "reference/#OpenStreetMapX.fastest_route-Tuple{MapData,Int64,Int64,Int64,Dict{Int64,Float64}}",
-    "page": "Reference",
-    "title": "OpenStreetMapX.fastest_route",
-    "category": "method",
-    "text": "fastest_route(m::MapData, node1::Int, node2::Int, node3::Int,\n              speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)\n\nFind fastest route between node1 and node2 and node3  on map m with assuming speeds for road classes.\n\n\n\n\n\n"
-},
-
-{
     "location": "reference/#Routing-operations-1",
     "page": "Reference",
     "title": "Routing operations",
