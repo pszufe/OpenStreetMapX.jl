@@ -102,11 +102,13 @@ function get_velocities(m::OpenStreetMapX.MapData,
             class_speeds::Dict{Int,Float64} = OpenStreetMapX.SPEED_ROADS_URBAN)
     @assert length(m.e) == length(m.w.nzval)
     indices = [(m.v[i],m.v[j]) for (i,j) in m.e]
-    V = Array{Float64}(undef,length(m.e))
-    for i = 1:length(indices)
-        V[i] = class_speeds[m.class[i]]/3.6
+    V = Dict{Tuple{Int,Int},Float64}()
+    for (i,ind) in enumerate(indices)
+        V[ind] = class_speeds[m.class[i]]/3.6
     end
-    return SparseArrays.sparse(map(i -> m.v[i[1]], m.e), map(i -> m.v[i[2]], m.e),V)
+    return SparseArrays.sparse(map(x->getfield.(collect(keys(V)), x),
+        fieldnames(eltype(collect(keys(V)))))..., 
+        collect(values(V)),length(m.v),length(m.v))
 end
 
 ### Extract route from Dijkstra results object ###
