@@ -3,9 +3,9 @@ import LightGraphs
 
 @testset "maps" begin
 
-m = get_map_data( string(path,"\\data\\reno_east3.osm"),use_cache=false);
-m1 = get_map_data( string(path,"\\data\\joburg"),use_cache=false);
-m2 = get_map_data( string(path,"\\data\\skopje.osm"),use_cache=false);
+m = get_map_data( "data/reno_east3.osm",use_cache=false);
+m1 = get_map_data( "data/joburg",use_cache=false);
+m2 = get_map_data( "data/skopje.osm",use_cache=false);
 
 
 @test length(m.nodes) == 9032
