@@ -155,7 +155,7 @@ calculate_distance(m::OpenStreetMapX.MapData, weights::SparseArrays.SparseMatrix
 
 function find_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, 
                     weights::SparseArrays.SparseMatrixCSC{Float64,Int64};
-                    routing::Symbol = :astar, heuristic::Function = n -> zero(Float64),
+                    routing::Symbol = :astar, heuristic::Function = (u,v) -> zero(Float64),
                     get_distance::Bool = false, get_time::Bool = false)
     result = Any[]
 	start_vertex = m.v[node0]
@@ -206,7 +206,7 @@ end
 
 function find_route(m::OpenStreetMapX.MapData, node0::Int, node1::Int, node2::Int, 
                     weights::SparseArrays.SparseMatrixCSC{Float64,Int64};
-                    routing::Symbol = :astar, heuristic::Function = n -> zero(Float64), 
+                    routing::Symbol = :astar, heuristic::Function = (u,v) -> zero(Float64), 
                     get_distance::Bool = false, get_time::Bool = false)
     result = Any[]
     route1 = OpenStreetMapX.find_route(m, node0, node1, weights,
