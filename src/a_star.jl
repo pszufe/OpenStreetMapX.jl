@@ -37,7 +37,7 @@ end
                     s::Integer,                       
                     t::Integer,                       
                     distmx::AbstractMatrix{T}=LightGraphs.weights(g),
-                    heuristic::Function = n -> zero(T)) where {T, U}
+                    heuristic::Function = (u,v) -> zero(T)) where {T, U}
 
 High level function - implementation of A star search algorithm:
 (https://en.wikipedia.org/wiki/A*_search_algorithm). 
@@ -56,7 +56,7 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
                           s::Integer,           # the start vertex
                           t::Integer,           # the end vertex
                           distmx::AbstractMatrix{T}=LightGraphs.weights(g),
-                          heuristic::Function = n -> zero(T)) where {T, U}
+                          heuristic::Function = (u,v) -> zero(T)) where {T, U}
     checkbounds(distmx, Base.OneTo(nv(g)), Base.OneTo(nv(g)))
     frontier = DataStructures.PriorityQueue{Tuple{T, U},T}()
     frontier[(zero(T), U(s))] = zero(T)
