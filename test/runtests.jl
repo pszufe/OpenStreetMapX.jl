@@ -41,10 +41,10 @@ node_list = [pointA,pointB]
 @test nodes_within_range(m.nodes, ENU(3300,1500,-1), 100.0) == [3052967037, 3052967180, 3052967130, 6050217400, 3052966904, 3052967140, 6050217409, 3052967199]
 
 #nodes.jl/add_new_node!
-OpenStreetMapX.add_new_node!(m.nodes,ENU(3300,1500,-1))
+@test haskey(m.nodes,-1) == false
+OpenStreetMapX.add_new_node!(m.nodes,ENU(3300,1500,-1),-1)
 @test length(m.nodes) == 9033
-# @test nearest_node(m.nodes,ENU(3300,1500,-1)) == -1649120132623789578
-
+@test nearest_node(m.nodes,ENU(3300,1500,-1)) == -1
 
 ### intersections.jl ###
 #intersections.jl/oneway
@@ -56,27 +56,19 @@ OpenStreetMapX.add_new_node!(m.nodes,ENU(3300,1500,-1))
 #intersections.jl/find_intersections
 @test OpenStreetMapX.find_intersections(m.roadways[1:2]) == Dict(139988738=>Set([14370413]),2975020216=>Set([14370407]),2441017888=>Set([14370407]),385046328=>Set([14370413]))
 
-#intersections.jl/find_segments
-#Returning Segment not defined error
-# @test find_segments(m.nodes,m.roadways[1:2],find_intersections(m.roadways[1:2])) == OpenStreetMapX.Segment[Segment(2441017888, 2975020216, [2441017888, 2441017878, 2441017870, 2975020216], 30.8339, 14370407), Segment(139988738, 385046328, [139988738, 385046327, 385046328], 65.6942, 14370413)]
-
-
 ### routing.jl ###
-#intersections.jl/get_edges
+#routing.jl/get_edges
 @test OpenStreetMapX.get_edges(m.nodes,m.roadways[1:2]) == (Tuple{Int64,Int64}[(139988738, 385046327), (2441017870, 2975020216), (385046327, 385046328), (2441017888, 2441017878), (2441017878, 2441017870)], [1, 4, 1, 4, 4])
 
-#intersections.jl/get_vertices
+#routing.jl/get_vertices
 @test OpenStreetMapX.get_vertices(OpenStreetMapX.get_edges(m.nodes,m.roadways[1:2])[1]) == Dict(2441017878=>7,139988738=>1,2975020216=>4,2441017870=>3,385046328=>5,2441017888=>6,385046327=>2)
 
-#intersections.jl/distance
+#routing.jl/distance
 #Returns seem to be equal yet returning false (?)
-# @test distance(m.nodes,OpenStreetMapX.get_edges(m.nodes,m.roadways[1:2])[1]) == [30.2014, 7.24394, 35.4928, 12.2999, 11.2901]
+@test distance(m.nodes,OpenStreetMapX.get_edges(m.nodes,m.roadways[1:2])[1]) == [30.2013937293296, 7.243941886194111, 35.492758006997796, 12.29992029473937, 11.290063259013777]
 
 #intersections.jl/features_to_graph
-#Returning no method matching nearest_node(::MapData, ::Tuple{String,String})
-# mapdata = OpenStreetMapX.parseOSM("data/reno_east3.osm");
-# feat = mapdata.features
-# OpenStreetMapX.features_to_graph(m,feat)
+
 #######################################################
 
 function perftest()
