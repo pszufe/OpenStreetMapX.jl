@@ -1,6 +1,6 @@
 # OpenStreetMapX.jl
 
-* Package for spatial analysis, simulation and vizualization of Open Street Map data 
+* Package for spatial analysis, simulation and visualization of Open Street Map data 
 * The plotting functionality is provided via a separate package [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl)
 
 The goal of this package is to provide a backbone for multi-agent simulation of cities. 
@@ -30,7 +30,7 @@ The goal of this package is to provide a backbone for multi-agent simulation of 
 
 ## Installation
 
-The current version uses at least Julia 1.0.5 and is known to work up to Julia 1.3.1
+The current version uses at least Julia 1.3. However older versions will work with Julia 1.0.
 
 ```julia
 using Pkg; Pkg.add("OpenStreetMapX.jl")
@@ -45,7 +45,7 @@ In order to plot the maps we recommend two tools:
 
   - rendering the maps yourself with PyPlot or Plots.jl with backend - use the [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl) package
   - rendering the maps with Leaflet.jl - use the Python folium package (examples can be found in the [tutorial](https://pszufe.github.io/OpenStreetMapX_Tutorial/) and the [manual](https://pszufe.github.io/OpenStreetMapX.jl/stable))
-  
+
 In order to install all plotting backends please run the commands below:
 ```julia
 using Pkg
@@ -56,7 +56,7 @@ pkg"add Conda"
 using Conda
 Conda.runconda(`install folium -c conda-forge`)
 ```
-  
+
 
 ## Usage
 
