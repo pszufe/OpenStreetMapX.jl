@@ -3,7 +3,13 @@
 ### into limited, discrete classes for routing and plotting. ###
 ################################################################
 
-# Ordered by typical significance
+"""
+	ROAD_CLASSES
+
+Road classes. Information used for routing and plotting.
+
+Ordered by typical significance
+"""
 const ROAD_CLASSES = Dict(
     "motorway" => 1,
     "trunk" => 2,
@@ -22,10 +28,16 @@ const ROAD_CLASSES = Dict(
     "pedestrian" => 8,
     "road" => 6)
 
-# Level 1: Cycleways, walking paths, and pedestrian streets
-# Level 2: Sidewalks
-# Level 3: Pedestrians typically allowed but unspecified
-# Level 4: Agricultural or horse paths, etc.
+"""
+	PED_CLASSES
+
+Pedestrain paths
+
+	- Level 1: Cycleways, walking paths, and pedestrian streets
+	- Level 2: Sidewalks
+	- Level 3: Pedestrians typically allowed but unspecified
+	- Level 4: Agricultural or horse paths, etc.
+"""
 const PED_CLASSES = Dict(
     "cycleway" => 1,
     "pedestrian" => 1,
@@ -47,10 +59,15 @@ const PED_CLASSES = Dict(
     "bridleway" => 4,
     "unclassified" => 4)
 
-# Level 1: Bike paths
-# Level 2: Separated bike lanes (tracks)
-# Level 3: Bike lanes
-# Level 4: Bikes typically allowed but not specified
+"""
+	CYCLE_CLASSES
+	
+Cycle classes
+	- Level 1: Bike paths
+	- Level 2: Separated bike lanes (tracks)
+	- Level 3: Bike lanes
+	- Level 4: Bikes typically allowed but not specified
+"""
 const CYCLE_CLASSES = Dict(
     "cycleway" => 1,
     "cycleway:track" => 2,
@@ -71,7 +88,7 @@ const CYCLE_CLASSES = Dict(
     "living_street" => 4,
     "service" => 4,
     "unclassified" => 4)
-		
+
 const FEATURE_CLASSES = Dict(
     "aerialway" => 1,
     "aeroway" => 2,
@@ -171,7 +188,7 @@ const BUILDING_CLASSES = Dict(
     "transformer_tower" => 4,
     "collapsed" => 4,
     "damaged" => 4,
-    "ruins" => 4,   
+    "ruins" => 4,
     "kiosk" => 4,
     "service" => 4,
     "yes" => 5,

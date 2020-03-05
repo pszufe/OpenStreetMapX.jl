@@ -15,7 +15,7 @@ makedocs(
         prettyurls = get(ENV, "CI", nothing) == "true"
     ),
     modules = [OpenStreetMapX],
-    pages = ["index.md", "reference.md"],
+    pages = ["index.md", "spatial.md", "reference.md"],
     doctest = true
 )
 

@@ -1,7 +1,3 @@
-################################################################
-### Different types used in library with proper constructors ###
-################################################################
-
 #########################
 ### Coordinates Types ###
 #########################
@@ -32,6 +28,7 @@ struct LLA
 end
 LLA(lat, lon) = LLA(lat, lon, 0.0)
 
+Base.isapprox(a::LLA, b::LLA) = (a.lat ≈ b.lat &&  a.lon ≈ b.lon &&  a.alt ≈ b.alt)
 
 """
     ECEF
@@ -50,6 +47,7 @@ struct ECEF
     z::Float64
 end
 
+Base.isapprox(a::ECEF, b::ECEF) = (a.x ≈ b.x &&  a.y ≈ b.y &&  a.z ≈ b.z)
 
 """
     ENU
@@ -74,6 +72,9 @@ end
 ENU(east, north) = ENU(east, north, 0.0)
 
 
+Base.isapprox(a::ENU, b::ENU) = (a.east ≈ b.east &&  a.north ≈ b.north &&  a.up ≈ b.up)
+
+
 ### XYZ
 #
 """
@@ -93,13 +94,21 @@ struct XYZ
     z::Float64
 end
 
+Base.isapprox(a::XYZ, b::XYZ) = (a.x ≈ b.x &&  a.y ≈ b.y &&  a.z ≈ b.z)
+
 XY(x, y) = XYZ(x, y, 0.0)
 LLA(xyz::XYZ) = LLA(xyz.y, xyz.x, xyz.z)
 ENU(xyz::XYZ) = ENU(xyz.x, xyz.y, xyz.z)
 
-
-### Ellipsoid
-# Specify datum for translation between LLA and other coordinate systems
+"""
+	struct Ellipsoid
+		a::Float64        # Semi-major axis
+		b::Float64        # Semi-minor axis
+		e²::Float64       # Eccentricity squared
+		e′²::Float64      # Second eccentricity squared
+	end
+Specify datum for translation between LLA and other coordinate systems
+"""
 struct Ellipsoid
     a::Float64        # Semi-major axis
     b::Float64        # Semi-minor axis
@@ -129,6 +138,7 @@ end
     Bounds{T <: Union{LLA, ENU}}
 
 Bounds for the `LLA` or `ENU `coordinates.
+If `T` is not given Bounds{ENU} will be created.
 """
 struct Bounds{T <: Union{LLA, ENU}}
     min_y::Float64
@@ -147,14 +157,21 @@ function Bounds(min_lat, max_lat, min_lon, max_lon)
     OpenStreetMapX.Bounds{OpenStreetMapX.LLA}(min_lat, max_lat, min_lon, max_lon)
 end
 
+
 ##################
 ### Main Types ###
 ##################
 
+"""
+Element on Open Street Map
+"""
 abstract type
     OSMElement
 end
 
+"""
+Ways in OSM data
+"""
 mutable struct Way <: OSMElement
     id::Int
     nodes::Vector{Int}
@@ -163,6 +180,9 @@ mutable struct Way <: OSMElement
 end
 tags(w::Way) = w.tags
 
+"""
+Relations in OSM data
+"""
 mutable struct Relation <: OSMElement
     id::Int
     members::Vector{Dict{String,String}}
@@ -171,11 +191,15 @@ mutable struct Relation <: OSMElement
 end
 tags(r::Relation) = r.tags
 
+"""
+Route segments between start (`node0`) and target (`node1`) node having
+a defined `distance` and belonging to a `parent` highway
+"""
 mutable struct Segment
     node0::Int          # Source node ID
     node1::Int          # Target node ID
     nodes::Vector{Int}  # List of nodes falling within node0 and node1
-    distance::Real      # Length of the segment
+    distance::Float64      # Length of the segment
     parent::Int         # ID of parent highway
 end
 
@@ -186,15 +210,29 @@ end
 ### OSM Data Types ###
 ######################
 
+"""
+	mutable struct OSMData
+		nodes::Dict{Int,OpenStreetMapX.LLA}
+		ways::Vector{OpenStreetMapX.Way}
+		relations::Vector{OpenStreetMapX.Relation}
+		features::Dict{Int,Tuple{String,String}}
+		bounds::OpenStreetMapX.Bounds
+		way_tags::Set{String}
+		relation_tags::Set{String}
+	end
+Representation of OSM data
+"""
 mutable struct OSMData
-    nodes::Dict{Int,OpenStreetMapX.LLA}
-    ways::Vector{OpenStreetMapX.Way}
-    relations::Vector{OpenStreetMapX.Relation}
-    features::Dict{Int,Tuple{String,String}}
-    bounds::OpenStreetMapX.Bounds
-    way_tags::Set{String}
-    relation_tags::Set{String}
+	nodes::Dict{Int,OpenStreetMapX.LLA}
+	ways::Vector{OpenStreetMapX.Way}
+	relations::Vector{OpenStreetMapX.Relation}
+	features::Dict{Int,Tuple{String,String}}
+	bounds::OpenStreetMapX.Bounds
+	way_tags::Set{String}
+	relation_tags::Set{String}
 end
+
+
 OSMData() = OSMData(Dict{Int, OpenStreetMapX.LLA}(), Vector{OpenStreetMapX.Way}(),
 	            Vector{OpenStreetMapX.Relation}(), Dict{Int,String}(),
 	            Bounds(0.0, 0.0, 0.0, 0.0), Set{String}(), Set{String}())
@@ -234,7 +272,7 @@ struct MapData
     g::LightGraphs.SimpleGraphs.SimpleDiGraph{Int64} # Graph object
     v::Dict{Int,Int}                             # (node id) => (graph vertex)
 	n::Dict{Int,Int}                             # (graph vertex) => (node id)
-    e::Array{Tuple{Int64,Int64},1}                # Edges in graph, stored as a tuple (source,destination)
+    e::Vector{Tuple{Int,Int}}                # Edges in graph, stored as a tuple (source,destination)
     w::SparseArrays.SparseMatrixCSC{Float64, Int}   # Edge weights, indexed by graph id
     class::Vector{Int}                           # Road class of each edge
 	#MapData(bounds, nodes, roadways, intersections) = new(bounds, nodes, roadways, intersections, LightGraphs.SimpleGraphs.SimpleDiGraph{Int64}(), Dict{Int,Int}(), Tuple{Int64,Int64}[],  SparseMatrixCSC(Matrix{Float64}(undef,0,0)),Int[])

@@ -24,11 +24,16 @@ getZ(enu::OpenStreetMapX.ENU) = enu.up
 ### Distance ###
 ################
 
-# Point translators
-distance(a::OpenStreetMapX.ENU, b::OpenStreetMapX.ENU) = OpenStreetMapX.distance(a.east, a.north, a.up,
+"""
+Calculates a distance between two points `a` and `b`
+"""
+distance(a::ENU, b::ENU) = OpenStreetMapX.distance(a.east, a.north, a.up,
                                     b.east, b.north, b.up)
 
-distance(a::OpenStreetMapX.ECEF, b::OpenStreetMapX.ECEF) = OpenStreetMapX.distance(a.x, a.y, a.z,
+"""
+Calculates a distance between two points `a` and `b`
+"""
+distance(a::ECEF, b::ECEF) = OpenStreetMapX.distance(a.x, a.y, a.z,
                                       b.x, b.y, b.z)
 
 function distance(x1, y1, z1, x2, y2, z2)

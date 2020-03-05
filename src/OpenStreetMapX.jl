@@ -9,6 +9,8 @@ using Statistics
 using JSON
 using HTTP
 
+import Base.isapprox
+
 export WGS84, OSGB36, NAD27 # Coordinate systems constants
 export distance, getX, getY, getZ  # Auxiliary functions to calculate distances and get coordinates of points
 export center, inbounds, onbounds, boundary_point #Functions for map bounds
@@ -27,15 +29,17 @@ export features_to_graph, find_optimal_waypoint_approx, find_optimal_waypoint_ex
 export find_route, shortest_route, fastest_route #Routing funcions
 export nodes_within_weights, nodes_within_driving_distance, nodes_within_driving_time #Find nodes within specified range
 export get_map_data
-
 export get_google_route
 export encode, decode
 export generate_point_in_bounds, point_to_nodes
 
+export ROAD_CLASSES, CYCLE_CLASSES, PED_CLASSES, SPEED_ROADS_URBAN, SPEED_ROADS_RURAL
+
+
 include("types.jl") #types used in the package
 include("classes.jl") #grouping highways into classes for routing and plotting
 include("speeds.jl") # speed limits in kilometers per hour
-include("polyline.jl")
+include("polyline.jl") # Goole Polyline Algorithm Format encoder/decoder
 include("a_star.jl")
 include("points.jl") # points coordinates and constants
 include("bounds.jl") #bounds of the map

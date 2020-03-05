@@ -30,7 +30,7 @@ The goal of this package is to provide a backbone for multi-agent simulation of 
 
 ## Installation
 
-The current version uses Julia 1.0
+The current version uses at least Julia 1.0.5 and is known to work up to Julia 1.3.1
 
 ```julia
 using Pkg; Pkg.add("OpenStreetMapX.jl")
@@ -40,6 +40,23 @@ Note that on Linux platform you need to separately install `libexpat` used by th
 ```bash
 sudo apt install libexpat-dev
 ```
+
+In order to plot the maps we recommend two tools:
+
+  - rendering the maps yourself with PyPlot or Plots.jl with backend - use the [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl) package
+  - rendering the maps with Leaflet.jl - use the Python folium package (examples can be found in the [tutorial](https://pszufe.github.io/OpenStreetMapX_Tutorial/) and the [manual](https://pszufe.github.io/OpenStreetMapX.jl/stable))
+  
+In order to install all plotting backends please run the commands below:
+```julia
+using Pkg
+pkg"add Plots"
+pkg"add PyPlot"
+pkg"add OpenStreetMapXPlot"
+pkg"add Conda"
+using Conda
+Conda.runconda(`install folium -c conda-forge`)
+```
+  
 
 ## Usage
 
@@ -64,16 +81,13 @@ In order to obtain the `*.osm` file follow the steps below:
 4. Press the "*Export*" button on the left. Note that sometimes the *Export* link does not work - in this case click one of the links below the Export button (for example the *Overpass API* link)
 
 
-**Any pull requests are welcome!**
-
-
 
 
 #### Acknowledgments
 <sup>This code is a major re-write of project - available at [https://github.com/tedsteiner/OpenStreetMap.jl](https://github.com/tedsteiner/OpenStreetMap.jl) .
 
 
-Compared to the original package major changes include:
+Compared to the original package major changes include among many others:
 
 - `LightGraphs.jl` is used for map data storage
 - Several changes with routing algorithm (currently finding a route in a 1 million people city takes around 150ms)

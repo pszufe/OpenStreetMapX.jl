@@ -1,10 +1,11 @@
-#################################################
-### Polyline Algorithm Format encoder/decoder ###
-#################################################
+#######################################################
+### Goole Polyline Algorithm Format encoder/decoder ###
+#######################################################
 
 
 """
 Encode single coordinate (multiplied by 1e5 and rounded)
+in Google Polyline Algorithm Format
 
 **Arguments**
 * `val` : single coordinate (multiplied by 1e5 and rounded)
@@ -22,7 +23,7 @@ function encode_one(val::Int)
 end
 
 """
-Encode coordinates 
+Encode coordinates in Google Polyline Algorithm Format
 
 **Arguments**
 * `coords` : coordinates in LLA system stored as a tuple
@@ -32,7 +33,7 @@ function encode(coords::Tuple{Float64,Float64}...)
     prev_lat, prev_lon = 0,0
     res = ""
     for coord in coords
-        lat,lon = trunc(Int, coord[1] *1e5), trunc(Int, coord[2]  *1e5) 
+        lat,lon = trunc(Int, coord[1] *1e5), trunc(Int, coord[2]  *1e5)
         res *= OpenStreetMapX.encode_one(lat - prev_lat) * encode_one(lon - prev_lon)
         prev_lat, prev_lon = lat,lon
     end
@@ -43,7 +44,7 @@ end
 Decode single coordinate
 
 **Arguments**
-* `polyline` : coordinates in Polyline Algorithm Format stored as an array of characters
+* `polyline` : coordinates in Google Polyline Algorithm Format stored as an array of characters
 * `index` : position of each single coordinate in polyline array
 
 """
@@ -62,7 +63,7 @@ function decode_one(polyline::Array{Char,1}, index::Int)
 end
 
 """
-Decode coordinates 
+Decode coordinates in Google Polyline Algorithm Format
 
 **Arguments**
 * `polyline` : string containing coordinates in Polyline Algorithm Format
@@ -71,7 +72,7 @@ Decode coordinates
 function decode(polyline::String)
     polyline = collect(polyline)
     coords = Tuple{Float64,Float64}[]
-    index = 1 
+    index = 1
     lat, lon = 0.0,0.0
     while index < length(polyline)
         lat_change, index = OpenStreetMapX.decode_one(polyline,index)

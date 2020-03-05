@@ -1,8 +1,6 @@
-### Julia OpenStreetMapX Package ###
-### MIT License                 ###
-### Copyright 2014              ###
-
-### Default Speed Limits in Kilometers Per Hour ###
+"""
+Default Speed Limits in Kilometers Per Hour in urban areas
+"""
 const SPEED_ROADS_URBAN = Dict{Int,Float64}(
     1 => 100,    # Motorway
     2 => 90,    # Trunk
@@ -12,7 +10,9 @@ const SPEED_ROADS_URBAN = Dict{Int,Float64}(
     6 => 40,    # Residential/Unclassified
     7 => 20,     # Service
     8 => 10)     # Living street
-
+"""
+Default Speed Limits in Kilometers Per Hour in rural areas
+"""
 const SPEED_ROADS_RURAL = Dict{Int,Float64}(
     1 => 100,
     2 => 90,
