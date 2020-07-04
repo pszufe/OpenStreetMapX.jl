@@ -1,7 +1,6 @@
-#############################
-### Parse Elements of Map ###
-#############################
-
+"""
+Parse Elements of Map
+"""
 function parse_element(handler::LibExpat.XPStreamHandler,
                       name::AbstractString,
                       attr::Dict{AbstractString,AbstractString})
@@ -82,8 +81,10 @@ High level function - parses .osm file and create the road network based on the 
 * `road_levels` : a set with the road categories (see: OpenStreetMapX.ROAD_CLASSES for more informations)
 * `use_cache` : a *.cache file will be crated with a serialized map image in the `datapath` folder
 * `only_intersections` : include only road system data
+* `trim_to_connected_graph`: trim orphan nodes in such way that the map is a strongly connected graph
 """
-function get_map_data(filepath::String,filename::Union{String,Nothing}=nothing; road_levels::Set{Int} = Set(1:length(OpenStreetMapX.ROAD_CLASSES)),use_cache::Bool = true,only_intersections=true)::MapData
+function get_map_data(filepath::String,filename::Union{String,Nothing}=nothing; road_levels::Set{Int} = Set(1:length(OpenStreetMapX.ROAD_CLASSES)),
+		use_cache::Bool = true,only_intersections::Bool = true, trim_to_connected_graph::Bool=false)::MapData
     #preprocessing map file
     datapath = (filename==nothing) ? dirname(filepath) : filepath;
 	if filename == nothing
@@ -98,42 +99,7 @@ function get_map_data(filepath::String,filename::Union{String,Nothing}=nothing; 
 	else
 		mapdata = OpenStreetMapX.parseOSM(joinpath(datapath,filename))
 		OpenStreetMapX.crop!(mapdata,crop_relations = false)
-		#preparing data
-		bounds = mapdata.bounds
-		nodes = OpenStreetMapX.ENU(mapdata.nodes,OpenStreetMapX.center(bounds))
-		highways = OpenStreetMapX.filter_highways(OpenStreetMapX.extract_highways(mapdata.ways))
-		roadways = OpenStreetMapX.filter_roadways(highways, levels= road_levels)
-		intersections = OpenStreetMapX.find_intersections(roadways)
-		segments = OpenStreetMapX.find_segments(nodes,roadways,intersections)
-
-		#remove unuseful nodes
-		roadways_nodes = unique(vcat(collect(way.nodes for way in roadways)...))
-		nodes = Dict(key => nodes[key] for key in roadways_nodes)
-
-		# e - Edges in graph, stored as a tuple (source,destination)
-		# class - Road class of each edgey
-		if only_intersections
-			vals = Dict((segment.node0,segment.node1) => (segment.distance,segment.parent) for segment in segments)
-			e = collect(keys(vals))
-			vals = collect(values(vals))
-			weights = map(val -> val[1],vals)
-            classified_roadways = OpenStreetMapX.classify_roadways(roadways)
-			class =  [classified_roadways[id] for id in map(val -> val[2],vals)]
-		else
-			e,class = OpenStreetMapX.get_edges(nodes,roadways)
-			weights = OpenStreetMapX.distance(nodes,e)
-		end
-		# (node id) => (graph vertex)
-		v = OpenStreetMapX.get_vertices(e)
-		n = Dict(reverse.(collect(v)))
-		edges = [v[id] for id in reinterpret(Int, e)]
-		I = edges[1:2:end]
-		J = edges[2:2:end]
-		# w - Edge weights, indexed by graph id
-		w = SparseArrays.sparse(I, J, weights, length(v), length(v))
-		g = LightGraphs.DiGraph(w)
-
-		res = OpenStreetMapX.MapData(bounds,nodes,roadways,intersections,g,v,n,e,w,class)
+		res = MapData(mapdata, road_levels, only_intersections; trim_to_connected_graph=trim_to_connected_graph)
 		if use_cache
 			f=open(cachefile,"w");
 			Serialization.serialize(f,res);
@@ -142,4 +108,67 @@ function get_map_data(filepath::String,filename::Union{String,Nothing}=nothing; 
 		end
 	end
     return res
+end
+
+
+function MapData(mapdata::OSMData, road_levels::Set{Int}, only_intersections::Bool=true;
+	 trim_to_connected_graph::Bool=false, remove_nodes::AbstractSet{Int}=Set{Int}())
+	#preparing data
+	bounds = mapdata.bounds
+	nodes = OpenStreetMapX.ENU(mapdata.nodes,OpenStreetMapX.center(bounds))
+	highways = OpenStreetMapX.filter_highways(OpenStreetMapX.extract_highways(mapdata.ways))
+	roadways = OpenStreetMapX.filter_roadways(highways, levels= road_levels)
+	if length(remove_nodes) > 0
+		delete!.(Ref(nodes), remove_nodes);
+		delcount = 0
+		for rno in length(roadways):-1:1
+			rr = roadways[rno]
+			for i in length(rr.nodes):-1:1
+				if rr.nodes[i] in remove_nodes
+					deleteat!(rr.nodes,i)
+					delcount += 1
+				end
+			end
+			length(rr.nodes) == 0 && deleteat!(roadways, rno)
+		end
+	end
+	intersections = OpenStreetMapX.find_intersections(roadways)
+	segments = OpenStreetMapX.find_segments(nodes,roadways,intersections)
+	#remove unuseful nodes
+	roadways_nodes = unique(vcat(collect(way.nodes for way in roadways)...))
+	nodes = Dict(key => nodes[key] for key in roadways_nodes)
+
+	# e - Edges in graph, stored as a tuple (source,destination)
+	# class - Road class of each edgey
+	if only_intersections && !trim_to_connected_graph
+		vals = Dict((segment.node0,segment.node1) => (segment.distance,segment.parent) for segment in segments)
+		e = collect(keys(vals))
+		vals = collect(values(vals))
+		weight_vals = map(val -> val[1],vals)
+		classified_roadways = OpenStreetMapX.classify_roadways(roadways)
+		class =  [classified_roadways[id] for id in map(val -> val[2],vals)]
+	else
+		e,class = OpenStreetMapX.get_edges(nodes,roadways)
+		weight_vals = OpenStreetMapX.distance(nodes,e)
+	end
+	# (node id) => (graph vertex)
+	v = OpenStreetMapX.get_vertices(e)
+	n = Dict(reverse.(collect(v)))
+	edges = [v[id] for id in reinterpret(Int, e)]
+	I = edges[1:2:end]
+	J = edges[2:2:end]
+	# w - Edge weights, indexed by graph id
+	w = SparseArrays.sparse(I, J, weight_vals, length(v), length(v))
+	g = LightGraphs.DiGraph(w)
+
+	if trim_to_connected_graph
+		rm_list = Set{Int}()
+		conn_components = sort!(LightGraphs.strongly_connected_components(g),
+        	lt=(x,y)->length(x)<length(y), rev=true)
+		remove_vs = vcat(conn_components[2:end]...)
+		rm_list = getindex.(Ref(n), remove_vs)
+		return  MapData(mapdata, road_levels, only_intersections, remove_nodes=Set{Int}(rm_list))
+	else
+		return MapData(bounds,nodes,roadways,intersections,g,v,n,e,w,class)
+	end
 end

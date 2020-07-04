@@ -1,4 +1,6 @@
 using Documenter
+using Pkg
+
 try
     using OpenStreetMapX
 catch

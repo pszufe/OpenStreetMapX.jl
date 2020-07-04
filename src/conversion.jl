@@ -228,3 +228,15 @@ Converts a dictionary of `ENU` `nodes` into a dictionary of `LLA` values.
 Uses the center of the given `bounds` for linearization.
 """
 LLA(nodes::Dict{Int,ENU}, bounds::Bounds{LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84) = LLA(nodes, OpenStreetMapX.center(bounds), datum)
+
+"""
+	latlon(m::MapData,map_g_point_id::Int64)::Tuple{Float64, Float64}
+
+Returns a tuple of lattitute and longitude for a given graph node identifier
+`map_g_point_id` in graph `m.g` (i.e. `map_g_point_id ∈ 1:nv(m.g)`).
+"""
+function latlon(m::MapData,map_g_point_id::Int64)::Tuple{Float64, Float64}
+	osm_node_ix = m.n[map_g_point_id]
+	lla = LLA(m.nodes[osm_node_ix], m.bounds)
+    return (lla.lat, lla.lon)
+end

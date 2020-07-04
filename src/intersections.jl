@@ -2,8 +2,10 @@
 ### Auxiliary Functions ###
 ###########################
 
-### Check if Way is One - Way ### 
 
+"""
+Check if Way is One - Way
+"""
 function oneway(w::OpenStreetMapX.Way)
     v = get(w.tags,"oneway", "")
     if v == "false" || v == "no" || v == "0"
@@ -16,12 +18,15 @@ function oneway(w::OpenStreetMapX.Way)
     return (highway == "motorway" || highway == "motorway_link" || junction == "roundabout")
 end
 
-### Check if Way is Reverse ###
 
+"""
+Check if Way is Reverse
+"""
 reverseway(w::OpenStreetMapX.Way) = (get(w.tags,"oneway", "") == "-1")
 
-### Compute the distance of a route ###
-
+"""
+Compute the distance of a route for some `nodes` data
+"""
 function distance(nodes::Dict{Int,T}, route::Vector{Int}) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
     if length(route) == 0
         return Inf
@@ -29,10 +34,9 @@ function distance(nodes::Dict{Int,T}, route::Vector{Int}) where T<:(Union{OpenSt
     dist = sum(distance(nodes[route[i-1]],nodes[route[i]]) for i = 2:length(route))
 end
 
-######################################
-### Find Intersections of Highways ###
-######################################
-
+"""
+Find Intersections of Highways ###
+"""
 function find_intersections(highways::Vector{OpenStreetMapX.Way})
     seen = Set{Int}()
     intersections = Dict{Int,Set{Int}}()
@@ -55,10 +59,9 @@ function find_intersections(highways::Vector{OpenStreetMapX.Way})
     return intersections
 end
 
-#################################
-### Find Segments of Highways ###
-#################################
-
+"""
+Find Segments of Highways ###
+"""
 function find_segments(nodes::Dict{Int,T}, highways::Vector{OpenStreetMapX.Way}, intersections::Dict{Int,Set{Int}}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
     segments = OpenStreetMapX.Segment[]
     intersect = Set(keys(intersections))

@@ -3,7 +3,9 @@ using Random
 import LightGraphs
 
 
-m = get_map_data("data/reno_east3.osm",use_cache=false);
+pth = joinpath(dirname(pathof(OpenStreetMapX)),"..","test","data","reno_east3.osm")
+m =  OpenStreetMapX.get_map_data(pth,use_cache = false);
+
 @testset "maps" begin
 
 
@@ -65,6 +67,15 @@ m = get_map_data("data/reno_east3.osm",use_cache=false);
 	#routing.jl/distance
 	#Returns seem to be equal yet returning false (?)
 	@test distance(m.nodes,OpenStreetMapX.get_edges(m.nodes,m.roadways[1:2])[1]) == [30.2013937293296, 7.243941886194111, 35.492758006997796, 12.29992029473937, 11.290063259013777]
+
+	conn_components = sort!(LightGraphs.strongly_connected_components(m.g),
+	        lt=(x,y)->length(x)<length(y), rev=true)
+	@test length(conn_components[1])==1799
+
+	m2 =  OpenStreetMapX.get_map_data(pth,use_cache = false, trim_to_connected_graph=true);
+	conn_components2 = sort!(LightGraphs.strongly_connected_components(m2.g),
+	        lt=(x,y)->length(x)<length(y), rev=true)
+	@test length(conn_components[1])==length(conn_components2[1])
 
 	#######################################################
 

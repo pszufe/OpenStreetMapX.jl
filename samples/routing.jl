@@ -1,8 +1,8 @@
 using OpenStreetMapX
 
-mapfile = "reno_east3.osm";  # This file can be found in test/data folder
-datapath = "/home/ubuntu/";
-map_data = get_map_data(datapath, mapfile,use_cache=false);
+
+pth = joinpath(dirname(pathof(OpenStreetMapX)),"..","test","data","reno_east3.osm")
+map_data =  OpenStreetMapX.get_map_data(pth,use_cache = false);
 
 using Random
 Random.seed!(0);
@@ -21,7 +21,7 @@ println("fastest route nodes: ",fastest_route1)
 
 ### Create this file if you want to test routing with Google API
 ### The file should only contain your Google API key
-google_api_file = joinpath(datapath,"googleapi.key")
+google_api_file = joinpath("some_folder","googleapi.key")
 
 if isfile(google_api_file)
     google_api_key = readlines(google_api_file)[1]
