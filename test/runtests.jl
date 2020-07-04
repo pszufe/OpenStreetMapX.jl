@@ -70,11 +70,13 @@ m =  OpenStreetMapX.get_map_data(pth,use_cache = false);
 
 	conn_components = sort!(LightGraphs.strongly_connected_components(m.g),
 	        lt=(x,y)->length(x)<length(y), rev=true)
+	@test length(conn_components)>1
 	@test length(conn_components[1])==1799
 
 	m2 =  OpenStreetMapX.get_map_data(pth,use_cache = false, trim_to_connected_graph=true);
 	conn_components2 = sort!(LightGraphs.strongly_connected_components(m2.g),
 	        lt=(x,y)->length(x)<length(y), rev=true)
+	@test length(conn_components2)==1
 	@test length(conn_components[1])==length(conn_components2[1])
 
 	#######################################################
