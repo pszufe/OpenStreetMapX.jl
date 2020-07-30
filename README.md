@@ -16,7 +16,7 @@ The goal of this package is to provide a backbone for multi-agent simulation of 
 - [**STABLE**][docs-stable-url] &mdash; **documentation of the most recently tagged version.**
 - [**DEV**][docs-dev-url] &mdash; **documentation of the development version.**
 - [**TUTORIAL**](https://pszufe.github.io/OpenStreetMapX_Tutorial/)  &mdash; A simple tutorial showing routing simulation with OpenStreetMapX along with integration with *folium* via `PyCall.jl`
-- [**JuliaCon 2020 TUTORIAL**](https://pszufe.github.io/OpenStreetMapX_Tutorial/JuliaCon2020)  &mdash; **NEW!** See the tutorial that I will be presenting during JuliaCon2020!
+- [**JuliaCon 2020 TUTORIAL**](https://pszufe.github.io/OpenStreetMapX_Tutorial/JuliaCon2020)  &mdash; **NEW!** See the tutorial that I will be presenting during JuliaCon2020! A research application of this tutorial can be found in our paper [On Broadcasting Time in the Model of Travelling Agents](https://arxiv.org/pdf/2003.08501.pdf)].
 
 
 [docs-latest-img]: https://img.shields.io/badge/docs-latest-blue.svg
