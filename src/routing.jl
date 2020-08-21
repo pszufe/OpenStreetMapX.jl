@@ -21,13 +21,6 @@ function get_edges(nodes::Dict{Int,T},roadways::Vector{OpenStreetMapX.Way}) wher
 end
 
 """
-Get Vertices for a set of `edges`
-"""
-function get_vertices(edges::Vector{Tuple{Int,Int}})
-    graph_nodes = unique(reinterpret(Int, edges))
-    vertices = Dict{Int,Int}(zip(graph_nodes, 1:length(graph_nodes)))
-end
-"""
 Get Distances Between Edges
 """
 function distance(nodes::Dict{Int,T},edges::Vector{Tuple{Int,Int}}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}

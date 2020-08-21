@@ -110,7 +110,18 @@ function get_map_data(filepath::String,filename::Union{String,Nothing}=nothing; 
     return res
 end
 
+"""
+Get Vertices and nodes for a set of `edges`
+"""
+function get_vertices_and_graph_nodes(edges::Vector{Tuple{Int,Int}})
+    graph_nodes = unique(reinterpret(Int, edges))
+	vertices = Dict{Int,Int}(zip(graph_nodes, 1:length(graph_nodes)))
+	return vertices, graph_nodes
+end
 
+"""
+Internal constructor of `MapData` object
+"""
 function MapData(mapdata::OSMData, road_levels::Set{Int}, only_intersections::Bool=true;
 	 trim_to_connected_graph::Bool=false, remove_nodes::AbstractSet{Int}=Set{Int}())
 	#preparing data
@@ -152,14 +163,16 @@ function MapData(mapdata::OSMData, road_levels::Set{Int}, only_intersections::Bo
 		weight_vals = OpenStreetMapX.distance(nodes,e)
 	end
 	# (node id) => (graph vertex)
-	v = OpenStreetMapX.get_vertices(e)
-	n = Dict(reverse.(collect(v)))
+	v, n = OpenStreetMapX.get_vertices_and_graph_nodes(e)
 	edges = [v[id] for id in reinterpret(Int, e)]
 	I = edges[1:2:end]
 	J = edges[2:2:end]
 	# w - Edge weights, indexed by graph id
 	w = SparseArrays.sparse(I, J, weight_vals, length(v), length(v))
-	g = LightGraphs.DiGraph(w)
+	g = LightGraphs.DiGraph(length(v))
+	for edge in e
+		add_edge!(g,v[edge[1]], v[edge[2]])
+	end
 
 	if trim_to_connected_graph
 		rm_list = Set{Int}()
