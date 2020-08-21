@@ -1,7 +1,7 @@
 """
     get_distance(A::Int, B::Int, 
                  nodes::Dict{Int,T} , 
-                 vertices_to_nodes::Dict{Int,Int}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
+                 vertices_to_nodes::Vector{Int}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
 					
 Auxiliary function - takes two vertices of graph and return the distance between them. 
 Used to compute straight line distance heuristic for A* algorithm.
@@ -15,7 +15,7 @@ Used to compute straight line distance heuristic for A* algorithm.
 """
 function get_distance(A::Int, B::Int, 
                      nodes::Dict{Int,T}, 
-                     vertices_to_nodes::Dict{Int,Int}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
+                     vertices_to_nodes::Vector{Int}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
     A,B = vertices_to_nodes[A], vertices_to_nodes[B]
     OpenStreetMapX.distance(nodes[A],nodes[B])
 end

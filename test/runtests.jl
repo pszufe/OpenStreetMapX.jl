@@ -61,8 +61,8 @@ m =  OpenStreetMapX.get_map_data(pth,use_cache = false);
 	#routing.jl/get_edges
 	@test OpenStreetMapX.get_edges(m.nodes,m.roadways[1:2]) == (Tuple{Int64,Int64}[(139988738, 385046327), (2441017870, 2975020216), (385046327, 385046328), (2441017888, 2441017878), (2441017878, 2441017870)], [1, 4, 1, 4, 4])
 
-	#routing.jl/get_vertices
-	@test OpenStreetMapX.get_vertices(OpenStreetMapX.get_edges(m.nodes,m.roadways[1:2])[1]) == Dict(2441017878=>7,139988738=>1,2975020216=>4,2441017870=>3,385046328=>5,2441017888=>6,385046327=>2)
+	#parseMap.jl/get_vertices_and_graph_nodes
+	@test OpenStreetMapX.get_vertices_and_graph_nodes(OpenStreetMapX.get_edges(m.nodes,m.roadways[1:2])[1])[1] == Dict(2441017878=>7,139988738=>1,2975020216=>4,2441017870=>3,385046328=>5,2441017888=>6,385046327=>2)
 
 	#routing.jl/distance
 	#Returns seem to be equal yet returning false (?)
