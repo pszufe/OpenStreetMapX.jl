@@ -6,7 +6,7 @@ Using the the library makes basic understanding of spatial data. The following [
 - Earth-centered, Earth-fixed (ECEF)
 - East, North, Up (ENU)
 
-The `LLA` node is the standard way to represent locations. The `ECEF` and `ENU` modes uses a distance (measeured in meters) from a reference point. To better understand those modes have a look at the Wikipedia pictures below:
+The `LLA` node is the standard way to represent locations. The `ECEF` and `ENU` modes uses a distance (measured in meters) from a reference point. To better understand those modes have a look at the Wikipedia pictures below:
 
 - Earth-centered, Earth-fixed (ECEF)
 
