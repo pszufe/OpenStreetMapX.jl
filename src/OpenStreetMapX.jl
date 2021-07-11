@@ -49,6 +49,7 @@ include("bounds.jl") #bounds of the map
 include("conversion.jl") #conversion of geographical coordinates
 
 include("parseMap.jl") #map parsing funcions
+include("pbf.jl")
 include("classification.jl") #highways, features and buildings classification functions
 include("crop.jl") #cropping nodes and ways
 
