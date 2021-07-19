@@ -19,7 +19,7 @@ The goal of this package is to provide a backbone for multi-agent simulation of 
 - [**JuliaCon 2020 TUTORIAL**](https://pszufe.github.io/OpenStreetMapX_Tutorial/JuliaCon2020)  &mdash; See the tutorial that has been presented during JuliaCon2020! A research application of this tutorial can be found in our paper [On Broadcasting Time in the Model of Travelling Agents](https://arxiv.org/pdf/2003.08501.pdf).
 - [**JuliaCon 2021 TUTORIAL**](https://pszufe.github.io/OpenStreetMapX_Tutorial/JuliaCon2021)  &mdash; **NEW** See the tutorial that has been presented during JuliaCon2021!
 
-[![][https://szufel-public.s3.us-east-2.amazonaws.com/ttc_frame.png]]
+![Agents travelling within a city](https://szufel-public.s3.us-east-2.amazonaws.com/ttc_frame.png)
 
 [docs-latest-img]: https://img.shields.io/badge/docs-latest-blue.svg
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
