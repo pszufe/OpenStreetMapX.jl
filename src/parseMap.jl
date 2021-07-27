@@ -21,17 +21,11 @@ function parse_element(handler::LibExpat.XPStreamHandler,
     elseif name == "tag"
         k = attr["k"]; v = attr["v"]
         if  data.element == :Tuple
-			if haskey(FEATURE_CLASSES, k)
-				data.osm.features[handler.data.node[1]] = k,v
-			end
+            tag(data.osm, handler.data.node[1], k, v)
 		elseif data.element == :Way
-            data_tags = tags(data.way)
-            push!(data.osm.way_tags, k)
-			data_tags[k] = v
+            tag(data.osm, data.way, k, v)
         elseif data.element == :Relation
-            data_tags = tags(data.relation)
-            push!(data.osm.relation_tags, k)
-			data_tags[k] = v
+            tag(data.osm, data.relation, k, v)
         end
     elseif name == "nd"
         push!(data.way.nodes, parse(Int, attr["ref"]))
@@ -97,7 +91,12 @@ function get_map_data(filepath::String,filename::Union{String,Nothing}=nothing; 
 		close(f);
 		@info "Read map data from cache $cachefile"
 	else
-		mapdata = OpenStreetMapX.parseOSM(joinpath(datapath,filename))
+		path = joinpath(datapath, filename)
+		if endswith(filename, ".pbf")
+		    mapdata = OpenStreetMapX.parsePBF(path)
+		else
+		    mapdata = OpenStreetMapX.parseOSM(path)
+		end
 		OpenStreetMapX.crop!(mapdata,crop_relations = false)
 		res = MapData(mapdata, road_levels, only_intersections; trim_to_connected_graph=trim_to_connected_graph)
 		if use_cache
