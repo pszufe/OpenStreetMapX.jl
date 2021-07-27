@@ -91,9 +91,19 @@ function process_element(osm, pbf_way::OSMPBF.Way, table, lat_offset, lon_offset
     return
 end
 
+const MEMBER_TYPE = ["NODE", "WAY", "RELATION"]
+
 function process_element(osm, pbf_relation::OSMPBF.Relation, table, lat_offset, lon_offset, granularity)
     relation = Relation(pbf_relation.id)
-    # TODO members
+    memids = pbf_relation.memids
+    cumsum!(memids, memids)
+    types = pbf_relation.types
+    for i in eachindex(types)
+        push!(relation.members, Dict(
+            "type" => MEMBER_TYPE[types[i] + 1],
+            "ref" => string(memids[i]),
+        ))
+    end
     keys = pbf_relation.keys
     vals = pbf_relation.vals
     for i in eachindex(keys)
