@@ -1,5 +1,5 @@
 using Test, OpenStreetMapX
-using Random
+using Random, StableRNGs
 import LightGraphs
 
 @testset "$ext" for ext in ["osm", "pbf"]
@@ -7,20 +7,18 @@ import LightGraphs
     m =  OpenStreetMapX.get_map_data(pth,use_cache = false);
 
     @testset "maps" begin
-
-
         @test length(m.nodes) == 9032
-        Random.seed!(0);
-        pA = generate_point_in_bounds(m)
-        @test all(isapprox.(pA,(39.53584630184622, -119.71506095062803)))
-        pB = generate_point_in_bounds(m)
-        @test all(isapprox.(pB,(39.507242155639005, -119.78506509516248)))
+        rng = StableRNGs.StableRNG(1234)
+        pA = generate_point_in_bounds(rng, m)
+        @test all(isapprox.(pA,(39.52679926947162, -119.7400090256387)))
+        pB = generate_point_in_bounds(rng, m)
+        @test all(isapprox.(pB,(39.53417080390912, -119.73955700911934)))
         pointA = point_to_nodes(pA, m)
         pointB = point_to_nodes(pB, m)
 
 
-        @test pointA == 3052967037
-        @test pointB == 140393352
+        @test pointA == 3625693684
+        @test pointB == 140115165
 
 
         sr1, shortest_distance1, shortest_time1 = shortest_route(m, pointA, pointB)
@@ -36,7 +34,7 @@ import LightGraphs
 
         #nodes.jl/centroid
         node_list = [pointA,pointB]
-        @test centroid(m.nodes,node_list) ≈ ENU(309.1010361600104, -35.35610349960848, -0.9191984126487114)
+        @test centroid(m.nodes,node_list) ≈ ENU(1264.3091688577153, 982.9015092571676, -0.2152924371073368)
 
         #nodes.jl/nodes_within_range
         @test Set(nodes_within_range(m.nodes, ENU(3300,1500,-1), 100.0)) == Set([3052967037, 3052967180, 3052967130, 6050217400, 3052966904, 3052967140, 6050217409, 3052967199])
@@ -52,7 +50,7 @@ import LightGraphs
         @test OpenStreetMapX.oneway(m.roadways[1]) == true
 
         #intersections.jl/distance
-        @test distance(m.nodes,sr1) ≈ 9019.07204040599
+        @test distance(m.nodes,sr1) ≈ 1720.2462568078658
 
         #intersections.jl/find_intersections
         @test OpenStreetMapX.find_intersections(m.roadways[1:2]) == Dict(139988738=>Set([14370413]),2975020216=>Set([14370407]),2441017888=>Set([14370407]),385046328=>Set([14370413]))

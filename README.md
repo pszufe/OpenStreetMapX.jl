@@ -5,6 +5,7 @@
 
 The goal of this package is to provide a backbone for multi-agent simulation of cities. 
 
+The package can parse `*.osm` and `*.pbf`  (contributed by [@blegat](https://github.com/blegat/)) files and generate a LightGraphs representation along the metadata.
 
 
 | **Documentation** | **Build Status** |
@@ -34,7 +35,7 @@ The goal of this package is to provide a backbone for multi-agent simulation of 
 
 ## Installation
 
-The current version uses at least Julia 1.3. However older versions will work with Julia 1.0.
+The current version uses at least Julia 1.5. However older versions will work with Julia 1.0.
 
 ```julia
 using Pkg; Pkg.add("OpenStreetMapX.jl")

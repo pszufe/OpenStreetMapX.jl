@@ -67,10 +67,11 @@ end
 				 use_cache::Bool = true, only_intersections::Bool=true)::MapData
 
 High level function - parses .osm file and create the road network based on the map data.
+This code currently can parse both *.osm and *.pbf (@blegat - thank you!) files. The data type is determined by file extension.
 
 **Arguments**
 
-* `filepath` : path with an .osm file (directory or path to a file)
+* `filepath` : path with an .osm/.pbf file (directory or path to a file)
 * `filename` : name of the file (when the first argument is a directory)
 * `road_levels` : a set with the road categories (see: OpenStreetMapX.ROAD_CLASSES for more informations)
 * `use_cache` : a *.cache file will be crated with a serialized map image in the `datapath` folder

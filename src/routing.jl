@@ -392,16 +392,21 @@ function nodes_within_driving_time(nodes::Dict{Int,T}, m::MapData, loc::T, limit
 end
 
 """
-    generate_point_in_bounds(m::MapData)
+    generate_point_in_bounds([rng::AbstractRNG], m::MapData)
 
 Generates a random pair of Latitude-Longitude coordinates within
 boundaries of map `m`
 """
-function generate_point_in_bounds(m::MapData)
+function generate_point_in_bounds(rng::AbstractRNG, m::MapData)
     boundaries = m.bounds
-    (rand() * (boundaries.max_y -  boundaries.min_y) + boundaries.min_y,
-    rand() * (boundaries.max_x -  boundaries.min_x) + boundaries.min_x)
+    (rand(rng) * (boundaries.max_y -  boundaries.min_y) + boundaries.min_y,
+    rand(rng) * (boundaries.max_x -  boundaries.min_x) + boundaries.min_x)
 end
+
+function generate_point_in_bounds(m::MapData)
+    generate_point_in_bounds(Random._GLOBAL_RNG, m)
+end
+
 
 """
     point_to_nodes(point::Tuple{Float64,Float64}, m::MapData)
