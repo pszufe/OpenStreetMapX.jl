@@ -23,6 +23,9 @@ HTTP = "^0.7.0, ^0.8.0, ^0.9.0"
 JSON = "^0.20.0, ^0.21.0"
 LibExpat = "^0.6.0"
 LightGraphs = "^1.3.3"
+CodecZlib = "^0.7.0"
+ProtoBuf = "^0.11.0"
+StableRNGs = "^1.0.0"
 julia = "^1.3.0"
 
 [extras]
