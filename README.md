@@ -27,8 +27,8 @@ The package can parse `*.osm` and `*.pbf`  (contributed by [@blegat](https://git
 [docs-dev-url]: https://pszufe.github.io/OpenStreetMapX.jl/dev
 [docs-stable-url]: https://pszufe.github.io/OpenStreetMapX.jl/stable
 
-[travis-img]: https://travis-ci.org/pszufe/OpenStreetMapX.jl.svg?branch=master
-[travis-url]: https://travis-ci.org/pszufe/OpenStreetMapX.jl
+[travis-img]: https://travis-ci.com/pszufe/OpenStreetMapX.jl.svg?branch=master
+[travis-url]: https://travis-ci.com/pszufe/OpenStreetMapX.jl
 
 [codecov-img]: https://coveralls.io/repos/github/pszufe/OpenStreetMapX.jl/badge.svg?branch=master
 [codecov-url]: https://coveralls.io/github/pszufe/OpenStreetMapX.jl?branch=master
