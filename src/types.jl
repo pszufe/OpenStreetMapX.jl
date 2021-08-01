@@ -237,6 +237,27 @@ OSMData() = OSMData(Dict{Int, OpenStreetMapX.LLA}(), Vector{OpenStreetMapX.Way}(
 	            Vector{OpenStreetMapX.Relation}(), Dict{Int,String}(),
 	            Bounds(0.0, 0.0, 0.0, 0.0), Set{String}(), Set{String}())
 
+function tag(osm::OSMData, node_id::Int64, key::String, value::String)
+    if haskey(FEATURE_CLASSES, key)
+        osm.features[node_id] = key, value
+    end
+    return
+end
+
+function tag(osm::OSMData, way::Way, key::String, value::String)
+    push!(osm.way_tags, key)
+    data_tags = tags(way)
+    data_tags[key] = value
+    return
+end
+
+function tag(osm::OSMData, relation::Relation, key::String, value::String)
+    push!(osm.relation_tags, key)
+    data_tags = tags(relation)
+    data_tags[key] = value
+    return
+end
+
 mutable struct DataHandle
     element::Symbol
     osm::OpenStreetMapX.OSMData
@@ -259,7 +280,7 @@ This is the main data structure used fot map data analytics.
 * `intersections` : roads intersections
 * `g` : `LightGraphs` directed graph representing a road network
 * `v` : vertices in the road network (node id .=> graph vertex)
-* `n` : vector of OpenStreetMap node ids for each corresponding graph vertex 
+* `n` : vector of OpenStreetMap node ids for each corresponding graph vertex
 * `e` : vector of edges in the graph represented as a tuple (source,destination)
 * `w` : sparse matrix of edge weights, indexed by graph id
 * `class` : road class of each edge
