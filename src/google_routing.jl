@@ -98,15 +98,15 @@ Extract route from Google API results
 
 """
 function extract_google_route(routes::Dict)
-    res = Array{Tuple{Float64,Float64},1}[]
+    res = Tuple{Float64,Float64}[]
     legs = routes["legs"]
     for leg in legs
         steps = leg["steps"]
         for step in steps
-            push!(res,OpenStreetMapX.decode(step["polyline"]["points"]))
+            append!(res, OpenStreetMapX.decode(step["polyline"]["points"]))
         end
     end
-    return vcat(res...)
+    return res
 end
 
 """
