@@ -74,11 +74,15 @@ end
 Create a Sparse Matrix for a given vector of weights
 """
 function create_weights_matrix(m::MapData,weights::Vector{Float64})
-    w = SparseArrays.spzeros(length(m.v), length(m.v))
+    I = Int[]
+    J = Int[]
+    V = Float64[]
     for (i,edge) in enumerate(m.e)
-        w[m.v[edge[1]],m.v[edge[2]]] = weights[i]
+        push!(I, m.v[edge[1]])
+        push!(J, m.v[edge[2]])
+        push!(V, weights[i])
     end
-    w
+    return SparseArrays.sparse(I, J, V, length(m.v), length(m.v))
 end
 
 """
