@@ -64,11 +64,10 @@ Find Segments of Highways ###
 """
 function find_segments(nodes::Dict{Int,T}, highways::Vector{OpenStreetMapX.Way}, intersections::Dict{Int,Set{Int}}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
     segments = OpenStreetMapX.Segment[]
-    intersect = Set(keys(intersections))
     for highway in highways
         firstNode = 1
         for j = 2:length(highway.nodes)
-            if highway.nodes[firstNode] != highway.nodes[j] && (in(highway.nodes[j], intersect)|| j == length(highway.nodes))
+            if highway.nodes[firstNode] != highway.nodes[j] && (haskey(intersections, highway.nodes[j])|| j == length(highway.nodes))
                 if !reverseway(highway)
                     seg = OpenStreetMapX.Segment(highway.nodes[firstNode],highway.nodes[j],highway.nodes[firstNode:j], OpenStreetMapX.distance(nodes, highway.nodes[firstNode:j]), highway.id)
                     push!(segments,seg)
