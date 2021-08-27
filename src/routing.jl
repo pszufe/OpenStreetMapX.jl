@@ -359,7 +359,7 @@ function nodes_within_weights(m::MapData, weights::SparseArrays.SparseMatrixCSC{
     return OpenStreetMapX.filter_vertices(m.v, bellman_ford.dists, limit)
 end
 
-nodes_within_weights(nodes::Dict{Int,T}, m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, loc::T, limit::Float64=Inf,locrange::Float64=500.0) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nodes_within_weights(m, weights, nodes_within_range(nodes, loc, network, locrange), limit)
+nodes_within_weights(nodes::Dict{Int,T}, m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, loc::T, limit::Float64=Inf,locrange::Float64=500.0) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nodes_within_weights(m, weights, nodes_within_range(nodes, loc, m, locrange), limit)
 
 ##############################################################################
 ### Extract Nodes from bellman_fordStates Object Within an (Optional) Limit ###
@@ -372,7 +372,7 @@ function nodes_within_driving_distance(m::MapData, start_indices::Vector{Int}, l
     return OpenStreetMapX.filter_vertices(m.v, bellman_ford.dists, limit)
 end
 
-nodes_within_driving_distance(nodes::Dict{Int,T}, m::MapData, loc::T, limit::Float64=Inf,locrange::Float64=500.0) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})= OpenStreetMapX.nodes_within_driving_distance(m, nodes_within_range(nodes, loc ,network, locrange), limit)
+nodes_within_driving_distance(nodes::Dict{Int,T}, m::MapData, loc::T, limit::Float64=Inf,locrange::Float64=500.0) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})= OpenStreetMapX.nodes_within_driving_distance(m, nodes_within_range(nodes, loc, m, locrange), limit)
 
 ##############################################################################
 ### Extract Nodes from bellman_fordStates Object Within an (Optional) Limit ###
