@@ -8,14 +8,7 @@ module OSMPBF
   set_defaults!(::SimpleProtoType) = nothing
   function ProtoBuf.clear(obj::SimpleProtoType)
       # FIXME how does it play with GC ?
-      ccall(
-            :memset,
-            Ptr{Nothing},
-            (Ptr{Nothing}, Cint, Csize_t),
-            pointer_from_objref(obj),
-            0,
-            sizeof(typeof(obj)),
-           )
+      Base.unsafe_securezero!(pointer_from_objref(obj), sizeof(typeof(obj)))
       set_defaults!(obj)
       return
   end
