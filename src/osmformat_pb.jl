@@ -3,26 +3,16 @@
 using ProtoBuf
 import ProtoBuf.meta
 
-mutable struct HeaderBBox <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
-
-    function HeaderBBox(; kwargs...)
-        obj = new(meta(HeaderBBox), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+mutable struct HeaderBBox <: SimpleProtoType
+    left::Int64
+    right::Int64
+    top::Int64
+    bottom::Int64
+    function HeaderBBox()
+        return new()
     end
-end # mutable struct HeaderBBox
+end
+
 const __meta_HeaderBBox = Ref{ProtoMeta}()
 function meta(::Type{HeaderBBox})
     ProtoBuf.metalock() do
@@ -36,40 +26,31 @@ function meta(::Type{HeaderBBox})
         __meta_HeaderBBox[]
     end
 end
-function Base.getproperty(obj::HeaderBBox, name::Symbol)
-    if name === :left
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :right
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :top
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :bottom
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    else
-        getfield(obj, name)
-    end
-end
 
-mutable struct HeaderBlock <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
+# TODO which subtype of `AbstractString` is actually used ?
+mutable struct HeaderBlock <: SimpleProtoType
+    bbox::HeaderBBox
+    required_features::Vector{AbstractString}
+    optional_features::Vector{AbstractString}
+    writingprogram::AbstractString
+    source::AbstractString
+    osmosis_replication_timestamp::Int64
+    osmosis_replication_sequence_number::Int64
+    osmosis_replication_base_url::AbstractString
 
-    function HeaderBlock(; kwargs...)
-        obj = new(meta(HeaderBlock), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+    function HeaderBlock()
+        return new()
     end
 end # mutable struct HeaderBlock
+#function ProtoBuf.clear(obj::HeaderBlock)
+#    if isdefined(obj, :required_features)
+#        empty!(obj.required_features)
+#    end
+#    if isdefined(obj, :optional_features)
+#        empty!(obj.optional_features)
+#    end
+#    return
+#end
 const __meta_HeaderBlock = Ref{ProtoMeta}()
 function meta(::Type{HeaderBlock})
     ProtoBuf.metalock() do
@@ -82,48 +63,19 @@ function meta(::Type{HeaderBlock})
         __meta_HeaderBlock[]
     end
 end
-function Base.getproperty(obj::HeaderBlock, name::Symbol)
-    if name === :bbox
-        return (obj.__protobuf_jl_internal_values[name])::HeaderBBox
-    elseif name === :required_features
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{AbstractString}
-    elseif name === :optional_features
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{AbstractString}
-    elseif name === :writingprogram
-        return (obj.__protobuf_jl_internal_values[name])::AbstractString
-    elseif name === :source
-        return (obj.__protobuf_jl_internal_values[name])::AbstractString
-    elseif name === :osmosis_replication_timestamp
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :osmosis_replication_sequence_number
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :osmosis_replication_base_url
-        return (obj.__protobuf_jl_internal_values[name])::AbstractString
-    else
-        getfield(obj, name)
-    end
-end
 
-mutable struct StringTable <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
-
-    function StringTable(; kwargs...)
-        obj = new(meta(StringTable), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+mutable struct StringTable <: SimpleProtoType
+    s::Vector{Vector{UInt8}}
+    function StringTable()
+        return new()
     end
 end # mutable struct StringTable
+#function ProtoBuf.clear(obj::StringTable)
+#    if isdefined(obj, :s)
+#        empty!(obj.s)
+#    end
+#    return
+#end
 const __meta_StringTable = Ref{ProtoMeta}()
 function meta(::Type{StringTable})
     ProtoBuf.metalock() do
@@ -135,34 +87,24 @@ function meta(::Type{StringTable})
         __meta_StringTable[]
     end
 end
-function Base.getproperty(obj::StringTable, name::Symbol)
-    if name === :s
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Vector{UInt8}}
-    else
-        getfield(obj, name)
-    end
-end
 
-mutable struct Info <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
-
-    function Info(; kwargs...)
-        obj = new(meta(Info), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+mutable struct Info <: SimpleProtoType
+    version::Int32
+    timestamp::Int64
+    changeset::Int64
+    uid::Int32
+    user_sid::UInt32
+    visible::Bool
+    function Info()
+        obj = new()
+        set_defaults!(obj)
+        return obj
     end
 end # mutable struct Info
+function set_defaults!(obj::Info)
+    obj.version = Int32(-1)
+    return
+end
 const __meta_Info = Ref{ProtoMeta}()
 function meta(::Type{Info})
     ProtoBuf.metalock() do
@@ -175,42 +117,16 @@ function meta(::Type{Info})
         __meta_Info[]
     end
 end
-function Base.getproperty(obj::Info, name::Symbol)
-    if name === :version
-        return (obj.__protobuf_jl_internal_values[name])::Int32
-    elseif name === :timestamp
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :changeset
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :uid
-        return (obj.__protobuf_jl_internal_values[name])::Int32
-    elseif name === :user_sid
-        return (obj.__protobuf_jl_internal_values[name])::UInt32
-    elseif name === :visible
-        return (obj.__protobuf_jl_internal_values[name])::Bool
-    else
-        getfield(obj, name)
-    end
-end
 
-mutable struct DenseInfo <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
-
-    function DenseInfo(; kwargs...)
-        obj = new(meta(DenseInfo), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+mutable struct DenseInfo <: SimpleProtoType
+    version::Vector{Int32}
+    timestamp::Vector{Int64}
+    changeset::Vector{Int64}
+    uid::Vector{Int32}
+    user_sid::Vector{Int32}
+    visible::Vector{Bool}
+    function DenseInfo()
+        return new()
     end
 end # mutable struct DenseInfo
 const __meta_DenseInfo = Ref{ProtoMeta}()
@@ -226,42 +142,11 @@ function meta(::Type{DenseInfo})
         __meta_DenseInfo[]
     end
 end
-function Base.getproperty(obj::DenseInfo, name::Symbol)
-    if name === :version
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int32}
-    elseif name === :timestamp
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int64}
-    elseif name === :changeset
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int64}
-    elseif name === :uid
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int32}
-    elseif name === :user_sid
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int32}
-    elseif name === :visible
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Bool}
-    else
-        getfield(obj, name)
-    end
-end
 
-mutable struct ChangeSet <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
-
-    function ChangeSet(; kwargs...)
-        obj = new(meta(ChangeSet), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+mutable struct ChangeSet <: SimpleProtoType
+    id::Int64
+    function ChangeSet()
+        return new()
     end
 end # mutable struct ChangeSet
 const __meta_ChangeSet = Ref{ProtoMeta}()
@@ -276,32 +161,16 @@ function meta(::Type{ChangeSet})
         __meta_ChangeSet[]
     end
 end
-function Base.getproperty(obj::ChangeSet, name::Symbol)
-    if name === :id
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    else
-        getfield(obj, name)
-    end
-end
 
-mutable struct Node <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
-
-    function Node(; kwargs...)
-        obj = new(meta(Node), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+mutable struct Node <: SimpleProtoType
+    id::Int64
+    keys::Vector{UInt32}
+    vals::Vector{UInt32}
+    info::Info
+    lat::Int64
+    lon::Int64
+    function Node()
+        return new()
     end
 end # mutable struct Node
 const __meta_Node = Ref{ProtoMeta}()
@@ -319,42 +188,15 @@ function meta(::Type{Node})
         __meta_Node[]
     end
 end
-function Base.getproperty(obj::Node, name::Symbol)
-    if name === :id
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :keys
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{UInt32}
-    elseif name === :vals
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{UInt32}
-    elseif name === :info
-        return (obj.__protobuf_jl_internal_values[name])::Info
-    elseif name === :lat
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :lon
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    else
-        getfield(obj, name)
-    end
-end
 
-mutable struct DenseNodes <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
-
-    function DenseNodes(; kwargs...)
-        obj = new(meta(DenseNodes), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+mutable struct DenseNodes <: SimpleProtoType
+    id::Vector{Int64}
+    denseinfo::DenseInfo
+    lat::Vector{Int64}
+    lon::Vector{Int64}
+    keys_vals::Vector{Int32}
+    function DenseNodes()
+        return new()
     end
 end # mutable struct DenseNodes
 const __meta_DenseNodes = Ref{ProtoMeta}()
@@ -371,42 +213,23 @@ function meta(::Type{DenseNodes})
         __meta_DenseNodes[]
     end
 end
-function Base.getproperty(obj::DenseNodes, name::Symbol)
-    if name === :id
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int64}
-    elseif name === :denseinfo
-        return (obj.__protobuf_jl_internal_values[name])::DenseInfo
-    elseif name === :lat
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int64}
-    elseif name === :lon
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int64}
-    elseif name === :keys_vals
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int32}
-    else
-        getfield(obj, name)
-    end
-end
 
-mutable struct Way <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
-
-    function Way(; kwargs...)
-        obj = new(meta(Way), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+mutable struct Way <: SimpleProtoType
+    id::Int64
+    keys::Vector{UInt32}
+    vals::Vector{UInt32}
+    info::Info
+    refs::Vector{Int64}
+    lat::Vector{Int64}
+    lon::Vector{Int64}
+    function Way()
+        return new()
     end
 end # mutable struct Way
+#function set_defaults!(obj::Way)
+#    obj.keys = UInt32[]
+#    obj.vals = UInt32[]
+#end
 const __meta_Way = Ref{ProtoMeta}()
 function meta(::Type{Way})
     ProtoBuf.metalock() do
@@ -422,52 +245,22 @@ function meta(::Type{Way})
         __meta_Way[]
     end
 end
-function Base.getproperty(obj::Way, name::Symbol)
-    if name === :id
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :keys
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{UInt32}
-    elseif name === :vals
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{UInt32}
-    elseif name === :info
-        return (obj.__protobuf_jl_internal_values[name])::Info
-    elseif name === :refs
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int64}
-    elseif name === :lat
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int64}
-    elseif name === :lon
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int64}
-    else
-        getfield(obj, name)
-    end
-end
 
-const Relation_MemberType = (;[
-    Symbol("NODE") => Int32(0),
-    Symbol("WAY") => Int32(1),
-    Symbol("RELATION") => Int32(2),
-]...)
+const Relation_MemberType = ["NODE", "WAY", "RELATION"]
 
-mutable struct Relation <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
-
-    function Relation(; kwargs...)
-        obj = new(meta(Relation), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+mutable struct Relation <: SimpleProtoType
+    id::Int64
+    keys::Vector{UInt32}
+    vals::Vector{UInt32}
+    info::Info
+    roles_sid::Vector{Int32}
+    memids::Vector{Int64}
+    types::Vector{Int32}
+    function Relation()
+        return new()
     end
 end # mutable struct Relation
+
 const __meta_Relation = Ref{ProtoMeta}()
 function meta(::Type{Relation})
     ProtoBuf.metalock() do
@@ -483,44 +276,15 @@ function meta(::Type{Relation})
         __meta_Relation[]
     end
 end
-function Base.getproperty(obj::Relation, name::Symbol)
-    if name === :id
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :keys
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{UInt32}
-    elseif name === :vals
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{UInt32}
-    elseif name === :info
-        return (obj.__protobuf_jl_internal_values[name])::Info
-    elseif name === :roles_sid
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int32}
-    elseif name === :memids
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int64}
-    elseif name === :types
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Int32}
-    else
-        getfield(obj, name)
-    end
-end
 
-mutable struct PrimitiveGroup <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
-
-    function PrimitiveGroup(; kwargs...)
-        obj = new(meta(PrimitiveGroup), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+mutable struct PrimitiveGroup <: SimpleProtoType
+    nodes::Vector{Node}
+    dense::DenseNodes
+    ways::Vector{Way}
+    relations::Vector{Relation}
+    changesets::Vector{ChangeSet}
+    function PrimitiveGroup()
+        return new()
     end
 end # mutable struct PrimitiveGroup
 const __meta_PrimitiveGroup = Ref{ProtoMeta}()
@@ -534,42 +298,36 @@ function meta(::Type{PrimitiveGroup})
         __meta_PrimitiveGroup[]
     end
 end
-function Base.getproperty(obj::PrimitiveGroup, name::Symbol)
-    if name === :nodes
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Node}
-    elseif name === :dense
-        return (obj.__protobuf_jl_internal_values[name])::DenseNodes
-    elseif name === :ways
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Way}
-    elseif name === :relations
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{Relation}
-    elseif name === :changesets
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{ChangeSet}
-    else
-        getfield(obj, name)
-    end
-end
 
-mutable struct PrimitiveBlock <: ProtoType
-    __protobuf_jl_internal_meta::ProtoMeta
-    __protobuf_jl_internal_values::Dict{Symbol,Any}
-    __protobuf_jl_internal_defaultset::Set{Symbol}
-
-    function PrimitiveBlock(; kwargs...)
-        obj = new(meta(PrimitiveBlock), Dict{Symbol,Any}(), Set{Symbol}())
-        values = obj.__protobuf_jl_internal_values
-        symdict = obj.__protobuf_jl_internal_meta.symdict
-        for nv in kwargs
-            fldname, fldval = nv
-            fldtype = symdict[fldname].jtyp
-            (fldname in keys(symdict)) || error(string(typeof(obj), " has no field with name ", fldname))
-            if fldval !== nothing
-                values[fldname] = isa(fldval, fldtype) ? fldval : convert(fldtype, fldval)
-            end
-        end
-        obj
+mutable struct PrimitiveBlock <: SimpleProtoType
+    stringtable::StringTable
+    primitivegroup::Vector{PrimitiveGroup}
+    granularity::Int32
+    lat_offset::Int64
+    lon_offset::Int64
+    date_granularity::Int32
+    function PrimitiveBlock()
+        obj = new()
+        set_defaults!(obj)
+        return obj
     end
 end # mutable struct PrimitiveBlock
+function set_defaults!(obj::PrimitiveBlock)
+    obj.granularity = Int32(100)
+    obj.lat_offset = 0
+    obj.lon_offset = 0
+    obj.date_granularity = Int32(1000)
+    return
+end
+#function ProtoBuf.clear(obj::PrimitiveBlock)
+#    if isdefined(obj, :stringtable)
+#        ProtoBuf.clear(obj.stringtable)
+#    end
+#    if isdefined(obj, :primitivegroup)
+#        empty!(obj.primitivegroup)
+#    end
+#    return
+#end
 const __meta_PrimitiveBlock = Ref{ProtoMeta}()
 function meta(::Type{PrimitiveBlock})
     ProtoBuf.metalock() do
@@ -582,23 +340,6 @@ function meta(::Type{PrimitiveBlock})
             meta(target, PrimitiveBlock, allflds, req, fnum, val, ProtoBuf.DEF_PACK, ProtoBuf.DEF_WTYPES, ProtoBuf.DEF_ONEOFS, ProtoBuf.DEF_ONEOF_NAMES)
         end
         __meta_PrimitiveBlock[]
-    end
-end
-function Base.getproperty(obj::PrimitiveBlock, name::Symbol)
-    if name === :stringtable
-        return (obj.__protobuf_jl_internal_values[name])::StringTable
-    elseif name === :primitivegroup
-        return (obj.__protobuf_jl_internal_values[name])::Base.Vector{PrimitiveGroup}
-    elseif name === :granularity
-        return (obj.__protobuf_jl_internal_values[name])::Int32
-    elseif name === :lat_offset
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :lon_offset
-        return (obj.__protobuf_jl_internal_values[name])::Int64
-    elseif name === :date_granularity
-        return (obj.__protobuf_jl_internal_values[name])::Int32
-    else
-        getfield(obj, name)
     end
 end
 
