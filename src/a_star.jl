@@ -57,10 +57,10 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
                           t::Integer,           # the end vertex
                           distmx::AbstractMatrix{T}=LightGraphs.weights(g),
                           heuristic::Function = (u,v) -> zero(T)) where {T, U}
-    checkbounds(distmx, Base.OneTo(nv(g)), Base.OneTo(nv(g)))
+    nvg = nv(g)
+    checkbounds(distmx, Base.OneTo(nvg), Base.OneTo(nvg))
     frontier = DataStructures.PriorityQueue{Tuple{T, U},T}()
     frontier[(zero(T), U(s))] = zero(T)
-    nvg = nv(g)
     visited = zeros(Bool, nvg)
     dists = fill(typemax(T), nvg)
     parents = zeros(U, nvg)
