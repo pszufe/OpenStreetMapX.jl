@@ -60,8 +60,11 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
     nvg = nv(g)
     checkbounds(distmx, Base.OneTo(nvg), Base.OneTo(nvg))
     frontier = DataStructures.PriorityQueue{U,T}()
+    # The value should be `heuristic(s, t)` but it does not matter since it will
+    # be `dequeue!`d in the first iteration independently of the value.
     frontier[U(s)] = zero(T)
     dists = fill(typemax(T), nvg)
+    dists[s] = zero(T)
     parents = zeros(U, nvg)
     colormap = zeros(UInt8, nvg)
     colormap[s] = 1
