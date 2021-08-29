@@ -158,12 +158,10 @@ function find_route(m::MapData, node0::Int, node1::Int,
         route_indices, route_values = OpenStreetMapX.extract_route(dijkstra_result, start_vertex, finish_vertex)
         route_nodes = OpenStreetMapX.get_route_nodes(m, route_indices)
         push!(result, route_nodes, route_values)
-    elseif routing == :astar
-        route_indices, route_values = OpenStreetMapX.a_star_algorithm(m.g, start_vertex, finish_vertex, weights, heuristic)
-        route_nodes = OpenStreetMapX.get_route_nodes(m, route_indices)
-        push!(result, route_nodes, route_values)
     else
-        @warn "routing module declared wrongly - a star algorithm will be used instead!"
+        if routing != :astar
+            @warn "routing module declared wrongly - a star algorithm will be used instead!"
+        end
         route_indices, route_values = OpenStreetMapX.a_star_algorithm(m.g, start_vertex, finish_vertex, weights, heuristic)
         route_nodes = OpenStreetMapX.get_route_nodes(m, route_indices)
         push!(result, route_nodes, route_values)
