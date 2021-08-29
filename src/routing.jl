@@ -116,7 +116,7 @@ end
 """
 Extract nodes ID's from route object
 """
-function get_route_nodes(m::MapData, route_indices::Vector{Int})
+function get_route_nodes(m::MapData, route_indices::AbstractVector{Int})
     return getindex.(Ref(m.n), route_indices)
 end
 
