@@ -61,7 +61,6 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
     checkbounds(distmx, Base.OneTo(nvg), Base.OneTo(nvg))
     frontier = DataStructures.PriorityQueue{Tuple{T, U},T}()
     frontier[(zero(T), U(s))] = zero(T)
-    visited = zeros(Bool, nvg)
     dists = fill(typemax(T), nvg)
     parents = zeros(U, nvg)
     colormap = zeros(UInt8, nvg)
@@ -70,12 +69,12 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
         (cost_so_far, u) = dequeue!(frontier)
         u == t && (return OpenStreetMapX.extract_a_star_route(parents,s,u), cost_so_far)
         for v in LightGraphs.outneighbors(g, u)
-            if get(colormap, v, 0) < 2
+            col = colormap[v]
+            if col < UInt8(2)
                 dist = distmx[u, v]
                 colormap[v] = 1
                 path_cost = cost_so_far + dist
-                if !visited[v] 
-                    visited[v] = true
+                if iszero(col)
                     parents[v] = u
                     dists[v] = path_cost
                     enqueue!(frontier,
