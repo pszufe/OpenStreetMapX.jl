@@ -82,16 +82,16 @@ function process_element(osm, pbf_way::OSMPBF.Way, table, lat_offset, lon_offset
     refs = pbf_way.refs
     cumsum!(refs, refs)
     way.nodes = refs
-    keys = pbf_way.keys
-    vals = pbf_way.vals
-    for i in eachindex(keys)
-        tag(osm, way, table, keys[i], vals[i])
+    if isdefined(pbf_way, :keys)
+        keys = pbf_way.keys
+        vals = pbf_way.vals
+        for i in eachindex(keys)
+            tag(osm, way, table, keys[i], vals[i])
+        end
     end
     push!(osm.ways, way)
     return
 end
-
-const MEMBER_TYPE = ["NODE", "WAY", "RELATION"]
 
 function process_element(osm, pbf_relation::OSMPBF.Relation, table, lat_offset, lon_offset, granularity)
     relation = Relation(pbf_relation.id)
@@ -100,14 +100,16 @@ function process_element(osm, pbf_relation::OSMPBF.Relation, table, lat_offset, 
     types = pbf_relation.types
     for i in eachindex(types)
         push!(relation.members, Dict(
-            "type" => MEMBER_TYPE[types[i] + 1],
+            "type" => OSMPBF.Relation_MemberType[types[i] + 1],
             "ref" => string(memids[i]),
         ))
     end
-    keys = pbf_relation.keys
-    vals = pbf_relation.vals
-    for i in eachindex(keys)
-        tag(osm, relation, table, keys[i], vals[i])
+    if isdefined(pbf_relation, :keys)
+        keys = pbf_relation.keys
+        vals = pbf_relation.vals
+        for i in eachindex(keys)
+            tag(osm, relation, table, keys[i], vals[i])
+        end
     end
     push!(osm.relations, relation)
     return
@@ -125,8 +127,10 @@ function process_block(osm, block::OSMPBF.PrimitiveBlock)
     lat_offset = block.lat_offset
     lon_offset = block.lon_offset
     for group in block.primitivegroup
-        for key in keys(group.__protobuf_jl_internal_values)
-            process_elements(osm, getproperty(group, key), table, lat_offset, lon_offset, granularity)
+        for key in fieldnames(OSMPBF.PrimitiveGroup)
+            if isdefined(group, key)
+                process_elements(osm, getproperty(group, key), table, lat_offset, lon_offset, granularity)
+            end
         end
     end
 end
