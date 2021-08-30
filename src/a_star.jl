@@ -59,14 +59,18 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
                           heuristic::Function = (u,v) -> zero(T)) where {T, U}
     nvg = nv(g)
     checkbounds(distmx, Base.OneTo(nvg), Base.OneTo(nvg))
-    frontier = DataStructures.PriorityQueue{Tuple{T, U},T}()
-    frontier[(zero(T), U(s))] = zero(T)
+    frontier = DataStructures.PriorityQueue{U,T}()
+    # The value should be `heuristic(s, t)` but it does not matter since it will
+    # be `dequeue!`d in the first iteration independently of the value.
+    frontier[U(s)] = zero(T)
     dists = fill(typemax(T), nvg)
+    dists[s] = zero(T)
     parents = zeros(U, nvg)
     colormap = zeros(UInt8, nvg)
     colormap[s] = 1
     @inbounds while !isempty(frontier)
-        (cost_so_far, u) = dequeue!(frontier)
+        u = dequeue!(frontier)
+        cost_so_far = dists[u]
         u == t && (return OpenStreetMapX.extract_a_star_route(parents,s,u), cost_so_far)
         for v in LightGraphs.outneighbors(g, u)
             col = colormap[v]
@@ -77,13 +81,11 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
                 if iszero(col)
                     parents[v] = u
                     dists[v] = path_cost
-                    enqueue!(frontier,
-                            (path_cost, v),
-                            path_cost + heuristic(v,t))
+                    enqueue!(frontier, v, path_cost + heuristic(v,t))
                 elseif path_cost < dists[v]
                     parents[v] = u
                     dists[v] = path_cost
-                    frontier[path_cost, v] = path_cost + heuristic(v,t)
+                    frontier[v] = path_cost + heuristic(v,t)
                 end
             end
         end
