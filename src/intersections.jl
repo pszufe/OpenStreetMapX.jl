@@ -27,7 +27,7 @@ reverseway(w::OpenStreetMapX.Way) = (get(w.tags,"oneway", "") == "-1")
 """
 Compute the distance of a route for some `nodes` data
 """
-function distance(nodes::Dict{Int,T}, route::Vector{Int}) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
+function distance(nodes::Dict{Int,T}, route::AbstractVector{Int}) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
     if length(route) == 0
         return Inf
     end
@@ -84,4 +84,43 @@ function find_segments(nodes::Dict{Int,T}, highways::Vector{OpenStreetMapX.Way},
         end
     end
     return segments
+end
+
+function get_edges_distances(nodes::Dict{Int,T}, highways::Vector{OpenStreetMapX.Way}, intersections::Dict{Int,Set{Int}}) where T<:Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}
+    back = Dict{Tuple{Int,Int},Int}()
+    e = Tuple{Int,Int}[]
+    class = Int[]
+    weight_vals = Float64[]
+    function add_segment(way, path)
+        edge = (first(path), last(path))
+        weight = OpenStreetMapX.distance(nodes, path)
+        if haskey(back, edge)
+            i = back[edge]
+            if weight < weight_vals[i]
+                class[i] = classify_roadway(way)
+                weight_vals[i] = weight
+            end
+        else
+            push!(e, edge)
+            push!(class, classify_roadway(way))
+            push!(weight_vals, weight)
+            back[edge] = length(e)
+        end
+    end
+    for highway in highways
+        firstNode = 1
+        for j = 2:length(highway.nodes)
+            if highway.nodes[firstNode] != highway.nodes[j] && (haskey(intersections, highway.nodes[j]) || j == length(highway.nodes))
+                rev = reverseway(highway)
+                if !rev
+                    add_segment(highway, view(highway.nodes, firstNode:j))
+                end
+                if rev || !oneway(highway)
+                    add_segment(highway, view(highway.nodes, j:-1:firstNode))
+                end
+				firstNode = j
+            end
+        end
+    end
+    return e, class, weight_vals
 end
