@@ -25,9 +25,18 @@ filter_highways(ways::Vector{OpenStreetMapX.Way}) = [way for way in ways if Open
 ### Filter and Classify Highways for Cars ###
 ##############################################
 
+function valid_roadway(way, levels::Set{Int}, classes::Dict{String, Int} = OpenStreetMapX.ROAD_CLASSES)
+    highway = get(way.tags, "highway", "")
+    if isempty(highway) || highway == "services" || !haskey(classes, highway)
+        return false
+    end
+    return OpenStreetMapX.visible(way) && classes[highway] in levels
+end
+
 filter_roadways(ways::Vector{OpenStreetMapX.Way}, classes::Dict{String, Int} = OpenStreetMapX.ROAD_CLASSES; levels::Set{Int} = Set(1:length(OpenStreetMapX.ROAD_CLASSES))) = [way for way in ways if way.tags["highway"] in keys(classes) && classes[way.tags["highway"]] in levels]
 
-classify_roadways(ways::Vector{OpenStreetMapX.Way}, classes::Dict{String, Int} = OpenStreetMapX.ROAD_CLASSES) = Dict{Int,Int}(way.id => classes[way.tags["highway"]] for  way in ways if haskey(classes, way.tags["highway"]))
+classify_roadway(way::Way, classes::Dict{String, Int} = OpenStreetMapX.ROAD_CLASSES) = classes[way.tags["highway"]]
+classify_roadways(ways::Vector{OpenStreetMapX.Way}, classes::Dict{String, Int} = OpenStreetMapX.ROAD_CLASSES) = Dict{Int,Int}(way.id => classify_roadway(way, classes) for way in ways if haskey(classes, way.tags["highway"]))
 
 ####################################################
 ### Filter and Classify Highways for Pedestrians ###

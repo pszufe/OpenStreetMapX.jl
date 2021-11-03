@@ -125,41 +125,32 @@ Internal constructor of `MapData` object
 function MapData(mapdata::OSMData, road_levels::Set{Int}, only_intersections::Bool=true;
 	 trim_to_connected_graph::Bool=false, remove_nodes::AbstractSet{Int}=Set{Int}())
 	#preparing data
-	bounds = mapdata.bounds
-	nodes = OpenStreetMapX.ENU(mapdata.nodes,OpenStreetMapX.center(bounds))
-	highways = OpenStreetMapX.filter_highways(OpenStreetMapX.extract_highways(mapdata.ways))
-	roadways = OpenStreetMapX.filter_roadways(highways, levels= road_levels)
-	if length(remove_nodes) > 0
-		delete!.(Ref(nodes), remove_nodes);
-		delcount = 0
-		for rno in length(roadways):-1:1
-			rr = roadways[rno]
-			for i in length(rr.nodes):-1:1
-				if rr.nodes[i] in remove_nodes
-					deleteat!(rr.nodes,i)
-					delcount += 1
-				end
+	roadways = filter(Base.Fix2(valid_roadway, road_levels), mapdata.ways)
+	if !isempty(remove_nodes)
+		for way in roadways
+			filter!(node -> !(node in remove_nodes), way.nodes)
+		end
+		filter!(way -> !isempty(way.nodes), roadways)
+	end
+
+	nodes = Dict{Int,ENU}()
+	lla_ref = OpenStreetMapX.center(mapdata.bounds)
+	for way in roadways # TODO use `intersections` instead of `roadways` if `only_intersections` ?
+		for node in way.nodes
+			if !haskey(nodes, node)
+				nodes[node] = ENU(mapdata.nodes[node], lla_ref)
 			end
-			length(rr.nodes) == 0 && deleteat!(roadways, rno)
 		end
 	end
+
 	intersections = OpenStreetMapX.find_intersections(roadways)
-	segments = OpenStreetMapX.find_segments(nodes,roadways,intersections)
-	#remove unuseful nodes
-	roadways_nodes = unique(vcat(collect(way.nodes for way in roadways)...))
-	nodes = Dict(key => nodes[key] for key in roadways_nodes)
 
 	# e - Edges in graph, stored as a tuple (source,destination)
 	# class - Road class of each edgey
 	if only_intersections && !trim_to_connected_graph
-		vals = Dict((segment.node0,segment.node1) => (segment.distance,segment.parent) for segment in segments)
-		e = collect(keys(vals))
-		vals = collect(values(vals))
-		weight_vals = map(val -> val[1],vals)
-		classified_roadways = OpenStreetMapX.classify_roadways(roadways)
-		class =  [classified_roadways[id] for id in map(val -> val[2],vals)]
+		e, class, weight_vals = get_edges_distances(nodes, roadways, intersections)
 	else
-		e,class = OpenStreetMapX.get_edges(nodes,roadways)
+		e, class = OpenStreetMapX.get_edges(nodes,roadways)
 		weight_vals = OpenStreetMapX.distance(nodes,e)
 	end
 	# (node id) => (graph vertex)
@@ -175,13 +166,18 @@ function MapData(mapdata::OSMData, road_levels::Set{Int}, only_intersections::Bo
 	end
 
 	if trim_to_connected_graph
-		rm_list = Set{Int}()
 		conn_components = sort!(LightGraphs.strongly_connected_components(g),
-        	lt=(x,y)->length(x)<length(y), rev=true)
-		remove_vs = vcat(conn_components[2:end]...)
-		rm_list = getindex.(Ref(n), remove_vs)
-		return  MapData(mapdata, road_levels, only_intersections, remove_nodes=Set{Int}(rm_list))
+			lt=(x,y)->length(x)<length(y), rev=true)
+		remove_nodes = Set{Int}()
+		I = 2:length(conn_components)
+		sizehint!(remove_nodes, sum(i -> length(conn_components[i]), I))
+		for i in I
+			for node in conn_components[i]
+				push!(remove_nodes, n[node])
+			end
+		end
+		return MapData(mapdata, road_levels, only_intersections, remove_nodes=remove_nodes)
 	else
-		return MapData(bounds,nodes,roadways,intersections,g,v,n,e,w,class)
+		return MapData(mapdata.bounds,nodes,roadways,intersections,g,v,n,e,w,class)
 	end
 end
