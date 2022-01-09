@@ -278,7 +278,7 @@ This is the main data structure used fot map data analytics.
 * `nodes` :  dictionary of nodes representing all the objects on the map (with coordinates in East, North, Up system)
 * `roadways` :  unique roads stored as a OpenStreetMapX.Way objects
 * `intersections` : roads intersections
-* `g` : `LightGraphs` directed graph representing a road network
+* `g` : `Graphs` directed graph representing a road network
 * `v` : vertices in the road network (node id .=> graph vertex)
 * `n` : vector of OpenStreetMap node ids for each corresponding graph vertex
 * `e` : vector of edges in the graph represented as a tuple (source,destination)
@@ -291,11 +291,11 @@ mutable struct MapData
     roadways::Array{Way,1}
     intersections::Dict{Int,Set{Int}}
     # Transporation network graph data and helpers to increase routing speed
-    g::LightGraphs.SimpleGraphs.SimpleDiGraph{Int64} # Graph object
+    g::Graphs.SimpleGraphs.SimpleDiGraph{Int64} # Graph object
     v::Dict{Int,Int}                             # (node id) => (graph vertex)
 	n::Vector{Int}                             # (graph vertex) => (node id)
     e::Vector{Tuple{Int,Int}}                # Edges in graph, stored as a tuple (source,destination)
     w::SparseArrays.SparseMatrixCSC{Float64, Int}   # Edge weights, indexed by graph id
     class::Vector{Int}                           # Road class of each edge
-	#MapData(bounds, nodes, roadways, intersections) = new(bounds, nodes, roadways, intersections, LightGraphs.SimpleGraphs.SimpleDiGraph{Int64}(), Dict{Int,Int}(),Int[], Tuple{Int64,Int64}[],  SparseMatrixCSC(Matrix{Float64}(undef,0,0)),Int[])
+	#MapData(bounds, nodes, roadways, intersections) = new(bounds, nodes, roadways, intersections, Graphs.SimpleGraphs.SimpleDiGraph{Int64}(), Dict{Int,Int}(),Int[], Tuple{Int64,Int64}[],  SparseMatrixCSC(Matrix{Float64}(undef,0,0)),Int[])
 end

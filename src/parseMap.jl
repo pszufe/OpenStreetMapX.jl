@@ -160,13 +160,13 @@ function MapData(mapdata::OSMData, road_levels::Set{Int}, only_intersections::Bo
 	J = edges[2:2:end]
 	# w - Edge weights, indexed by graph id
 	w = SparseArrays.sparse(I, J, weight_vals, length(v), length(v))
-	g = LightGraphs.DiGraph(length(v))
+	g = Graphs.DiGraph(length(v))
 	for edge in e
 		add_edge!(g,v[edge[1]], v[edge[2]])
 	end
 
 	if trim_to_connected_graph
-		conn_components = sort!(LightGraphs.strongly_connected_components(g),
+		conn_components = sort!(Graphs.strongly_connected_components(g),
 			lt=(x,y)->length(x)<length(y), rev=true)
 		remove_nodes = Set{Int}()
 		I = 2:length(conn_components)

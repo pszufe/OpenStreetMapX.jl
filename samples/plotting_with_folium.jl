@@ -1,4 +1,4 @@
-using OpenStreetMapX, LightGraphs, PyCall
+using OpenStreetMapX, Graphs, PyCall
 
 # This code assumes that folium has benn installed
 

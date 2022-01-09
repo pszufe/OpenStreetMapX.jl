@@ -36,12 +36,12 @@ end
     a_star_algorithm(g::AbstractGraph{U},  
                     s::Integer,                       
                     t::Integer,                       
-                    distmx::AbstractMatrix{T}=LightGraphs.weights(g),
+                    distmx::AbstractMatrix{T}=Graphs.weights(g),
                     heuristic::Function = (u,v) -> zero(T)) where {T, U}
 
 High level function - implementation of A star search algorithm:
 (https://en.wikipedia.org/wiki/A*_search_algorithm). 
-Based on the implementation in LightGraphs library, 
+Based on the implementation in Graphs library, 
 however significantly improved in terms of performance.
 
 **Arguments**
@@ -52,10 +52,10 @@ however significantly improved in terms of performance.
 * `distmx` : distance matrix
 * `heuristic` : search heuristic function; by default returns zero 
 """
-function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
+function a_star_algorithm(g::Graphs.AbstractGraph{U},  # the g
                           s::Integer,           # the start vertex
                           t::Integer,           # the end vertex
-                          distmx::AbstractMatrix{T}=LightGraphs.weights(g),
+                          distmx::AbstractMatrix{T}=Graphs.weights(g),
                           heuristic::Function = (u,v) -> zero(T)) where {T, U}
     nvg = nv(g)
     checkbounds(distmx, Base.OneTo(nvg), Base.OneTo(nvg))
@@ -72,7 +72,7 @@ function a_star_algorithm(g::LightGraphs.AbstractGraph{U},  # the g
         u = dequeue!(frontier)
         cost_so_far = dists[u]
         u == t && (return OpenStreetMapX.extract_a_star_route(parents,s,u), cost_so_far)
-        for v in LightGraphs.outneighbors(g, u)
+        for v in Graphs.outneighbors(g, u)
             col = colormap[v]
             if col < UInt8(2)
                 dist = distmx[u, v]

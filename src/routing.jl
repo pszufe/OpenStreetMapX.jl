@@ -54,7 +54,7 @@ end
 Dijkstra's Algorithm
 """
 function dijkstra(m::MapData, w::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_vertex::Int)
-    return LightGraphs.dijkstra_shortest_paths(m.g, start_vertex, w)
+    return Graphs.dijkstra_shortest_paths(m.g, start_vertex, w)
 end
 
 """
@@ -102,7 +102,7 @@ end
 """
 Extract route from Dijkstra results object
 """
-function extract_route(dijkstra::LightGraphs.DijkstraState{Float64,Int64}, startIndex::Int, finishIndex::Int)
+function extract_route(dijkstra::Graphs.DijkstraState{Float64,Int64}, startIndex::Int, finishIndex::Int)
     route = Int[]
     distance = dijkstra.dists[finishIndex]
     if distance != Inf
@@ -284,8 +284,8 @@ Find  waypoint minimizing the route
 Approximate solution
 """
 function find_optimal_waypoint_approx(m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
-    dists_start_waypoint = LightGraphs.dijkstra_shortest_paths(m.g, m.v[node0], weights).dists
-    dists_waypoint_fin = LightGraphs.dijkstra_shortest_paths(m.g, m.v[node1], weights).dists
+    dists_start_waypoint = Graphs.dijkstra_shortest_paths(m.g, m.v[node0], weights).dists
+    dists_waypoint_fin = Graphs.dijkstra_shortest_paths(m.g, m.v[node1], weights).dists
     node_id = NaN
     min_dist = Inf
     for (key,value) in waypoints
@@ -303,11 +303,11 @@ Find  waypoint minimizing the route
 Exact solution
 """
 function find_optimal_waypoint_exact(m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
-    dists_start_waypoint = LightGraphs.dijkstra_shortest_paths(m.g, m.v[node0], weights).dists
+    dists_start_waypoint = Graphs.dijkstra_shortest_paths(m.g, m.v[node0], weights).dists
     node_id = NaN
     min_dist = Inf
     for (key,value) in waypoints
-        dist_to_fin = LightGraphs.dijkstra_shortest_paths(m.g, m.v[value], weights).dists[m.v[node1]]
+        dist_to_fin = Graphs.dijkstra_shortest_paths(m.g, m.v[value], weights).dists[m.v[node1]]
         dist  = dists_start_waypoint[m.v[value]] + dist_to_fin
         if dist < min_dist
             min_dist = dist
@@ -323,7 +323,7 @@ end
 
 ### Bellman Ford's Algorithm ###
 function bellman_ford(m::MapData, w::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_vertices::Vector{Int})
-    return LightGraphs.bellman_ford_shortest_paths(m.g, start_vertices, w)
+    return Graphs.bellman_ford_shortest_paths(m.g, start_vertices, w)
 end
 
 ### Filter vertices from bellman_fordStates object ###

@@ -1,6 +1,6 @@
 using Test, OpenStreetMapX
 using Random, StableRNGs
-import LightGraphs
+import Graphs
 
 @testset "$ext" for ext in ["osm", "pbf"]
     pth = joinpath(dirname(pathof(OpenStreetMapX)),"..","test","data","reno_east3.$ext")
@@ -68,13 +68,13 @@ import LightGraphs
         #Returns seem to be equal yet returning false (?)
         @test sort(distance(m.nodes,OpenStreetMapX.get_edges(m.nodes,m.roadways[1:2])[1])) ≈ sort([30.2013937293296, 7.243941886194111, 35.492758006997796, 12.29992029473937, 11.290063259013777])
 
-        conn_components = sort!(LightGraphs.strongly_connected_components(m.g),
+        conn_components = sort!(Graphs.strongly_connected_components(m.g),
                 lt=(x,y)->length(x)<length(y), rev=true)
         @test length(conn_components)>1
         @test length(conn_components[1])==1799
 
         m2 =  OpenStreetMapX.get_map_data(pth,use_cache = false, trim_to_connected_graph=true);
-        conn_components2 = sort!(LightGraphs.strongly_connected_components(m2.g),
+        conn_components2 = sort!(Graphs.strongly_connected_components(m2.g),
                 lt=(x,y)->length(x)<length(y), rev=true)
         @test length(conn_components2)==1
         @test length(conn_components[1])==length(conn_components2[1])

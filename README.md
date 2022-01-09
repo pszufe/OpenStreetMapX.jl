@@ -3,9 +3,9 @@
 * Package for spatial analysis, simulation and visualization of Open Street Map data 
 * The plotting functionality is provided via a separate package [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl)
 
-The goal of this package is to provide a backbone for multi-agent simulation of cities. 
+The goal of this package is to provide a backbone for multi-agent modelling and simulation of cities. 
 
-The package can parse `*.osm` and `*.pbf`  (contributed by [@blegat](https://github.com/blegat/)) files and generate a LightGraphs representation along the metadata.
+The package can parse `*.osm` and `*.pbf`  (contributed by [@blegat](https://github.com/blegat/)) files and generate a Graphs.jl representation along the metadata.
 
 
 | **Documentation** | **Build Status** |
@@ -94,7 +94,7 @@ In order to obtain the `*.osm` file follow the steps below:
 
 Compared to the original package major changes include among many others:
 
-- `LightGraphs.jl` is used for map data storage
+- Nwe `Graphs.jl` is used for map data storage
 - Several changes with routing algorithm (currently finding a route in a 1 million people city takes around 150ms)
 - Added support for using Google Maps API for routing
 - Data structure adjustment to make the library more suitable to run simulations of cities. 
