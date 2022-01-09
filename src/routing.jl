@@ -401,7 +401,7 @@ function generate_point_in_bounds(rng::AbstractRNG, m::MapData)
 end
 
 function generate_point_in_bounds(m::MapData)
-    generate_point_in_bounds(Random._GLOBAL_RNG, m)
+    generate_point_in_bounds(Random.GLOBAL_RNG, m)
 end
 
 

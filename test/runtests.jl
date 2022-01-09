@@ -8,6 +8,7 @@ import Graphs
 
     @testset "maps" begin
         @test length(m.nodes) == 9032
+        @test eltype(generate_point_in_bounds(m)) <: Float64
         rng = StableRNGs.StableRNG(1234)
         pA = generate_point_in_bounds(rng, m)
         @test all(isapprox.(pA,(39.52679926947162, -119.7400090256387)))
