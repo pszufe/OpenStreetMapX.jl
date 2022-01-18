@@ -94,7 +94,7 @@ In order to obtain the `*.osm` file follow the steps below:
 
 Compared to the original package major changes include among many others:
 
-- Nwe `Graphs.jl` is used for map data storage
+- New `Graphs.jl` is used for map data storage
 - Several changes with routing algorithm (currently finding a route in a 1 million people city takes around 150ms)
 - Added support for using Google Maps API for routing
 - Data structure adjustment to make the library more suitable to run simulations of cities. 
