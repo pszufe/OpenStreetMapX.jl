@@ -38,12 +38,7 @@ The package can parse `*.osm` and `*.pbf`  (contributed by [@blegat](https://git
 The current version uses at least Julia 1.5. However older versions will work with Julia 1.0.
 
 ```julia
-using Pkg; Pkg.add("OpenStreetMapX.jl")
-```
-
-Note that on Linux platform you need to separately install `libexpat` used by the library to parse XML (on Windows this step is not required). For example, on Ubuntu run in bash shell:
-```bash
-sudo apt install libexpat-dev
+using Pkg; Pkg.add("OpenStreetMapX")
 ```
 
 In order to plot the maps we recommend two tools:
