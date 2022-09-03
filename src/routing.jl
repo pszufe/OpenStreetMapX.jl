@@ -256,7 +256,7 @@ function fastest_route(m::MapData, node1::Int, node2::Int;
     w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
     route_nodes, route_time, distance = OpenStreetMapX.find_route(m, node1, node2, w,
                                                                 routing = routing,
-																heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / maximum(values(speeds)),
+								heuristic = (u,v) -> OpenStreetMapX.get_distance(u, v, m.nodes, m.n) / maximum(values(speeds)),
                                                                 get_distance = true, get_time = false)
     return route_nodes, distance, route_time
 end
