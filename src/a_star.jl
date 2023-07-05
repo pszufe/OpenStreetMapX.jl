@@ -20,7 +20,18 @@ function get_distance(A::Int, B::Int,
     OpenStreetMapX.distance(nodes[A],nodes[B])
 end
 
+"""
+    function extract_a_star_route(parents::Vector{Int},s::Int, u::Int)
+					
+It uses the parents information to extract the A* search route from the starting node
+to the destination node and returns it as an array of node indices in the correct order.
 
+**Arguments**
+
+* `parents::Vector{Int}` : vector of integers
+* `s::Int` : start index
+* `u::Int` : end index
+"""
 function extract_a_star_route(parents::Vector{Int},s::Int, u::Int)
     route = Int[]
     index = u

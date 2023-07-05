@@ -3,7 +3,15 @@
 ##########################
 
 """
-Create ECEF coordinates from a given `lla`
+    ECEF(lla::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+Create ECEF coordinates from a given `LLA` datum.
+
+**Arguments**
+
+* `lla::LLA,` : Coordinates used
+* `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
+
 """
 function ECEF(lla::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
     ϕdeg, λdeg, h = lla.lat, lla.lon, lla.alt
@@ -21,7 +29,15 @@ function ECEF(lla::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
     return ECEF(x, y, z)
 end
 """
-Create LLA coordinates from a given `ecef`
+    LLA(ecef::ECEF, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+Create LLA coordinates from a given `ECEF` datum
+
+**Arguments**
+
+* `lla::LLA,` : Coordinates used
+* `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
+
 """
 function LLA(ecef::ECEF, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
     x, y, z = ecef.x, ecef.y, ecef.z
@@ -39,8 +55,17 @@ function LLA(ecef::ECEF, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
 end
 
 """
+    ENU(ecef::ECEF, lla_ref::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
 Create ENU coordinates from given `ecef` coordinates
 given a reference point `lla_ref` for linarization
+
+**Arguments**
+
+* `ecef::ECEF,` : Coordinates used
+* `lla_ref::LLA,` : Reference point for linarization
+* `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
+
 """
 function ENU(ecef::ECEF, lla_ref::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
     ϕdeg, λdeg = lla_ref.lat, lla_ref.lon
@@ -74,8 +99,17 @@ ENU(ecef::ECEF, bounds::Bounds{LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStree
 
 
 """
+    ECEF(enu::ENU, lla_ref::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
 Create ECEF coordinates from given `enu` coordinates
 and a reference point being center of `bounds` for linearization
+
+**Arguments**
+
+* `enu::enu,` : Coordinates used
+* `lla_ref::LLA,` : Reference point for linarization
+* `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
+
 """
 function ECEF(enu::ENU, lla_ref::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
     ϕdeg, λdeg = lla_ref.lat, lla_ref.lon
@@ -135,8 +169,16 @@ and a reference point being center of `bounds` for linearization
 LLA(enu::ENU, bounds::Bounds{LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84) = LLA(ECEF(enu,bounds))
 
 """
+    ECEF(nodes::Dict{Int,LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
 Converts a dictionary of `LLA` `nodes` into a dictionary of `ECEF` values.
 Uses a reference point `lla_ref` for linearization.
+
+**Arguments**
+
+* `nodes::Dict{Int,LLA},` : Dictionary of LLA nodes.
+* `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
+
 """
 function ECEF(nodes::Dict{Int,LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
     r = Dict{Int,ECEF}()
@@ -150,7 +192,15 @@ function ECEF(nodes::Dict{Int,LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreet
 end
 
 """
+    LLA(nodes::Dict{Int,ECEF}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
 Converts a dictionary of `ECEF` `nodes` into a dictionary of `LLA` values.
+
+**Arguments**
+
+* `nodes::Dict{Int,ECEF},` : Dictionary of ECEF nodes.
+* `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
+
 """
 function LLA(nodes::Dict{Int,ECEF}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
     r = Dict{Int,LLA}()
@@ -164,8 +214,17 @@ function LLA(nodes::Dict{Int,ECEF}, datum::OpenStreetMapX.Ellipsoid = OpenStreet
 end
 
 """
+    ENU(nodes::Dict{Int,T}, lla_ref::LLA,datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84) where T<:Union{LLA,ECEF}
+
 Converts a dictionary of `LLA` and `ECEF` `nodes` into a dictionary of `ENU` values.
 Uses a reference point `lla_ref` for linearization.
+
+**Arguments**
+
+* `nodes::Dict{Int,T},` : Dictionary of LLA or ECEF nodes.
+* `lla_ref::LLA,` : Reference point for linarization
+* `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
+
 """
 function ENU(nodes::Dict{Int,T}, lla_ref::LLA,
             datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84) where T<:Union{LLA,ECEF}
@@ -187,8 +246,17 @@ ENU(nodes::Dict{Int,T}, bounds::Bounds{LLA}, datum::OpenStreetMapX.Ellipsoid = O
 
 
 """
+    ECEF(nodes::Dict{Int,ENU},lla_ref::LLA , datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
 Converts a dictionary of `ENU` `nodes` into a dictionary of `ECEF` values.
 Uses a reference point `lla_ref` for linearization.
+
+**Arguments**
+
+* `nodes::Dict{Int,ENU},` : Dictionary of ENU nodes.
+* `lla_ref::LLA,` : Reference point for linarization
+* `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
+
 """
 function ECEF(nodes::Dict{Int,ENU},lla_ref::LLA , datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
     r = Dict{Int,ECEF}()
@@ -209,8 +277,16 @@ ECEF(nodes::Dict{Int,ENU}, bounds::Bounds{LLA}, datum::Ellipsoid = WGS84) = ECEF
 
 
 """
+    LLA(nodes::Dict{Int,ENU},lla_ref::LLA , datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
 Converts a dictionary of `ENU` `nodes` into a dictionary of `LLA` values.
 Uses a reference point `lla_ref` for linearization.
+**Arguments**
+
+* `nodes::Dict{Int,ENU},` : Dictionary of ENU nodes.
+* `lla_ref::LLA,` : Reference point for linarization
+* `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
+
 """
 function LLA(nodes::Dict{Int,ENU},lla_ref::LLA , datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
     r = Dict{Int,LLA}()

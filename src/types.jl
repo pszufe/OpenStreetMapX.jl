@@ -116,13 +116,44 @@ struct Ellipsoid
     e′²::Float64      # Second eccentricity squared
 end
 
-#auxiliary function
+"""
+    ellipsoid(a::BigFloat, b::BigFloat)
+
+Compute `a` and `b` to create an ellipsoid with a mathematical formula.
+
+# Examples
+```julia-repl
+julia> OpenStreetMapX.ellipsoid(BigFloat(a), BigFloat(b))
+1
+```
+
+**Arguments**
+* `a::BigFloat` : vertical axis of ellipsoid;
+* `b::BigFloat` : horizontal axis of ellipsoid;
+
+"""
 function ellipsoid(a::BigFloat, b::BigFloat)
     e² = (a^2 - b^2) / a^2
     e′² = (a^2 - b^2) / b^2
     OpenStreetMapX.Ellipsoid(a, b, e², e′²)
 end
-#constructor
+
+"""
+    Ellipsoid(; a::Float64 = NaN, b::Float64= NaN, f_inv::Float64= NaN)
+
+Constructor to create an ellipsoid high `a` and wide `b` using an inverse function `f_inv`.
+
+# Examples
+```julia-repl
+julia> OpenStreetMapX.Ellipsoid(BigFloat(a), BigFloat(b), BigFloat(b))
+```
+
+**Arguments**
+* `a::Float64` : vertical axis of ellipsoid;
+* `b::Float64` : horizontal axis of ellipsoid;
+* `f_inv::Float64` : inverse function to compute the ellipsoid;
+
+"""
 function Ellipsoid(; a::Float64 = NaN, b::Float64= NaN, f_inv::Float64= NaN)
     if isnan(a) || isnan(b) == isnan(f_inv)
         throw(ArgumentError("Specify parameter 'a' and either 'b' or 'f_inv'"))
@@ -147,6 +178,23 @@ struct Bounds{T <: Union{LLA, ENU}}
     max_x::Float64
 end
 
+"""
+    Bounds(min_lat, max_lat, min_lon, max_lon)
+
+Throw an error if the lattitude (`min_lat` and `max_lat`) and longitude (`min_lon` and `max_lon`) bounds are out of range.
+
+# Examples
+```julia-repl
+julia> OpenStreetMapX.Bounds(min_lat, max_lat, min_lon, max_lon)
+```
+
+**Arguments**
+* `min_lat::Float64` : minimum lattitude of bounds;
+* `max_lat::Float64` : maximum lattitude of bounds;
+* `min_lon::Float64` : minimum longitude of bounds;
+* `min_lon::Float64` : maximum longitude of bounds;
+
+"""
 function Bounds(min_lat, max_lat, min_lon, max_lon)
     if !(-90 <= min_lat <= max_lat <= 90 &&
          -180 <= min_lon <= 180 &&

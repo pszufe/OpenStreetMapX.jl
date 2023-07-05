@@ -42,6 +42,22 @@ classify_roadways(ways::Vector{OpenStreetMapX.Way}, classes::Dict{String, Int} =
 ### Filter and Classify Highways for Pedestrians ###
 ####################################################
 
+"""
+    filter_walkways(ways::Vector{OpenStreetMapX.Way},
+                    classes::Dict{String, Int} = OpenStreetMapX.PED_CLASSES;
+                    levels::Set{Int} = Set(1:length(OpenStreetMapX.PED_CLASSES)))
+					
+Filters a vector of ways to include only those that are relevant for pedestrian walkways.
+It considers the presence of a "sidewalk" tag and checks if the corresponding value or the "highway" tag value
+is present in the specified classes dictionary and levels set. 
+
+**Arguments**
+
+* `ways::Vector{OpenStreetMapX.Way}` : vector of Way struct
+* `classes` : classes dictionary
+* `levels` : set of levels useful to compare with the way tags
+
+"""
 function filter_walkways(ways::Vector{OpenStreetMapX.Way},classes::Dict{String, Int} = OpenStreetMapX.PED_CLASSES; levels::Set{Int} = Set(1:length(OpenStreetMapX.PED_CLASSES)))
     walkways = OpenStreetMapX.Way[]
     for way in ways
@@ -57,6 +73,20 @@ function filter_walkways(ways::Vector{OpenStreetMapX.Way},classes::Dict{String, 
     return walkways
 end 
 
+"""
+    classify_walkways(ways::Vector{OpenStreetMapX.Way},
+                      classes::Dict{String, Int} = OpenStreetMapX.PED_CLASSES)
+					
+Classifies a vector of OpenStreetMapX ways based on their pedestrian attributes.
+It considers the presence of a "sidewalk" tagand checks if the corresponding value or the "highway" tag value
+is present in the specified classes dictionary
+
+**Arguments**
+
+* `ways::Vector{OpenStreetMapX.Way}` : vector of Way struct
+* `classes` : classes dictionary
+
+"""
 function classify_walkways(ways::Vector{OpenStreetMapX.Way},classes::Dict{String, Int} = OpenStreetMapX.PED_CLASSES)
     walkways = Dict{Int,Int}()
     for way in ways
@@ -76,6 +106,22 @@ end
 ### Filter and Classify Highways for Cycles ###
 ###############################################
 
+"""
+    filter_cycleways(ways::Vector{OpenStreetMapX.Way},
+                    classes::Dict{String, Int} = OpenStreetMapX.CYCLE_CLASSES;
+                    levels::Set{Int} = Set(1:length(OpenStreetMapX.CYCLE_CLASSES)))
+					
+Filters a vector of OpenStreetMapX ways to include only those that are relevant for cycleways.
+It considers the presence of "bicycle", "cycleway", and "highway" tags and checks if the corresponding values
+or the constructed class strings are present in the specified classes dictionary and levels set.
+
+**Arguments**
+
+* `ways::Vector{OpenStreetMapX.Way}` : vector of Way struct
+* `classes` : classes dictionary
+* `levels` : set of levels useful to compare with the way tags 
+
+"""
 function filter_cycleways(ways::Vector{OpenStreetMapX.Way}, classes::Dict{String, Int} = OpenStreetMapX.CYCLE_CLASSES; levels::Set{Int} = Set(1:length(OpenStreetMapX.CYCLE_CLASSES)))
     cycleways = OpenStreetMapX.Way[]
     for way in ways
@@ -99,6 +145,20 @@ function filter_cycleways(ways::Vector{OpenStreetMapX.Way}, classes::Dict{String
     return cycleways
 end
 
+"""
+    classify_cycleways(ways::Vector{OpenStreetMapX.Way},
+                       classes::Dict{String, Int} = OpenStreetMapX.CYCLE_CLASSES)
+					
+Classifies a vector of OpenStreetMapX ways based on their cycleway attributes.
+It considers the presence of "bicycle", "cycleway", and "highway" tags and checks if the corresponding values
+or the constructed class strings are present in the specified classes dictionary.
+
+**Arguments**
+
+* `ways::Vector{OpenStreetMapX.Way}` : vector of Way struct
+* `classes` : classes dictionary
+
+"""
 function classify_cycleways(ways::Vector{OpenStreetMapX.Way}, classes::Dict{String, Int} = OpenStreetMapX.CYCLE_CLASSES)
     cycleways = Dict{Int,Int}()
     for way in ways
