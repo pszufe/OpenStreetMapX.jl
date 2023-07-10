@@ -53,7 +53,7 @@ is present in the specified classes dictionary and levels set.
 
 **Arguments**
 
-* `ways::Vector{OpenStreetMapX.Way}` : vector of Way struct
+* `ways::Vector{OpenStreetMapX.Way}` : Way's vector
 * `classes` : classes dictionary
 * `levels` : set of levels useful to compare with the way tags
 
@@ -83,7 +83,7 @@ is present in the specified classes dictionary
 
 **Arguments**
 
-* `ways::Vector{OpenStreetMapX.Way}` : vector of Way struct
+* `ways::Vector{OpenStreetMapX.Way}` : Way's vector
 * `classes` : classes dictionary
 
 """
@@ -117,7 +117,7 @@ or the constructed class strings are present in the specified classes dictionary
 
 **Arguments**
 
-* `ways::Vector{OpenStreetMapX.Way}` : vector of Way struct
+* `ways::Vector{OpenStreetMapX.Way}` : Way's vector
 * `classes` : classes dictionary
 * `levels` : set of levels useful to compare with the way tags 
 
@@ -155,7 +155,7 @@ or the constructed class strings are present in the specified classes dictionary
 
 **Arguments**
 
-* `ways::Vector{OpenStreetMapX.Way}` : vector of Way struct
+* `ways::Vector{OpenStreetMapX.Way}` : Way's vector
 * `classes` : classes dictionary
 
 """

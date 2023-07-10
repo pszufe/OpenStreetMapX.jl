@@ -37,15 +37,67 @@ fields_institute_lla = LLA(43.658813, -79.397574, 0.0)
 	LLA(43.658813, -79.397574, 0.0)
 
 
-The library enables [conversion between diiferent coordinates systems](https://en.wikipedia.org/wiki/Geographic_coordinate_conversion).
+### Examples
+[conversion between different coordinates systems](https://en.wikipedia.org/wiki/Geographic_coordinate_conversion).
 
 
+### Constructors for conversions
 ```julia
-fields_ecef = OpenStreetMapX.ECEF(fields_institute_lla)
-```
-    ECEF(850365.5982110817, -4.542824565319083e6, 4.380743975743749e6)
+    # From LLA to ECEF
+    ECEF(lla::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
 
-Constructors for all-ways conversions are provided in the library. 
+    # From ECEF to LLA
+    LLA(ecef::ECEF, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From ECEF with LLA reference point to ENU
+    ENU(ecef::ECEF, lla_ref::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From ECEF with Bound reference point to ENU
+    ENU(ecef::ECEF, bounds::Bounds{LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From ENU with LLA reference point to ECEF
+    ECEF(enu::ENU, lla_ref::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From ENU with Bound reference point to ECEF
+    ECEF(enu::ENU, bounds::Bounds{LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From LLA with LLA reference point to ENU
+    ENU(lla::LLA, lla_ref::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From LLA with Bound reference point to ENU
+    ENU(lla::LLA, bounds::Bounds{LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From ENU with LLA reference point to LLA
+    LLA(enu::ENU, lla_ref::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From ENU with Bound reference point to LLA
+    LLA(enu::ENU, bounds::Bounds{LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From LLA's dict to ECEF's dict
+    ECEF(nodes::Dict{Int,LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From ECEF's dict to LLA's dict
+    LLA(nodes::Dict{Int,ECEF}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From LLA or ECEF with LLA reference point to ENU's dict
+    ENU(nodes::Dict{Int,T}, lla_ref::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84) where T<:Union{LLA,ECEF}
+
+    # From LLA or ECEF with Bound reference point to ENU's dict
+    ENU(nodes::Dict{Int,T}, bounds::Bounds{LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84) where T<:Union{LLA,ECEF}
+
+    # From ENU's dict to ECEF's dict with LLA reference point
+    ECEF(nodes::Dict{Int,ENU},lla_ref::LLA , datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From ENU's dict to ECEF's dict with Bound reference point
+    ECEF(nodes::Dict{Int,ENU}, bounds::Bounds{LLA},datum::Ellipsoid = WGS84)
+
+    # From ENU's dict to LLA's dict with LLA reference point
+    LLA(nodes::Dict{Int,ENU},lla_ref::LLA , datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+    # From ENU's dict to LLA's dict with Bound reference point
+    LLA(nodes::Dict{Int,ENU}, bounds::Bounds{LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
+
+```
 
 Once having a point it can be plotted (this requires installation of folium - see the README on the main project page):
 

@@ -9,7 +9,7 @@ Create ECEF coordinates from a given `LLA` datum.
 
 **Arguments**
 
-* `lla::LLA,` : Coordinates used
+* `lla::LLA` : Coordinates used
 * `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
 
 """
@@ -35,7 +35,7 @@ Create LLA coordinates from a given `ECEF` datum
 
 **Arguments**
 
-* `lla::LLA,` : Coordinates used
+* `lla::LLA` : Coordinates used
 * `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
 
 """
@@ -62,8 +62,8 @@ given a reference point `lla_ref` for linarization
 
 **Arguments**
 
-* `ecef::ECEF,` : Coordinates used
-* `lla_ref::LLA,` : Reference point for linarization
+* `ecef::ECEF` : Coordinates used
+* `lla_ref::LLA` : Reference point for linarization
 * `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
 
 """
@@ -102,12 +102,12 @@ ENU(ecef::ECEF, bounds::Bounds{LLA}, datum::OpenStreetMapX.Ellipsoid = OpenStree
     ECEF(enu::ENU, lla_ref::LLA, datum::OpenStreetMapX.Ellipsoid = OpenStreetMapX.WGS84)
 
 Create ECEF coordinates from given `enu` coordinates
-and a reference point being center of `bounds` for linearization
+given a reference point `lla_ref` for linarization
 
 **Arguments**
 
-* `enu::enu,` : Coordinates used
-* `lla_ref::LLA,` : Reference point for linarization
+* `enu::enu` : Coordinates used
+* `lla_ref::LLA` : Reference point for linarization
 * `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
 
 """
@@ -176,7 +176,7 @@ Uses a reference point `lla_ref` for linearization.
 
 **Arguments**
 
-* `nodes::Dict{Int,LLA},` : Dictionary of LLA nodes.
+* `nodes::Dict{Int,LLA}` : Dictionary of LLA nodes.
 * `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
 
 """
@@ -198,7 +198,7 @@ Converts a dictionary of `ECEF` `nodes` into a dictionary of `LLA` values.
 
 **Arguments**
 
-* `nodes::Dict{Int,ECEF},` : Dictionary of ECEF nodes.
+* `nodes::Dict{Int,ECEF}` : Dictionary of ECEF nodes.
 * `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
 
 """
@@ -221,8 +221,8 @@ Uses a reference point `lla_ref` for linearization.
 
 **Arguments**
 
-* `nodes::Dict{Int,T},` : Dictionary of LLA or ECEF nodes.
-* `lla_ref::LLA,` : Reference point for linarization
+* `nodes::Dict{Int,T}` : Dictionary of LLA or ECEF nodes.
+* `lla_ref::LLA` : Reference point for linarization
 * `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
 
 """
@@ -254,7 +254,7 @@ Uses a reference point `lla_ref` for linearization.
 **Arguments**
 
 * `nodes::Dict{Int,ENU},` : Dictionary of ENU nodes.
-* `lla_ref::LLA,` : Reference point for linarization
+* `lla_ref::LLA` : Reference point for linarization
 * `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
 
 """
@@ -283,8 +283,8 @@ Converts a dictionary of `ENU` `nodes` into a dictionary of `LLA` values.
 Uses a reference point `lla_ref` for linearization.
 **Arguments**
 
-* `nodes::Dict{Int,ENU},` : Dictionary of ENU nodes.
-* `lla_ref::LLA,` : Reference point for linarization
+* `nodes::Dict{Int,ENU}` : Dictionary of ENU nodes.
+* `lla_ref::LLA` : Reference point for linarization
 * `datum::OpenStreetMapX.Ellipsoid` : type of ellipsoid used.
 
 """
