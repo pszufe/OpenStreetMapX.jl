@@ -181,3 +181,16 @@ function MapData(mapdata::OSMData, road_levels::Set{Int}, only_intersections::Bo
 		return MapData(mapdata.bounds,nodes,roadways,intersections,g,v,n,e,w,class)
 	end
 end
+
+const __SAMPLE_MAP = Ref{MapData}() 
+
+"""
+Produces a MapData object in a lazy loaded way.
+"""
+function sample_map()
+	if !isdefined(OpenStreetMapX.__SAMPLE_MAP, 1)
+		map_file_path = joinpath(dirname(pathof(OpenStreetMapX)),"..","test/data/reno_east3.osm")
+		OpenStreetMapX.__SAMPLE_MAP[] = get_map_data(map_file_path, use_cache=false)
+	end
+	deepcopy(OpenStreetMapX.__SAMPLE_MAP[])
+end
