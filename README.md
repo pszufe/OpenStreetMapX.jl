@@ -35,7 +35,7 @@ The package can parse `*.osm` and `*.pbf`  (contributed by [@blegat](https://git
 
 ## Installation
 
-The current version uses at least Julia 1.5. However older versions will work with Julia 1.0.
+The current version uses at least Julia 1.6. However older versions will work with Julia 1.0.
 
 ```julia
 using Pkg; Pkg.add("OpenStreetMapX")
