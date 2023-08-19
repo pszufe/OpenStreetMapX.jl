@@ -32,7 +32,7 @@ latlon
 Routing operations
 ------------------
 ```@docs
-generate_point_in_bounds(::MapData)
+generate_point_in_bounds
 point_to_nodes(::Tuple{Float64,Float64}, ::MapData)
 point_to_nodes(::LLA, ::MapData)
 shortest_route

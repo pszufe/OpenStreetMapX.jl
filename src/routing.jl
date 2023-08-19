@@ -35,7 +35,7 @@ end
 """
 For Each Feature Find the Nearest Graph Node ###
 """
-function features_to_graph(m::MapData, features::Dict{Int,Tuple{String,String}}) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
+function features_to_graph(m::MapData, features::Dict{Int,Tuple{String,String}})
     features_to_nodes = Dict{Int,Int}()
     sizehint!(features_to_nodes,length(features))
     for (key,value) in features
