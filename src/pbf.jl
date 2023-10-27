@@ -1,23 +1,28 @@
 include("OSMPBF.jl")
 
-using ProtoBuf, CodecZlib
+import CodecZlib
 
 const BLOCK = Dict(
-    "OSMHeader" => OSMPBF.HeaderBlock(),
-    "OSMData" => OSMPBF.PrimitiveBlock(),
+    "OSMHeader" => OSMPBF.HeaderBlock,
+    "OSMData" => OSMPBF.PrimitiveBlock,
 )
+
+function _decode(str, ::Type{T}) where {T}
+    io = IOBuffer(str)
+    d = OSMPBF.PB.ProtoDecoder(io)
+    return OSMPBF.PB.decode(d, T)
+end
 
 function parseblob(io::IO)
     len = ntoh(read(io, Int32))
     h = read(io, len)
-    bh = readproto(IOBuffer(h), OSMPBF.BlobHeader())
-    blob_buf = IOBuffer(read(io, bh.datasize))
-    b = readproto(blob_buf, OSMPBF.Blob())
-    ok = transcode(ZlibDecompressor, b.zlib_data)
+    bh = _decode(h, OSMPBF.BlockHeader)
+    b = _decode(read(io, bh.datasize), OSMPBF.Blob)
+    ok = CodecZlib.transcode(CodecZlib.ZlibDecompressor, b.zlib_data)
     if length(ok) != b.raw_size
         @warn("Uncompressed size $(length(ok)) bytes does not match $(b.raw_size).")
     end
-    readproto(IOBuffer(ok), BLOCK[bh._type])
+    return _decode(ok, BLOCK[bh.var"#type"])
 end
 
 function process_block(osm::OSMData, block::OSMPBF.HeaderBlock)
