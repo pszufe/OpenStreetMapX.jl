@@ -40,6 +40,8 @@ function tag(osm, element, table, key_id, value_id)
     tag(osm, element, table[key_id + 1], table[value_id + 1])
 end
 
+function process_elements(::OSMData, ::Nothing, _, _, _, _) end
+
 function process_elements(osm::OSMData, nodes::OSMPBF.DenseNodes, table, lat_offset, lon_offset, granularity)
     ids = nodes.id
     cumsum!(ids, ids)
