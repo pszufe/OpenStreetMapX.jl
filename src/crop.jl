@@ -1,7 +1,8 @@
-#######################
-### Crop Single Way ###
-#######################
+"""
+    crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, way::OpenStreetMapX.Way)
 
+Crop Single Way
+"""
 function crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, way::OpenStreetMapX.Way)
     valid = falses(length(way.nodes)+2)
     n = 1
@@ -48,10 +49,11 @@ function crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, way::OpenStreetMapX.W
     end
 end
 
-#################
-### Crop Ways ###
-#################
+"""
+    crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, ways::Vector{OpenStreetMapX.Way})
 
+Crop Ways
+"""
 function crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, ways::Vector{OpenStreetMapX.Way})
     leave = ways[[!OpenStreetMapX.crop!(nodes,bounds,way) for way in ways]]
 	append!(empty!(ways),leave)
@@ -59,10 +61,11 @@ function crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, ways::Vector{OpenStre
 end
 
 
-############################
-### Crop Single Relation ###
-############################
+"""
+    crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, ways::Vector{OpenStreetMapX.Way},relations::Vector{OpenStreetMapX.Relation}, relation::OpenStreetMapX.Relation)
 
+Crop Single Relation
+"""
 function crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, ways::Vector{OpenStreetMapX.Way},relations::Vector{OpenStreetMapX.Relation}, relation::OpenStreetMapX.Relation)
 	valid = falses(length(relation.members))
 	for i = 1:length(relation.members)
@@ -71,10 +74,10 @@ function crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, ways::Vector{OpenStre
 			valid[i] = OpenStreetMapX.inbounds(nodes[ref],bounds)
 		elseif relation.members[i]["type"] == "way"
 			way_index = findfirst(way -> way.id == ref, ways)
-			!isa(way_index,Nothing) && (valid[i] = !OpenStreetMapX.crop!(nodes, bounds, ways[way_index])) 
+			!isa(way_index,Nothing) && (valid[i] = !OpenStreetMapX.crop!(nodes, bounds, ways[way_index]))
 		else
 			relation_index = findfirst(relation -> relation.id == ref, relations)
-			!isa(relation_index,Nothing) && (valid[i] = !OpenStreetMapX.crop!(nodes,bounds, ways, relations, relations[relation_index])) 
+			!isa(relation_index,Nothing) && (valid[i] = !OpenStreetMapX.crop!(nodes,bounds, ways, relations, relations[relation_index]))
 		end
 	end
 	relation.members = relation.members[valid]
@@ -85,20 +88,23 @@ function crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, ways::Vector{OpenStre
 	end
 end
 
-######################
-### Crop Relations ###
-######################
+"""
+    crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, ways::Vector{OpenStreetMapX.Way}, relations::Vector{OpenStreetMapX.Relation})
 
+Crop Relations
+"""
 function crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, ways::Vector{OpenStreetMapX.Way}, relations::Vector{OpenStreetMapX.Relation})
     leave = relations[[!OpenStreetMapX.crop!(nodes,bounds,ways, relations, relation) for relation in relations]]
 	append!(empty!(relations),leave)
 	return nothing
 end
 
-####################################
-### Crop Single Node and Feature ###
-####################################
 
+"""
+    crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, features::Dict, id::Int)
+
+Crop Single Node and Feature
+"""
 function crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, features::Dict, id::Int)
 	if !OpenStreetMapX.inbounds(nodes[id], bounds)
 		id in keys(features) && delete!(features, id)
@@ -106,20 +112,22 @@ function crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, features::Dict, id::I
 	end
 end
 
-###############################
-### Crop Nodes and Features ###
-###############################
+"""
+    crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, features::Dict)
 
+Crop Nodes and Features
+"""
 function crop!(nodes::Dict, bounds::OpenStreetMapX.Bounds, features::Dict)
     for (key, node) in nodes
         OpenStreetMapX.crop!(nodes,bounds,features,key)
     end
 end
 
-################
-### Crop Map ###
-################
+"""
+    crop!(map::OpenStreetMapX.OSMData; crop_relations = true, crop_ways = true, crop_nodes = true)
 
+Crop Map
+"""
 function crop!(map::OpenStreetMapX.OSMData; crop_relations = true, crop_ways = true, crop_nodes = true)
 	crop_relations && OpenStreetMapX.crop!(map.nodes, map.bounds, map.ways, map.relations)
 	crop_ways && OpenStreetMapX.crop!(map.nodes, map.bounds, map.ways)

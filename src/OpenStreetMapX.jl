@@ -34,8 +34,9 @@ export get_map_data
 export get_google_route
 export encode, decode
 export generate_point_in_bounds, point_to_nodes
-
+export sample_map, sample_map_path
 export latlon
+export Bounds, Way
 
 export ROAD_CLASSES, CYCLE_CLASSES, PED_CLASSES, SPEED_ROADS_URBAN, SPEED_ROADS_RURAL
 

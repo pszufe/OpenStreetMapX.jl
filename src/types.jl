@@ -198,7 +198,7 @@ end
 ##################
 
 """
-Element on Open Street Map
+An abstract type representing an element on Open Street Map
 """
 abstract type
     OSMElement
@@ -309,9 +309,9 @@ This is the main data structure used fot map data analytics.
 
 **Fields**
 
-* `bounds` :  bounds of the area map (stored as a OpenStreetMapX.Bounds object)
+* `bounds` :  bounds of the area map (stored as a [`Bounds`](@ref) object)
 * `nodes` :  dictionary of nodes representing all the objects on the map (with coordinates in East, North, Up system)
-* `roadways` :  unique roads stored as a OpenStreetMapX.Way objects
+* `roadways` :  unique roads stored as a set of [`Way`](@ref)s
 * `intersections` : roads intersections
 * `g` : `Graphs` directed graph representing a road network
 * `v` : vertices in the road network (node id .=> graph vertex)
@@ -332,5 +332,4 @@ mutable struct MapData
     e::Vector{Tuple{Int,Int}}                # Edges in graph, stored as a tuple (source,destination)
     w::SparseArrays.SparseMatrixCSC{Float64, Int}   # Edge weights, indexed by graph id
     class::Vector{Int}                           # Road class of each edge
-	#MapData(bounds, nodes, roadways, intersections) = new(bounds, nodes, roadways, intersections, Graphs.SimpleGraphs.SimpleDiGraph{Int64}(), Dict{Int,Int}(),Int[], Tuple{Int64,Int64}[],  SparseMatrixCSC(Matrix{Float64}(undef,0,0)),Int[])
 end

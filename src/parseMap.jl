@@ -1,4 +1,8 @@
 """
+	parse_element(handler::LibExpat.XPStreamHandler,
+                      name::AbstractString,
+                      attr::Dict{AbstractString,AbstractString})
+
 Parse Elements of Map
 """
 function parse_element(handler::LibExpat.XPStreamHandler,
@@ -111,6 +115,8 @@ function get_map_data(filepath::String,filename::Union{String,Nothing}=nothing; 
 end
 
 """
+	get_vertices_and_graph_nodes(edges::Vector{Tuple{Int,Int}})
+
 Get Vertices and nodes for a set of `edges`
 """
 function get_vertices_and_graph_nodes(edges::Vector{Tuple{Int,Int}})
@@ -120,6 +126,8 @@ function get_vertices_and_graph_nodes(edges::Vector{Tuple{Int,Int}})
 end
 
 """
+	MapData(mapdata::OSMData, road_levels::Set{Int}, only_intersections::Bool=true; trim_to_connected_graph::Bool=false, remove_nodes::AbstractSet{Int}=Set{Int}())
+
 Internal constructor of `MapData` object
 """
 function MapData(mapdata::OSMData, road_levels::Set{Int}, only_intersections::Bool=true;
@@ -182,14 +190,25 @@ function MapData(mapdata::OSMData, road_levels::Set{Int}, only_intersections::Bo
 	end
 end
 
-const __SAMPLE_MAP = Ref{MapData}() 
+const __SAMPLE_MAP = Ref{MapData}()
 
 """
+	sample_map_path()
+
+Produces a path to a sample map file.
+"""
+function sample_map_path()
+	joinpath(dirname(pathof(OpenStreetMapX)),"..","test/data/reno_east3.osm")
+end
+
+"""
+	sample_map()
+
 Produces a MapData object in a lazy loaded way.
 """
 function sample_map()
 	if !isdefined(OpenStreetMapX.__SAMPLE_MAP, 1)
-		map_file_path = joinpath(dirname(pathof(OpenStreetMapX)),"..","test/data/reno_east3.osm")
+		map_file_path = sample_map_path()
 		OpenStreetMapX.__SAMPLE_MAP[] = get_map_data(map_file_path, use_cache=false)
 	end
 	deepcopy(OpenStreetMapX.__SAMPLE_MAP[])

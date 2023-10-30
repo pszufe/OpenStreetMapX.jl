@@ -13,6 +13,8 @@ Representing map data
 ```@docs
 MapData
 get_map_data(::String,::Union{String,Nothing}; ::Set{Int},::Bool,::Bool)
+sample_map_path
+sample_map
 ```
 
 Coordinate systems
@@ -26,6 +28,10 @@ center
 inbounds
 onbounds
 latlon
+getX
+getY
+getZ
+WGS84
 ```
 
 
@@ -39,6 +45,12 @@ shortest_route
 fastest_route
 a_star_algorithm
 distance
+get_distance
+nodes_within_driving_time
+nodes_within_driving_distance
+nodes_within_weights
+nearest_node
+nodes_within_range
 ```
 
 Google API routing
@@ -63,4 +75,32 @@ CYCLE_CLASSES
 PED_CLASSES
 SPEED_ROADS_URBAN
 SPEED_ROADS_RURAL
+```
+
+
+Map objects
+-----------
+```@docs
+Way
+Relation
+```
+
+Internal library functions
+--------------------------
+```@docs
+boundary_point
+centroid
+classify_cycleways
+classify_walkways
+crop!
+extract_highways
+features_to_graph
+filter_cycleways
+filter_highways
+filter_walkways
+find_intersections
+find_optimal_waypoint_approx
+find_optimal_waypoint_exact
+find_route
+find_segments
 ```

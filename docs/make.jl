@@ -1,15 +1,18 @@
 using Documenter
 using Pkg
 
-try
-    using OpenStreetMapX
-catch
-    if !("../src/" in LOAD_PATH)
-       push!(LOAD_PATH,"../src/")
-       @info "Added \"../src/\"to the path: $LOAD_PATH "
-       using OpenStreetMapX
+
+if isfile("src/OpenStreetMapX.jl")
+    if !("." in LOAD_PATH)
+        push!(LOAD_PATH,".")
+    end
+elseif isfile("../src/OpenStreetMapX.jl")
+    if !(".." in LOAD_PATH)
+	   push!(LOAD_PATH,"..")
     end
 end
+
+using OpenStreetMapX
 
 makedocs(
     sitename = "OpenStreetMapX",
@@ -18,6 +21,7 @@ makedocs(
     ),
     modules = [OpenStreetMapX],
     pages = ["index.md", "spatial.md", "reference.md"],
+    checkdocs = :exports,
     doctest = true
 )
 

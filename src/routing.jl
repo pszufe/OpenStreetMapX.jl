@@ -51,6 +51,8 @@ end
 
 
 """
+    dijkstra(m::MapData, w::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_vertex::Int)
+
 Dijkstra's Algorithm
 """
 function dijkstra(m::MapData, w::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_vertex::Int)
@@ -58,6 +60,8 @@ function dijkstra(m::MapData, w::SparseArrays.SparseMatrixCSC{Float64,Int64}, st
 end
 
 """
+    network_travel_times(m::MapData, class_speeds::Dict{Int,Float64} = OpenStreetMapX.SPEED_ROADS_URBAN)
+
 Transpose distances to times
 """
 function network_travel_times(m::MapData, class_speeds::Dict{Int,Float64} = OpenStreetMapX.SPEED_ROADS_URBAN)
@@ -71,6 +75,8 @@ function network_travel_times(m::MapData, class_speeds::Dict{Int,Float64} = Open
 end
 
 """
+    create_weights_matrix(m::MapData,weights::Vector{Float64})
+
 Create a Sparse Matrix for a given vector of weights
 """
 function create_weights_matrix(m::MapData,weights::Vector{Float64})
@@ -86,10 +92,11 @@ function create_weights_matrix(m::MapData,weights::Vector{Float64})
 end
 
 """
+    get_velocities(m::MapData, class_speeds::Dict{Int,Float64} = OpenStreetMapX.SPEED_ROADS_URBAN)
+
 Get velocities matrix ###
 """
-function get_velocities(m::MapData,
-            class_speeds::Dict{Int,Float64} = OpenStreetMapX.SPEED_ROADS_URBAN)
+function get_velocities(m::MapData, class_speeds::Dict{Int,Float64} = OpenStreetMapX.SPEED_ROADS_URBAN)
     @assert length(m.e) == length(m.w.nzval)
     indices = [(m.v[i],m.v[j]) for (i,j) in m.e]
     V = SparseArrays.spzeros(length(m.v), length(m.v))
@@ -100,6 +107,8 @@ function get_velocities(m::MapData,
 end
 
 """
+    extract_route(dijkstra::Graphs.DijkstraState{Float64,Int64}, startIndex::Int, finishIndex::Int)
+
 Extract route from Dijkstra results object
 """
 function extract_route(dijkstra::Graphs.DijkstraState{Float64,Int64}, startIndex::Int, finishIndex::Int)
@@ -118,6 +127,8 @@ function extract_route(dijkstra::Graphs.DijkstraState{Float64,Int64}, startIndex
 end
 
 """
+    get_route_nodes(m::MapData, route_indices::AbstractVector{Int})
+
 Extract nodes ID's from route object
 """
 function get_route_nodes(m::MapData, route_indices::AbstractVector{Int})
@@ -125,6 +136,8 @@ function get_route_nodes(m::MapData, route_indices::AbstractVector{Int})
 end
 
 """
+    route_edges(m::MapData, route_nodes::Vector{Int})
+
 Generate an ordered list of edges traversed in route
 """
 function route_edges(m::MapData, route_nodes::Vector{Int})
@@ -136,12 +149,19 @@ function route_edges(m::MapData, route_nodes::Vector{Int})
 end
 
 """
-Calculate distance with a given weights
+    calculate_distance(m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, route_indices::Vector{Int64}) = sum(weights[(route_indices[i-1], route_indices[i])] for i = 2:length(route_indices))
+
+Calculate distance with a given `weights` for the `route_indices` vector
 """
-calculate_distance(m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, route_indices::Array{Int64,1}) = sum(weights[(route_indices[i-1], route_indices[i])] for i = 2:length(route_indices))
+calculate_distance(m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, route_indices::Vector{Int64}) = sum(weights[(route_indices[i-1], route_indices[i])] for i = 2:length(route_indices))
 
 
 """
+    find_route(m::MapData, node0::Int, node1::Int,
+        weights::SparseArrays.SparseMatrixCSC{Float64,Int64};
+        routing::Symbol = :astar, heuristic::Function = (u,v) -> zero(Float64),
+        get_distance::Bool = false, get_time::Bool = false)
+
 Find Route with Given Weights
 """
 
@@ -280,8 +300,10 @@ function fastest_route(m::MapData, node1::Int, node2::Int, node3::Int;
 end
 
 """
-Find  waypoint minimizing the route
-Approximate solution
+    find_optimal_waypoint_approx(m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
+
+Find waypoint minimizing the route.
+Returns an approximate solution.
 """
 function find_optimal_waypoint_approx(m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
     dists_start_waypoint = Graphs.dijkstra_shortest_paths(m.g, m.v[node0], weights).dists
@@ -299,8 +321,10 @@ function find_optimal_waypoint_approx(m::MapData, weights::SparseArrays.SparseMa
 end
 
 """
-Find  waypoint minimizing the route
-Exact solution
+    find_optimal_waypoint_exact(m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
+
+Find  waypoint minimizing the route.
+Returns an exact solution.
 """
 function find_optimal_waypoint_exact(m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, node0::Int, node1::Int, waypoints::Dict{Int,Int})
     dists_start_waypoint = Graphs.dijkstra_shortest_paths(m.g, m.v[node0], weights).dists
@@ -321,13 +345,20 @@ end
 ### Find Nodes Within Driving Time or Distance - Auxiliary Functions ###
 ########################################################################
 
-### Bellman Ford's Algorithm ###
+"""
+    bellman_ford(m::MapData, w::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_vertices::Vector{Int})
+
+Bellman Ford's Algorithm
+"""
 function bellman_ford(m::MapData, w::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_vertices::Vector{Int})
     return Graphs.bellman_ford_shortest_paths(m.g, start_vertices, w)
 end
 
-### Filter vertices from bellman_fordStates object ###
+"""
+    filter_vertices(vertices::Dict{Int,Int}, weights::Vector{Float64}, limit::Float64)
 
+Filter vertices from bellman_fordStates object ###
+"""
 function filter_vertices(vertices::Dict{Int,Int}, weights::Vector{Float64}, limit::Float64)
     if limit == Inf
         @assert length(vertices) == length(weights)
@@ -345,11 +376,12 @@ function filter_vertices(vertices::Dict{Int,Int}, weights::Vector{Float64}, limi
     return indices, distances
 end
 
-##############################################################################
-### Extract Nodes from bellman_fordStates Object Within an (Optional) Limit ###
-### Based on Weights													   ###
-##############################################################################
+"""
+    nodes_within_weights(m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_indices::Vector{Int}, limit::Float64=Inf)
 
+Extract Nodes from bellman_fordStates Object Within an (Optional) Limit ###
+Based on Weights													   ###
+"""
 function nodes_within_weights(m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, start_indices::Vector{Int}, limit::Float64=Inf)
 	start_vertices = [m.v[i] for i in start_indices]
     bellman_ford = OpenStreetMapX.bellman_ford(m, weights, start_vertices)
@@ -358,11 +390,12 @@ end
 
 nodes_within_weights(nodes::Dict{Int,T}, m::MapData, weights::SparseArrays.SparseMatrixCSC{Float64,Int64}, loc::T, limit::Float64=Inf,locrange::Float64=500.0) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF}) = OpenStreetMapX.nodes_within_weights(m, weights, nodes_within_range(nodes, loc, m, locrange), limit)
 
-##############################################################################
-### Extract Nodes from bellman_fordStates Object Within an (Optional) Limit ###
-### Based on Driving Distance											   ###
-##############################################################################
+"""
+    nodes_within_driving_distance(m::MapData, start_indices::Vector{Int}, limit::Float64=Inf)
 
+Extract Nodes from bellman_fordStates Object Within an (Optional) Limit ###
+Based on Driving Distance											   ###
+"""
 function nodes_within_driving_distance(m::MapData, start_indices::Vector{Int}, limit::Float64=Inf)
     start_vertices = [m.v[i] for i in start_indices]
     bellman_ford = OpenStreetMapX.bellman_ford(m, m.w, start_vertices)
@@ -371,11 +404,14 @@ end
 
 nodes_within_driving_distance(nodes::Dict{Int,T}, m::MapData, loc::T, limit::Float64=Inf,locrange::Float64=500.0) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})= OpenStreetMapX.nodes_within_driving_distance(m, nodes_within_range(nodes, loc, m, locrange), limit)
 
-##############################################################################
-### Extract Nodes from bellman_fordStates Object Within an (Optional) Limit ###
-### Based on Driving Time												   ###
-##############################################################################
+"""
+    nodes_within_driving_time(m::MapData, start_indices::Vector{Int}, limit::Float64=Inf, speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
 
+    nodes_within_driving_time(nodes::Dict{Int,T}, m::MapData, loc::T, limit::Float64=Inf, locrange::Float64=500.0, speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN) where T<:(Union{OpenStreetMapX.ENU,OpenStreetMapX.ECEF})
+
+Extract Nodes from bellman_fordStates Object Within an (Optional) Limit ###
+Based on Driving Time												   ###
+"""
 function nodes_within_driving_time(m::MapData, start_indices::Vector{Int}, limit::Float64=Inf, speeds::Dict{Int,Float64}=SPEED_ROADS_URBAN)
 	w = OpenStreetMapX.create_weights_matrix(m,network_travel_times(m, speeds))
 	start_vertices = [m.v[i] for i in start_indices]
