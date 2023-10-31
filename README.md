@@ -2,6 +2,7 @@
 
 * Package for spatial analysis, simulation and visualization of Open Street Map data 
 * The plotting functionality is provided via a separate package [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl)
+* OSM file manipulation, POI extraction functionality and support for walkability indexes is provided by a package [`OSMToolset.jl`](https://github.com/pszufe/OSMToolset.jl)
 
 The goal of this package is to provide a backbone for multi-agent modelling and simulation of cities. 
 
