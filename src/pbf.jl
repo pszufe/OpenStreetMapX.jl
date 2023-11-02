@@ -107,7 +107,7 @@ function process_element(osm, pbf_relation::OSMPBF.Relation, table, lat_offset, 
     types = pbf_relation.types
     for i in eachindex(types)
         push!(relation.members, Dict(
-            "type" => OSMPBF.var"Relation.MemberType"[types[i] + 1],
+            "type" => string(types[i]),
             "ref" => string(memids[i]),
         ))
     end
