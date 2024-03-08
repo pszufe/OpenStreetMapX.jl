@@ -1,17 +1,23 @@
-using OpenStreetMapX, Graphs, PyCall
+using OpenStreetMapX, Graphs, PythonCall
 
 # This code assumes that folium has benn installed
+# using CondaPkg
+# CondaPkg.add_channel("conda-forge")
+# CondaPkg.add("folium")
 
+using OpenStreetMapX, Graphs, PythonCall
 
-function plot_map(m::MapData, filename::AbstractString; tiles="Stamen Toner" )
+function plot_map(m::MapData; tiles="Cartodb Positron")
     MAP_BOUNDS = [ ( m.bounds.min_y, m.bounds.min_x), ( m.bounds.max_y, m.bounds.max_x) ]
-    flm = pyimport("folium")
-    m_plot = flm.Map(tiles=tiles)
+    flm = PythonCall.pyimport("folium")
+    m_plot = flm.Map(;tiles)
     for e in edges(m.g)
 		info = "Edge from: $(e.src) to $(e.dst)<br>[information from the <pre>.e</pre> and <pre>.w</pre> fields] "
         flm.PolyLine(  (latlon(m,e.src), latlon(m,e.dst)),
             color="brown", weight=4, opacity=1).add_to(m_plot)
     end
+
+
 
     for n in keys(m.nodes)
         lla = LLA(m.nodes[n],m.bounds)
@@ -45,15 +51,16 @@ function plot_map(m::MapData, filename::AbstractString; tiles="Stamen Toner" )
         ).add_to(m_plot)
     end
 
-
-    MAP_BOUNDS = [( m.bounds.min_y, m.bounds.min_x),( m.bounds.max_y, m.bounds.max_x)]
+    MAP_BOUNDS = (( m.bounds.min_y, m.bounds.min_x),( m.bounds.max_y, m.bounds.max_x))
     flm.Rectangle(MAP_BOUNDS, color="black",weight=4).add_to(m_plot)
     m_plot.fit_bounds(MAP_BOUNDS)
-    m_plot.save(filename)
+    m_plot
 end
 
-pth = joinpath(dirname(pathof(OpenStreetMapX)),"..","test","data","reno_east3.osm")
+pth = OpenStreetMapX.sample_map_path()
 
 m2 =  OpenStreetMapX.get_map_data(pth,use_cache = false, trim_to_connected_graph=true);
 
-plot_map(m2, "mymap.html")
+m_p = plot_map(m2)  # this can be displayed in a Jupyter Notebook
+
+m_p.save("mymap.html") # or saved to a file

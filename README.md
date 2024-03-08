@@ -1,10 +1,10 @@
 # OpenStreetMapX.jl
 
-* Package for spatial analysis, simulation and visualization of Open Street Map data 
+* Package for spatial analysis, simulation and visualization of Open Street Map data
 * The plotting functionality is provided via a separate package [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl)
-* OSM file manipulation, POI extraction functionality and support for walkability indexes is provided by a package [`OSMToolset.jl`](https://github.com/pszufe/OSMToolset.jl)
+* OSM file manipulation, point-of-interest (POI) extraction functionality and support for walkability indexes is provided by a package [`OSMToolset.jl`](https://github.com/pszufe/OSMToolset.jl)
 
-The goal of this package is to provide a backbone for multi-agent modelling and simulation of cities. 
+The goal of this package is to provide a backbone for multi-agent modelling and simulation of cities.
 
 The package can parse `*.osm` and `*.pbf`  (contributed by [@blegat](https://github.com/blegat/)) files and generate a Graphs.jl representation along the metadata.
 
@@ -36,7 +36,7 @@ The package can parse `*.osm` and `*.pbf`  (contributed by [@blegat](https://git
 
 ## Installation
 
-The current version uses at least Julia 1.6. However older versions will work with Julia 1.0.
+The current version uses at least Julia 1.6.
 
 ```julia
 using Pkg; Pkg.add("OpenStreetMapX")
@@ -45,17 +45,16 @@ using Pkg; Pkg.add("OpenStreetMapX")
 In order to plot the maps we recommend two tools:
 
   - rendering the maps yourself with PyPlot or Plots.jl with backend - use the [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl) package
+  - extracting points-of-interests (POIs) from maps (such as restaurants, parks, schools, hospitals, grocery stores) - use the [`OSMToolset.jl`](https://github.com/pszufe/OSMToolset.jl) package
   - rendering the maps with Leaflet.jl - use the Python folium package (examples can be found in the [tutorial](https://pszufe.github.io/OpenStreetMapX_Tutorial/) and the [manual](https://pszufe.github.io/OpenStreetMapX.jl/stable))
 
 In order to install all plotting backends please run the commands below:
 ```julia
 using Pkg
-pkg"add Plots"
-pkg"add PyPlot"
-pkg"add OpenStreetMapXPlot"
-pkg"add Conda"
-using Conda
-Conda.runconda(`install folium -c conda-forge`)
+Pkg.add(["Plots", "OpenStreetMapXPlot", "CondaPkg"])
+using CondaPkg
+CondaPkg.add_channel("conda-forge")
+CondaPkg.add("folium")
 ```
 
 
@@ -63,12 +62,17 @@ Conda.runconda(`install folium -c conda-forge`)
 
 ```julia
 using OpenStreetMapX
-map_data = get_map_data("/home/ubuntu/mymap.osm");
+filename = OpenStreetMapX.sample_map_path()
+map_data = get_map_data(filename);
 
 println("The map contains $(length(map_data.nodes)) nodes")
 ```
 
-See the [samples](https://github.com/pszufe/OpenStreetMapX.jl/tree/master/samples) directory for a more complete example and have a look at [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl) for a route plotting.  
+
+![Sample plot](plot_sample_with_folium.png)
+
+The picture above has been generated with `folium` - for source code see the [samples](https://github.com/pszufe/OpenStreetMapX.jl/tree/master/samples) directory for a more complete example and have a look at [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl) for a route plotting.
+
 
 ## Obtaining map data
 
@@ -93,9 +97,7 @@ Compared to the original package major changes include among many others:
 - New `Graphs.jl` is used for map data storage
 - Several changes with routing algorithm (currently finding a route in a 1 million people city takes around 150ms)
 - Added support for using Google Maps API for routing
-- Data structure adjustment to make the library more suitable to run simulations of cities. 
+- Data structure adjustment to make the library more suitable to run simulations of cities.
 - `Plots.jl` with GR is used as backend for map vizualization (via a separate package   [`OpenStreetMapXPlot.jl`](https://github.com/pszufe/OpenStreetMapXPlot.jl))
 
 The creation of some parts of this source code was partially financed by research project supported by the Ontario Centres of Excellence ("OCE") under Voucher for Innovation and Productivity (VIP) program, OCE Project Number: 30293, project name: "Agent-based simulation modelling of out-of-home advertising viewing opportunity conducted in cooperation with Environics Analytics of Toronto, Canada. </sup>
-
-
